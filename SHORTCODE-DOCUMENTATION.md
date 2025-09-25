@@ -102,10 +102,12 @@ Automatic WhatsApp contact buttons on all products:
 
 ### Default Message Template
 ```
-Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}
+Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}
 ```
 
-The `{product_link}` placeholder will be automatically replaced with the actual product URL.
+Available placeholders:
+- `{product_link}` - Will be replaced with the actual product URL
+- `{product_name}` - Will be replaced with the product title
 
 ## 🌐 Frontend Display
 

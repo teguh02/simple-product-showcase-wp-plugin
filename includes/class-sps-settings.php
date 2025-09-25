@@ -127,7 +127,7 @@ class SPS_Settings {
      * WhatsApp number field callback
      */
     public function whatsapp_message_field_callback() {
-        $value = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}');
+        $value = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}');
         ?>
         <textarea 
             name="sps_whatsapp_message" 
@@ -135,10 +135,10 @@ class SPS_Settings {
             rows="4" 
             cols="50" 
             class="large-text"
-            placeholder="Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}"
+            placeholder="Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}"
         ><?php echo esc_textarea($value); ?></textarea>
         <p class="description">
-            <?php _e('Default message template for WhatsApp contact. Use {product_link} placeholder for product URL.', 'simple-product-showcase'); ?>
+            <?php _e('Default message template for WhatsApp contact. Available placeholders: {product_link} for product URL, {product_name} for product title.', 'simple-product-showcase'); ?>
         </p>
         <?php
     }
@@ -330,7 +330,8 @@ class SPS_Settings {
                             <p><?php _e('Automatic WhatsApp contact buttons on all products:', 'simple-product-showcase'); ?></p>
                             <ul>
                                 <li><?php _e('Uses the WhatsApp number configured above', 'simple-product-showcase'); ?></li>
-                                <li><?php _e('Pre-filled message with product link', 'simple-product-showcase'); ?></li>
+                                <li><?php _e('Pre-filled message with product link and name', 'simple-product-showcase'); ?></li>
+                                <li><?php _e('Available placeholders: {product_link}, {product_name}', 'simple-product-showcase'); ?></li>
                                 <li><?php _e('Customizable message per product', 'simple-product-showcase'); ?></li>
                                 <li><?php _e('Can be disabled per shortcode with show_whatsapp="false"', 'simple-product-showcase'); ?></li>
                             </ul>

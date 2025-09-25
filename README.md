@@ -10,6 +10,9 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Mengintegrasikan tombol WhatsApp untuk setiap produk
 - Menggunakan shortcode untuk menampilkan produk di halaman manapun
 - Mengorganisir produk dengan kategori
+- Menambahkan hingga 5 gambar gallery untuk setiap produk
+- Duplikasi produk dengan mudah
+- Data produk tetap tersimpan meskipun plugin dinonaktifkan
 
 ## ✨ Fitur Utama
 
@@ -17,7 +20,10 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Custom Post Type untuk produk (`sps_product`)
 - Field: Nama, Deskripsi, Harga, Gambar, Kategori
 - Meta box untuk harga dan pesan WhatsApp custom
+- **Gallery Images**: Hingga 5 gambar tambahan per produk
 - Kolom custom di admin list produk
+- **Duplicate Functionality**: Duplikasi produk dengan satu klik
+- **Persistent Data**: Data tetap tersimpan meskipun plugin dinonaktifkan
 
 ### 📱 Integrasi WhatsApp
 - Pengaturan nomor WhatsApp global
@@ -35,8 +41,9 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 ### 🔧 Shortcode
 - `[sps_products]` - Menampilkan semua produk
-- Atribut: `columns`, `category`, `limit`, `orderby`, `order`
-- Opsi: `show_price`, `show_description`, `show_whatsapp`
+- **10 Parameter Lengkap**: `columns`, `category`, `limit`, `orderby`, `order`, `show_price`, `show_description`, `show_whatsapp`, `show_gallery`, `gallery_style`
+- **Gallery Support**: Tampilkan gallery images dengan berbagai style (grid, slider, carousel)
+- **Responsive Design**: Otomatis menyesuaikan dengan tema WordPress
 
 ## 🚀 Instalasi
 
@@ -48,9 +55,11 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 ## ⚙️ Konfigurasi
 
 ### Pengaturan WhatsApp
-1. Buka **Simple Product Showcase → Settings**
+1. Buka **Products → Settings**
 2. Masukkan nomor WhatsApp dengan kode negara (contoh: +6281234567890)
-3. Kustomisasi pesan default (opsional)
+3. Kustomisasi pesan default dengan placeholder:
+   - `{product_link}` - URL produk
+   - `{product_name}` - Nama produk
 4. Simpan pengaturan
 
 ### Menambah Produk
@@ -59,9 +68,10 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 3. Tambahkan deskripsi di editor
 4. Set harga di meta box "Product Price"
 5. Upload gambar produk (featured image)
-6. Pilih kategori produk
-7. Kustomisasi pesan WhatsApp (opsional)
-8. Publish produk
+6. **Tambah Gallery Images**: Upload hingga 5 gambar tambahan di meta box "Product Gallery"
+7. Pilih kategori produk
+8. Kustomisasi pesan WhatsApp (opsional)
+9. Publish produk
 
 ## 📖 Penggunaan Shortcode
 
@@ -79,14 +89,16 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 | Atribut | Deskripsi | Default | Contoh |
 |---------|-----------|---------|---------|
-| `columns` | Jumlah kolom grid | 3 | `columns="2"` |
+| `columns` | Jumlah kolom grid (1-6) | 3 | `columns="2"` |
 | `category` | Filter berdasarkan kategori | - | `category="shoes"` |
 | `limit` | Batas jumlah produk | -1 (semua) | `limit="10"` |
-| `orderby` | Urutan berdasarkan | date | `orderby="title"` |
-| `order` | Arah urutan | DESC | `order="ASC"` |
+| `orderby` | Urutan berdasarkan: title, date, menu_order, price | date | `orderby="title"` |
+| `order` | Arah urutan: ASC atau DESC | DESC | `order="ASC"` |
 | `show_price` | Tampilkan harga | true | `show_price="false"` |
-| `show_description` | Tampilkan deskripsi | false | `show_description="true"` |
+| `show_description` | Tampilkan deskripsi | true | `show_description="false"` |
 | `show_whatsapp` | Tampilkan tombol WhatsApp | true | `show_whatsapp="false"` |
+| `show_gallery` | Tampilkan gallery images | true | `show_gallery="false"` |
+| `gallery_style` | Style gallery: grid, slider, carousel | grid | `gallery_style="slider"` |
 
 ### Contoh Penggunaan
 ```
@@ -101,6 +113,18 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 <!-- Menampilkan produk dengan deskripsi -->
 [sps_products show_description="true"]
+
+<!-- Gallery slider tanpa WhatsApp -->
+[sps_products gallery_style="slider" show_whatsapp="false"]
+
+<!-- Tampilan minimal (hanya gambar + judul) -->
+[sps_products show_price="false" show_description="false" show_whatsapp="false" show_gallery="false"]
+
+<!-- Produk terbaru dengan urutan alfabetis -->
+[sps_products orderby="title" order="ASC" limit="8"]
+
+<!-- Featured products section -->
+[sps_products limit="4" orderby="menu_order" columns="2"]
 ```
 
 ## 🎨 Kustomisasi
@@ -178,18 +202,29 @@ simple-product-showcase/
 │   ├── class-sps-cpt.php               # Custom Post Type
 │   ├── class-sps-settings.php          # Halaman settings
 │   ├── class-sps-shortcodes.php        # Shortcode handler
-│   └── class-sps-frontend.php          # Frontend template
+│   ├── class-sps-frontend.php          # Frontend template
+│   ├── class-sps-metabox.php           # Gallery meta box
+│   ├── class-sps-duplicate.php         # Duplicate functionality
+│   └── class-sps-persistent.php        # Data persistence
 ├── assets/                             # Assets (CSS & JS)
 │   ├── css/
 │   │   ├── style.css                   # CSS frontend
-│   │   └── admin-style.css             # CSS admin
-│   └── js/
-│       ├── script.js                   # JavaScript frontend
-│       └── admin-script.js             # JavaScript admin
+│   │   ├── admin-style.css             # CSS admin
+│   │   ├── duplicate-style.css         # CSS duplicate button
+│   │   └── gallery-metabox.css         # CSS gallery meta box
+│   ├── js/
+│   │   ├── script.js                   # JavaScript frontend
+│   │   ├── admin-script.js             # JavaScript admin
+│   │   ├── gallery-metabox.js          # JavaScript gallery
+│   │   └── gallery-admin.js            # JavaScript gallery admin
+│   └── images/
+│       └── placeholder.png             # Placeholder image
 ├── templates/                          # Template files
 │   ├── single-sps_product.php          # Template single product
 │   ├── archive-sps_product.php         # Template archive
 │   └── taxonomy-sps_product_category.php # Template kategori
+├── SHORTCODE-DOCUMENTATION.md          # Dokumentasi shortcode lengkap
+├── uninstall.php                       # Cleanup script
 └── README.md                           # Dokumentasi ini
 ```
 
@@ -219,6 +254,12 @@ simple-product-showcase/
 - Shortcode [sps_products]
 - Template responsif
 - Admin settings page
+- **Gallery Images**: Hingga 5 gambar tambahan per produk
+- **Duplicate Functionality**: Duplikasi produk dengan satu klik
+- **Data Persistence**: Data tetap tersimpan meskipun plugin dinonaktifkan
+- **Enhanced Shortcode**: 10 parameter lengkap dengan gallery support
+- **Improved Admin**: Menu terintegrasi dan meta box yang lebih baik
+- **Comprehensive Documentation**: Dokumentasi shortcode lengkap
 
 ## 📞 Support
 
