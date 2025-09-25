@@ -180,7 +180,7 @@ class SPS_Shortcodes {
         
         // Replace placeholders
         $message = str_replace('{product_link}', $product_url, $message);
-        $message = str_replace('{product_title}', $product_title, $message);
+        $message = str_replace('{product_name}', $product_title, $message);
         
         // URL encode the message
         $encoded_message = urlencode($message);

@@ -73,6 +73,9 @@ class Simple_Product_Showcase {
         // Inisialisasi class-class utama
         SPS_Init::get_instance();
         
+        // Inisialisasi shortcodes
+        SPS_Shortcodes::get_instance();
+        
         // Inisialisasi duplicate functionality
         SPS_Duplicate::get_instance();
         
@@ -84,6 +87,9 @@ class Simple_Product_Showcase {
         
         // Direct registration as additional fallback
         add_action('init', array($this, 'direct_cpt_registration'), 20);
+        
+        // Fallback: daftarkan shortcode langsung
+        add_action('init', array($this, 'register_fallback_shortcode'));
         
         // Initialize persistent class to keep data visible
         SPS_Persistent::get_instance();
@@ -463,6 +469,153 @@ class Simple_Product_Showcase {
         );
         
         register_taxonomy('sps_product_category', array('sps_product'), $taxonomy_args);
+    }
+    
+    /**
+     * Register fallback shortcode
+     */
+    public function register_fallback_shortcode() {
+        add_shortcode('sps_products', array($this, 'fallback_products_shortcode'));
+    }
+    
+    /**
+     * Fallback shortcode handler
+     */
+    public function fallback_products_shortcode($atts) {
+        // Default attributes
+        $atts = shortcode_atts(array(
+            'columns' => '3',
+            'category' => '',
+            'limit' => '-1',
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'show_price' => 'true',
+            'show_description' => 'true',
+            'show_whatsapp' => 'true'
+        ), $atts, 'sps_products');
+        
+        // Validate columns
+        $columns = intval($atts['columns']);
+        if ($columns < 1 || $columns > 6) {
+            $columns = 3;
+        }
+        
+        // Validate limit
+        $limit = intval($atts['limit']);
+        if ($limit < -1) {
+            $limit = -1;
+        }
+        
+        // Query arguments
+        $args = array(
+            'post_type' => 'sps_product',
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            'orderby' => $atts['orderby'],
+            'order' => $atts['order']
+        );
+        
+        // Add category filter if specified
+        if (!empty($atts['category'])) {
+            $args['tax_query'] = array(
+                array(
+                    'taxonomy' => 'sps_product_category',
+                    'field' => 'slug',
+                    'terms' => $atts['category']
+                )
+            );
+        }
+        
+        // Execute query
+        $products_query = new WP_Query($args);
+        
+        if (!$products_query->have_posts()) {
+            return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
+        }
+        
+        // Start output
+        ob_start();
+        ?>
+        <div class="sps-products-grid sps-columns-<?php echo esc_attr($columns); ?>">
+            <?php while ($products_query->have_posts()) : $products_query->the_post(); ?>
+                <div class="sps-product-item">
+                    <?php if (has_post_thumbnail()) : ?>
+                        <div class="sps-product-image">
+                            <a href="<?php the_permalink(); ?>">
+                                <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="sps-product-content">
+                        <h3 class="sps-product-title">
+                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                        </h3>
+                        
+                        <?php if ($atts['show_price'] === 'true') : ?>
+                            <?php $price = get_post_meta(get_the_ID(), '_sps_product_price', true); ?>
+                            <?php if ($price) : ?>
+                                <div class="sps-product-price"><?php echo esc_html($price); ?></div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        
+                        <?php if ($atts['show_description'] === 'true') : ?>
+                            <div class="sps-product-description">
+                                <?php echo wp_trim_words(get_the_excerpt(), 20, '...'); ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($atts['show_whatsapp'] === 'true') : ?>
+                            <div class="sps-product-actions">
+                                <?php echo $this->get_fallback_whatsapp_button(get_the_ID(), get_the_title(), get_permalink()); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+        
+        <?php
+        // Reset post data
+        wp_reset_postdata();
+        
+        return ob_get_clean();
+    }
+    
+    /**
+     * Generate fallback WhatsApp button HTML
+     */
+    private function get_fallback_whatsapp_button($product_id, $product_title, $product_url) {
+        $whatsapp_number = get_option('sps_whatsapp_number', '');
+        
+        if (empty($whatsapp_number)) {
+            return '<p class="sps-whatsapp-error">' . __('WhatsApp number not configured.', 'simple-product-showcase') . '</p>';
+        }
+        
+        // Get custom message for this product or use global message
+        $custom_message = get_post_meta($product_id, '_sps_whatsapp_message', true);
+        $global_message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}');
+        
+        $message = !empty($custom_message) ? $custom_message : $global_message;
+        
+        // Replace placeholders
+        $message = str_replace('{product_link}', $product_url, $message);
+        $message = str_replace('{product_name}', $product_title, $message);
+        
+        // URL encode the message
+        $encoded_message = urlencode($message);
+        
+        // Generate WhatsApp URL
+        $whatsapp_url = "https://wa.me/{$whatsapp_number}?text={$encoded_message}";
+        
+        return sprintf(
+            '<a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-button">
+                <span class="sps-whatsapp-icon">📱</span>
+                %s
+            </a>',
+            esc_url($whatsapp_url),
+            __('Contact via WhatsApp', 'simple-product-showcase')
+        );
     }
     
 }
