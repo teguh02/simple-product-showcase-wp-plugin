@@ -189,7 +189,7 @@ class SPS_Settings {
             </form>
             
             <div class="sps-settings-info">
-                <h2><?php _e('Plugin Information', 'simple-product-showcase'); ?></h2>
+                <h2><?php _e('Plugin Information', 'simple-product-showcase'); ?> <small style="color: #666; font-size: 12px;">(Enhanced Documentation - <?php echo date('Y-m-d H:i:s'); ?>)</small></h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row"><?php _e('Plugin Version', 'simple-product-showcase'); ?></th>
@@ -356,6 +356,7 @@ class SPS_Settings {
         </div>
         
         <style>
+        /* Enhanced Settings Documentation - Updated: <?php echo date('Y-m-d H:i:s'); ?> */
         .sps-settings-info {
             margin-top: 30px;
             padding: 20px;
