@@ -177,6 +177,10 @@ class SPS_Settings {
         <div class="wrap">
             <h1><?php _e('Simple Product Showcase Settings', 'simple-product-showcase'); ?></h1>
             
+            <div class="notice notice-info">
+                <p><strong>📚 Enhanced Documentation Available!</strong> Scroll down to see the comprehensive shortcode documentation with detailed parameters, examples, and usage instructions. <em>Last updated: <?php echo date('Y-m-d H:i:s'); ?></em></p>
+            </div>
+            
             <?php $this->display_admin_notices(); ?>
             
             <form method="post" action="">
@@ -202,7 +206,7 @@ class SPS_Settings {
                             <code>[sps_products]</code>
                             <p class="description"><?php _e('Display all products in a responsive grid layout.', 'simple-product-showcase'); ?></p>
                             
-                            <h4><?php _e('All Available Parameters', 'simple-product-showcase'); ?></h4>
+                            <h4><?php _e('All Available Parameters', 'simple-product-showcase'); ?> <span style="color: #0073aa; font-size: 12px;">(NEW - <?php echo date('H:i:s'); ?>)</span></h4>
                             <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0;">
                                 <table style="width: 100%; border-collapse: collapse;">
                                     <thead>
@@ -356,7 +360,7 @@ class SPS_Settings {
         </div>
         
         <style>
-        /* Enhanced Settings Documentation - Updated: <?php echo date('Y-m-d H:i:s'); ?> */
+        /* Enhanced Settings Documentation - Updated: <?php echo date('Y-m-d H:i:s'); ?> - Cache Bust: <?php echo uniqid(); ?> */
         .sps-settings-info {
             margin-top: 30px;
             padding: 20px;
