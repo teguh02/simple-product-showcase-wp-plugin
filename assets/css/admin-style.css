@@ -1,0 +1,385 @@
+/**
+ * Simple Product Showcase - Admin Styles
+ * 
+ * CSS untuk tampilan admin plugin Simple Product Showcase
+ */
+
+/* ==========================================================================
+   Admin Menu Icon
+   ========================================================================== */
+
+#adminmenu .toplevel_page_sps-settings .wp-menu-image:before {
+    content: "\f238";
+}
+
+/* ==========================================================================
+   Settings Page Styles
+   ========================================================================== */
+
+.sps-settings-page {
+    max-width: 800px;
+}
+
+.sps-settings-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.sps-settings-section h2 {
+    margin-top: 0;
+    color: #23282d;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.sps-form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+    vertical-align: top;
+}
+
+.sps-form-table td {
+    padding: 15px 10px;
+}
+
+.sps-form-table .description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   Product Meta Boxes
+   ========================================================================== */
+
+.sps-meta-box {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.sps-meta-box h3 {
+    margin-top: 0;
+    color: #23282d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sps-meta-box label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #23282d;
+}
+
+.sps-meta-box input[type="text"],
+.sps-meta-box textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.sps-meta-box input[type="text"]:focus,
+.sps-meta-box textarea:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.sps-meta-box small {
+    display: block;
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   Product List Table
+   ========================================================================== */
+
+.wp-list-table .column-product_price {
+    width: 120px;
+}
+
+.wp-list-table .column-product_category {
+    width: 150px;
+}
+
+.sps-price-display {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.sps-category-display {
+    font-size: 12px;
+    color: #666;
+}
+
+/* ==========================================================================
+   Admin Notices
+   ========================================================================== */
+
+.sps-admin-notice {
+    border-left: 4px solid #0073aa;
+    background: #fff;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+    margin: 5px 15px 2px;
+    padding: 1px 12px;
+}
+
+.sps-admin-notice.notice-success {
+    border-left-color: #46b450;
+}
+
+.sps-admin-notice.notice-warning {
+    border-left-color: #ffb900;
+}
+
+.sps-admin-notice.notice-error {
+    border-left-color: #dc3232;
+}
+
+/* ==========================================================================
+   Settings Form Styles
+   ========================================================================== */
+
+.sps-settings-form {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.sps-settings-form .form-table {
+    margin-top: 0;
+}
+
+.sps-settings-form .form-table th {
+    padding: 20px 10px 20px 0;
+    width: 200px;
+}
+
+.sps-settings-form .form-table td {
+    padding: 20px 10px;
+}
+
+.sps-settings-form .regular-text {
+    width: 100%;
+    max-width: 400px;
+}
+
+.sps-settings-form .large-text {
+    width: 100%;
+    max-width: 600px;
+    height: 100px;
+    resize: vertical;
+}
+
+/* ==========================================================================
+   Plugin Information Box
+   ========================================================================== */
+
+.sps-plugin-info {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.sps-plugin-info h2 {
+    margin-top: 0;
+    color: #23282d;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.sps-plugin-info .form-table {
+    margin-top: 0;
+}
+
+.sps-plugin-info .form-table th {
+    width: 150px;
+    padding: 10px 10px 10px 0;
+    font-weight: 600;
+}
+
+.sps-plugin-info .form-table td {
+    padding: 10px 10px;
+}
+
+.sps-plugin-info code {
+    background: #fff;
+    padding: 2px 6px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 13px;
+}
+
+.sps-plugin-info .description {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   WhatsApp Integration Styles
+   ========================================================================== */
+
+.sps-whatsapp-preview {
+    background: #f0f8f0;
+    border: 1px solid #25d366;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.sps-whatsapp-preview h4 {
+    margin: 0 0 10px 0;
+    color: #25d366;
+    font-size: 14px;
+}
+
+.sps-whatsapp-preview p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.sps-whatsapp-number-input {
+    position: relative;
+}
+
+.sps-whatsapp-number-input::before {
+    content: "📱";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
+.sps-whatsapp-number-input input {
+    padding-left: 35px;
+}
+
+/* ==========================================================================
+   Responsive Admin Styles
+   ========================================================================== */
+
+@media (max-width: 782px) {
+    .sps-settings-form .form-table th,
+    .sps-settings-form .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .sps-settings-form .form-table th {
+        border-bottom: none;
+        padding-bottom: 5px;
+    }
+    
+    .sps-plugin-info .form-table th,
+    .sps-plugin-info .form-table td {
+        display: block;
+        width: 100%;
+        padding: 5px 0;
+    }
+}
+
+/* ==========================================================================
+   Custom Admin Colors
+   ========================================================================== */
+
+.sps-primary-color {
+    color: #0073aa;
+}
+
+.sps-success-color {
+    color: #46b450;
+}
+
+.sps-warning-color {
+    color: #ffb900;
+}
+
+.sps-error-color {
+    color: #dc3232;
+}
+
+/* ==========================================================================
+   Admin Button Styles
+   ========================================================================== */
+
+.sps-admin-button {
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.sps-admin-button:hover {
+    background: #005a87;
+    color: #fff;
+}
+
+.sps-admin-button.button-secondary {
+    background: #f7f7f7;
+    color: #555;
+    border: 1px solid #ccd0d4;
+}
+
+.sps-admin-button.button-secondary:hover {
+    background: #f1f1f1;
+    color: #555;
+}
+
+/* ==========================================================================
+   Admin Help Text
+   ========================================================================== */
+
+.sps-help-text {
+    background: #f0f6fc;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.sps-help-text h4 {
+    margin: 0 0 10px 0;
+    color: #0073aa;
+    font-size: 14px;
+}
+
+.sps-help-text p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.sps-help-text ul {
+    margin: 10px 0 0 20px;
+    font-size: 13px;
+    color: #666;
+}
+
+.sps-help-text li {
+    margin-bottom: 5px;
+}

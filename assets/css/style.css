@@ -1,0 +1,563 @@
+/**
+ * Simple Product Showcase - Frontend Styles
+ * 
+ * CSS untuk tampilan frontend plugin Simple Product Showcase
+ */
+
+/* ==========================================================================
+   Reset dan Base Styles
+   ========================================================================== */
+
+.sps-products-grid,
+.sps-single-product,
+.sps-archive-products {
+    box-sizing: border-box;
+}
+
+.sps-products-grid *,
+.sps-single-product *,
+.sps-archive-products * {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Products Grid Layout
+   ========================================================================== */
+
+.sps-products-grid {
+    display: grid;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.sps-columns-1 {
+    grid-template-columns: 1fr;
+}
+
+.sps-columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.sps-columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.sps-columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.sps-columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.sps-columns-6 {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+/* Responsive Grid */
+@media (max-width: 1200px) {
+    .sps-columns-6 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .sps-columns-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .sps-columns-6,
+    .sps-columns-5,
+    .sps-columns-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sps-columns-6,
+    .sps-columns-5,
+    .sps-columns-4,
+    .sps-columns-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .sps-columns-6,
+    .sps-columns-5,
+    .sps-columns-4,
+    .sps-columns-3,
+    .sps-columns-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Product Item Styles
+   ========================================================================== */
+
+.sps-product-item {
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sps-product-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007cba;
+}
+
+.sps-product-image {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.sps-product-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.sps-product-item:hover .sps-product-image img {
+    transform: scale(1.05);
+}
+
+.sps-product-image a {
+    display: block;
+    text-decoration: none;
+}
+
+.sps-product-content {
+    padding: 15px;
+}
+
+.sps-product-title {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.sps-product-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.sps-product-title a:hover {
+    color: #007cba;
+}
+
+.sps-product-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #28a745;
+    margin-bottom: 10px;
+}
+
+.sps-product-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.sps-product-categories {
+    margin-bottom: 15px;
+}
+
+.sps-category-tag {
+    display: inline-block;
+    background: #f8f9fa;
+    color: #666;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.sps-product-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sps-view-product {
+    flex: 1;
+    background: #007cba;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.sps-view-product:hover {
+    background: #005a87;
+    color: #fff;
+}
+
+/* ==========================================================================
+   WhatsApp Button Styles
+   ========================================================================== */
+
+.sps-whatsapp-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #25d366;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.sps-whatsapp-button:hover {
+    background: #1da851;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.sps-whatsapp-icon {
+    font-size: 16px;
+}
+
+.sps-whatsapp-error {
+    color: #dc3545;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Single Product Page Styles
+   ========================================================================== */
+
+.sps-single-product {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sps-product-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.sps-product-header .sps-product-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.sps-product-header .sps-product-price {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.sps-product-categories {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sps-category-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.sps-category-link {
+    color: #007cba;
+    text-decoration: none;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.sps-category-link:hover {
+    background: #007cba;
+    color: #fff;
+}
+
+.sps-product-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.sps-product-image {
+    position: relative;
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sps-product-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.sps-product-details {
+    padding: 20px 0;
+}
+
+.sps-product-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.sps-product-contact {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e1e5e9;
+}
+
+.sps-product-contact h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.sps-product-contact p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.sps-product-contact .sps-whatsapp-button {
+    font-size: 16px;
+    padding: 12px 20px;
+}
+
+/* ==========================================================================
+   Archive Page Styles
+   ========================================================================== */
+
+.sps-archive-products {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sps-archive-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.sps-archive-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.sps-archive-description {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.sps-archive-filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.sps-search-filter {
+    flex: 1;
+    min-width: 250px;
+}
+
+.sps-search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.sps-search-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.sps-search-input:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+.sps-search-button {
+    background: #007cba;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.sps-search-button:hover {
+    background: #005a87;
+}
+
+.sps-category-filter {
+    min-width: 200px;
+}
+
+.sps-category-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.sps-category-select:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+/* ==========================================================================
+   No Products Message
+   ========================================================================== */
+
+.sps-no-products {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e1e5e9;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .sps-product-content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .sps-archive-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .sps-search-filter,
+    .sps-category-filter {
+        min-width: auto;
+    }
+    
+    .sps-product-header .sps-product-title {
+        font-size: 24px;
+    }
+    
+    .sps-archive-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sps-single-product,
+    .sps-archive-products {
+        padding: 10px;
+    }
+    
+    .sps-product-actions {
+        flex-direction: column;
+    }
+    
+    .sps-view-product {
+        flex: none;
+    }
+}
+
+/* ==========================================================================
+   Loading States
+   ========================================================================== */
+
+.sps-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.sps-loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: sps-spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes sps-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.sps-text-center {
+    text-align: center;
+}
+
+.sps-text-left {
+    text-align: left;
+}
+
+.sps-text-right {
+    text-align: right;
+}
+
+.sps-mb-0 { margin-bottom: 0; }
+.sps-mb-1 { margin-bottom: 10px; }
+.sps-mb-2 { margin-bottom: 20px; }
+.sps-mb-3 { margin-bottom: 30px; }
+
+.sps-mt-0 { margin-top: 0; }
+.sps-mt-1 { margin-top: 10px; }
+.sps-mt-2 { margin-top: 20px; }
+.sps-mt-3 { margin-top: 30px; }

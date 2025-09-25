@@ -1,0 +1,43 @@
+/**
+ * Duplicate Button Styles
+ * Styles untuk tombol duplicate di WordPress admin
+ */
+
+/* Style untuk tombol duplicate di row actions */
+.row-actions .duplicate a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.row-actions .duplicate a:hover {
+    color: #005177;
+    text-decoration: underline;
+}
+
+/* Style untuk bulk actions dropdown */
+#bulk-action-selector-top option[value="duplicate"],
+#bulk-action-selector-bottom option[value="duplicate"] {
+    font-weight: 500;
+}
+
+/* Style untuk admin notice */
+.notice.notice-success .duplicate-success {
+    font-weight: 500;
+}
+
+/* Hover effect untuk row actions */
+.row-actions .duplicate {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.row-actions:hover .duplicate {
+    opacity: 1;
+}
+
+/* Icon removed - no icon for duplicate button */
+.row-actions .duplicate a:before {
+    content: "";
+    margin-right: 0;
+}

@@ -1,0 +1,150 @@
+/**
+ * Gallery Metabox Styles
+ * Styles untuk Product Gallery meta box
+ */
+
+.sps-gallery-metabox {
+    max-width: 100%;
+}
+
+.sps-gallery-item {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.sps-gallery-item:hover {
+    background: #f0f0f0;
+    border-color: #0073aa;
+}
+
+.sps-gallery-item label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #23282d;
+}
+
+.sps-image-preview {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.sps-image-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sps-image-preview img:hover {
+    opacity: 0.8;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.sps-image-preview .no-image-placeholder {
+    width: 200px;
+    height: 150px;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    background: #f9f9f9;
+    margin: 0 auto;
+    font-style: italic;
+}
+
+.sps-gallery-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.sps-upload {
+    background: #0073aa;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.sps-upload:hover {
+    background: #005177;
+}
+
+.sps-remove {
+    background: #dc3232;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.sps-remove:hover {
+    background: #a00;
+}
+
+/* Loading state */
+.sps-gallery-item.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.sps-gallery-item.loading .sps-image-preview::after {
+    content: "Loading...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Success state */
+.sps-gallery-item.success {
+    border-color: #46b450;
+    background: #f7fff7;
+}
+
+.sps-gallery-item.success .sps-image-preview img {
+    border-color: #46b450;
+}
+
+/* Responsive design */
+@media screen and (max-width: 782px) {
+    .sps-gallery-item {
+        padding: 10px;
+    }
+    
+    .sps-image-preview img,
+    .sps-image-preview .no-image-placeholder {
+        max-width: 150px;
+        max-height: 150px;
+    }
+    
+    .sps-gallery-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .sps-upload,
+    .sps-remove {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
