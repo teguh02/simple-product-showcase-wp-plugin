@@ -479,20 +479,29 @@ class Simple_Product_Showcase {
                         </tr>
                         <tr>
                             <td style="padding: 10px;"><code>style</code></td>
-                            <td style="padding: 10px;">Gallery display style (only for gallery section)</td>
-                            <td style="padding: 10px;">grid, slider, carousel</td>
-                            <td style="padding: 10px;"><code>style="slider"</code></td>
+                            <td style="padding: 10px;">Display style based on section:<br>• Title: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel</td>
+                            <td style="padding: 10px;">Title: h1, h2, h3, h4, h5<br>Gallery: grid, slider, carousel</td>
+                            <td style="padding: 10px;"><code>style="h2"</code> or <code>style="slider"</code></td>
                         </tr>
                     </tbody>
                 </table>
                 
                 <h3>Available Sections:</h3>
                 <ul>
-                    <li><strong>title</strong> - Display product title as H1 heading</li>
+                    <li><strong>title</strong> - Display product title as heading (supports h1, h2, h3, h4, h5 styles)</li>
                     <li><strong>image</strong> - Display main product image (featured image)</li>
                     <li><strong>description</strong> - Display full product description/content</li>
-                    <li><strong>gallery</strong> - Display up to 5 gallery images</li>
+                    <li><strong>gallery</strong> - Display up to 5 gallery images (supports grid, slider, carousel styles)</li>
                     <li><strong>whatsapp</strong> - Display WhatsApp contact button</li>
+                </ul>
+                
+                <h3>Title Styles:</h3>
+                <ul>
+                    <li><strong>h1</strong> - Display as H1 heading (default)</li>
+                    <li><strong>h2</strong> - Display as H2 heading</li>
+                    <li><strong>h3</strong> - Display as H3 heading</li>
+                    <li><strong>h4</strong> - Display as H4 heading</li>
+                    <li><strong>h5</strong> - Display as H5 heading</li>
                 </ul>
                 
                 <h3>Gallery Styles:</h3>
@@ -525,8 +534,14 @@ class Simple_Product_Showcase {
                 
                 <h3>Product Detail Examples</h3>
                 
-                <h4>Display Product Title</h4>
+                <h4>Display Product Title (H1)</h4>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title"]</code></pre>
+                
+                <h4>Display Product Title (H2)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title" style="h2"]</code></pre>
+                
+                <h4>Display Product Title (H3)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title" style="h3"]</code></pre>
                 
                 <h4>Display Main Product Image</h4>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="image"]</code></pre>
@@ -548,10 +563,17 @@ class Simple_Product_Showcase {
                 
                 <h3>Complete Product Detail Page Layout</h3>
                 <p>For a complete product detail page, use multiple shortcodes:</p>
-                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title"]
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title" style="h2"]
 [sps_detail_products section="image"]
 [sps_detail_products section="description"]
 [sps_detail_products section="gallery" style="slider"]
+[sps_detail_products section="whatsapp"]</code></pre>
+                
+                <h4>Alternative Layout with H3 Title and Carousel</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title" style="h3"]
+[sps_detail_products section="image"]
+[sps_detail_products section="gallery" style="carousel"]
+[sps_detail_products section="description"]
 [sps_detail_products section="whatsapp"]</code></pre>
                 
                 <hr style="margin: 30px 0;">
@@ -981,7 +1003,10 @@ class Simple_Product_Showcase {
         // Switch berdasarkan section
         switch ($atts['section']) {
             case 'title':
-                return '<h1 class="sps-product-detail-title">' . esc_html($product->post_title) . '</h1>';
+                // Validasi style untuk title
+                $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
+                $heading_tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'h1';
+                return '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
                 
             case 'image':
                 if (has_post_thumbnail($product->ID)) {
@@ -1085,10 +1110,14 @@ class Simple_Product_Showcase {
         }
         .sps-gallery-carousel {
             display: flex;
-            overflow-x: auto;
+            overflow: hidden;
             gap: 15px;
             padding: 10px 0;
-            scroll-behavior: smooth;
+            transition: transform 0.3s ease;
+        }
+        .sps-gallery-item {
+            flex: 0 0 calc(33.333% - 10px);
+            min-width: 200px;
         }
         .sps-gallery-slider {
             position: relative;
@@ -1149,15 +1178,19 @@ class Simple_Product_Showcase {
         const totalSlides = slides.length;
         
         function spsGalleryNext() {
-            slides[currentSlide].style.display = 'none';
-            currentSlide = (currentSlide + 1) % totalSlides;
-            slides[currentSlide].style.display = 'block';
+            if (totalSlides > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide = (currentSlide + 1) % totalSlides;
+                slides[currentSlide].style.display = 'block';
+            }
         }
         
         function spsGalleryPrev() {
-            slides[currentSlide].style.display = 'none';
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            slides[currentSlide].style.display = 'block';
+            if (totalSlides > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                slides[currentSlide].style.display = 'block';
+            }
         }
         
         // Initialize slider
@@ -1165,6 +1198,44 @@ class Simple_Product_Showcase {
             slides.forEach((slide, index) => {
                 slide.style.display = index === 0 ? 'block' : 'none';
             });
+        });
+        </script>
+        <?php elseif ($style === 'carousel') : ?>
+        <div class="sps-gallery-controls">
+            <button class="sps-gallery-prev" onclick="spsCarouselPrev()">‹</button>
+            <button class="sps-gallery-next" onclick="spsCarouselNext()">›</button>
+        </div>
+        <script>
+        let currentCarouselIndex = 0;
+        const carouselContainer = document.querySelector('.sps-gallery-carousel');
+        const carouselItems = document.querySelectorAll('.sps-gallery-item');
+        const itemsToShow = 3; // Show 3 items at once
+        const totalItems = carouselItems.length;
+        
+        function spsCarouselNext() {
+            if (totalItems > itemsToShow) {
+                currentCarouselIndex = Math.min(currentCarouselIndex + 1, totalItems - itemsToShow);
+                updateCarouselPosition();
+            }
+        }
+        
+        function spsCarouselPrev() {
+            if (totalItems > itemsToShow) {
+                currentCarouselIndex = Math.max(currentCarouselIndex - 1, 0);
+                updateCarouselPosition();
+            }
+        }
+        
+        function updateCarouselPosition() {
+            if (carouselContainer && totalItems > 0) {
+                const translateX = -(currentCarouselIndex * (100 / itemsToShow));
+                carouselContainer.style.transform = `translateX(${translateX}%)`;
+            }
+        }
+        
+        // Initialize carousel
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCarouselPosition();
         });
         </script>
         <?php endif; ?>

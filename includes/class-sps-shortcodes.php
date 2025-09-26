@@ -259,7 +259,7 @@ class SPS_Shortcodes {
         // Switch berdasarkan section
         switch ($atts['section']) {
             case 'title':
-                return $this->render_product_title($product);
+                return $this->render_product_title($product, $atts['style']);
                 
             case 'image':
                 return $this->render_product_image($product);
@@ -333,8 +333,12 @@ class SPS_Shortcodes {
     /**
      * Render product title
      */
-    private function render_product_title($product) {
-        return '<h1 class="sps-product-detail-title">' . esc_html($product->post_title) . '</h1>';
+    private function render_product_title($product, $style = 'h1') {
+        // Validasi style untuk title
+        $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
+        $heading_tag = in_array($style, $valid_styles) ? $style : 'h1';
+        
+        return '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
     }
     
     /**
@@ -400,15 +404,19 @@ class SPS_Shortcodes {
         const totalSlides = slides.length;
         
         function spsGalleryNext() {
-            slides[currentSlide].style.display = 'none';
-            currentSlide = (currentSlide + 1) % totalSlides;
-            slides[currentSlide].style.display = 'block';
+            if (totalSlides > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide = (currentSlide + 1) % totalSlides;
+                slides[currentSlide].style.display = 'block';
+            }
         }
         
         function spsGalleryPrev() {
-            slides[currentSlide].style.display = 'none';
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            slides[currentSlide].style.display = 'block';
+            if (totalSlides > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                slides[currentSlide].style.display = 'block';
+            }
         }
         
         // Initialize slider
@@ -416,6 +424,44 @@ class SPS_Shortcodes {
             slides.forEach((slide, index) => {
                 slide.style.display = index === 0 ? 'block' : 'none';
             });
+        });
+        </script>
+        <?php elseif ($style === 'carousel') : ?>
+        <div class="sps-gallery-controls">
+            <button class="sps-gallery-prev" onclick="spsCarouselPrev()">‹</button>
+            <button class="sps-gallery-next" onclick="spsCarouselNext()">›</button>
+        </div>
+        <script>
+        let currentCarouselIndex = 0;
+        const carouselContainer = document.querySelector('.sps-gallery-carousel');
+        const carouselItems = document.querySelectorAll('.sps-gallery-item');
+        const itemsToShow = 3; // Show 3 items at once
+        const totalItems = carouselItems.length;
+        
+        function spsCarouselNext() {
+            if (totalItems > itemsToShow) {
+                currentCarouselIndex = Math.min(currentCarouselIndex + 1, totalItems - itemsToShow);
+                updateCarouselPosition();
+            }
+        }
+        
+        function spsCarouselPrev() {
+            if (totalItems > itemsToShow) {
+                currentCarouselIndex = Math.max(currentCarouselIndex - 1, 0);
+                updateCarouselPosition();
+            }
+        }
+        
+        function updateCarouselPosition() {
+            if (carouselContainer && totalItems > 0) {
+                const translateX = -(currentCarouselIndex * (100 / itemsToShow));
+                carouselContainer.style.transform = `translateX(${translateX}%)`;
+            }
+        }
+        
+        // Initialize carousel
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCarouselPosition();
         });
         </script>
         <?php endif; ?>

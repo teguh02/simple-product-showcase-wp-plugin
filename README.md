@@ -89,10 +89,14 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 ### Shortcode Detail Produk
 ```
-[sps_detail_products section="title"]
+[sps_detail_products section="title" style="h2"]
 [sps_detail_products section="image"]
 [sps_detail_products section="gallery" style="slider"]
 [sps_detail_products section="whatsapp"]
+
+<!-- Contoh dengan title h3 dan gallery carousel -->
+[sps_detail_products section="title" style="h3"]
+[sps_detail_products section="gallery" style="carousel"]
 ```
 
 ### Atribut yang Tersedia
@@ -115,7 +119,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 | Atribut | Deskripsi | Default | Contoh |
 |---------|-----------|---------|---------|
 | `section` | Bagian produk yang ditampilkan: title, image, description, gallery, whatsapp | title | `section="gallery"` |
-| `style` | Style gallery: grid, slider, carousel | grid | `style="slider"` |
+| `style` | Style berdasarkan section:<br>• Title: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel | h1 (title)<br>grid (gallery) | `style="h2"` atau `style="slider"` |
 
 ### Contoh Penggunaan
 ```
