@@ -297,10 +297,6 @@ class SPS_Shortcodes {
             $product = get_post($product_id);
             if ($product && $product->post_type === 'sps_product') {
                 return $product;
-            } else {
-                // Invalid product_id, redirect to homepage
-                wp_redirect(home_url());
-                exit;
             }
         }
         
@@ -331,9 +327,7 @@ class SPS_Shortcodes {
             }
         }
         
-        // No valid product found and no product_id parameter, redirect to homepage
-        wp_redirect(home_url());
-        exit;
+        return false;
     }
     
     /**
