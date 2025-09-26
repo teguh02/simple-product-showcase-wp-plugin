@@ -135,9 +135,16 @@ class SPS_Shortcodes {
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        .sps-product-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
         .sps-product-title {
-            margin: 0 0 15px 0;
-            text-align: center;
+            margin: 0;
+            flex: 1;
         }
         .sps-product-title-text {
             color: #333;
@@ -182,6 +189,14 @@ class SPS_Shortcodes {
             .sps-product-item {
                 max-width: 100%;
             }
+            .sps-product-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .sps-product-title {
+                text-align: center;
+            }
         }
         </style>
         <div class="sps-products-grid">
@@ -193,11 +208,12 @@ class SPS_Shortcodes {
                         </div>
                     <?php endif; ?>
                     
-                    <div class="sps-product-title">
-                        <p class="sps-product-title-text"><?php the_title(); ?></p>
+                    <div class="sps-product-info">
+                        <div class="sps-product-title">
+                            <p class="sps-product-title-text"><?php the_title(); ?></p>
+                        </div>
+                        <a href="<?php the_permalink(); ?>" class="sps-detail-button">Detail</a>
                     </div>
-                    
-                    <a href="<?php the_permalink(); ?>" class="sps-detail-button">Detail</a>
                 </div>
             <?php endwhile; ?>
         </div>
