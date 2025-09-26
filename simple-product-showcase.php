@@ -536,66 +536,72 @@ class Simple_Product_Showcase {
         .sps-products-grid {
             display: grid;
             grid-template-columns: repeat(<?php echo $columns; ?>, 1fr);
-            gap: 20px;
+            gap: 30px;
             margin: 20px 0;
+            justify-items: center;
         }
         .sps-product-item {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 300px;
+        }
+        .sps-product-image {
+            margin-bottom: 15px;
             text-align: center;
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .sps-product-image img {
             max-width: 100%;
             height: auto;
-            border-radius: 4px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .sps-product-title a {
-            text-decoration: none;
+        .sps-product-title {
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        .sps-product-title-text {
             color: #333;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .sps-product-title a:hover {
-            color: #0073aa;
-        }
-        .sps-product-price {
-            color: #0073aa;
-            font-weight: bold;
-            margin: 10px 0;
+            font-weight: 600;
             font-size: 16px;
+            margin: 0;
+            line-height: 1.3;
         }
-        .sps-product-description {
-            margin: 10px 0;
-            color: #666;
-            line-height: 1.4;
-        }
-        .sps-whatsapp-button {
-            background-color: #25D366;
-            color: white;
-            padding: 10px 20px;
+        .sps-detail-button {
+            background-color: #FFD700;
+            color: #333;
+            padding: 8px 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             text-decoration: none;
             display: inline-block;
-            margin-top: 10px;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
         }
-        .sps-whatsapp-button:hover {
-            background-color: #128C7E;
-            color: white;
+        .sps-detail-button:hover {
+            background-color: #FFC107;
+            color: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+        }
+        .sps-detail-button:active {
+            transform: translateY(0);
         }
         @media (max-width: 768px) {
             .sps-products-grid {
                 grid-template-columns: repeat(<?php echo min($columns, 2); ?>, 1fr);
-                gap: 15px;
+                gap: 25px;
             }
         }
         @media (max-width: 480px) {
             .sps-products-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .sps-product-item {
+                max-width: 100%;
             }
         }
         </style>
@@ -604,48 +610,15 @@ class Simple_Product_Showcase {
                 <div class="sps-product-item">
                     <?php if (has_post_thumbnail()) : ?>
                         <div class="sps-product-image">
-                            <a href="<?php the_permalink(); ?>">
-                                <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
-                            </a>
+                            <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
                         </div>
                     <?php endif; ?>
                     
-                    <div class="sps-product-content">
-                        <h3 class="sps-product-title">
-                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                        </h3>
-                        
-                        <?php if ($atts['show_price'] === 'true') : ?>
-                            <?php $price = get_post_meta(get_the_ID(), '_sps_product_price', true); ?>
-                            <?php if ($price) : ?>
-                                <div class="sps-product-price"><?php echo esc_html($price); ?></div>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                        
-                        <?php if ($atts['show_description'] === 'true') : ?>
-                            <div class="sps-product-description">
-                                <?php echo wp_trim_words(get_the_excerpt(), 20, '...'); ?>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if ($atts['show_whatsapp'] === 'true') : ?>
-                            <div class="sps-product-actions">
-                                <?php 
-                                $whatsapp_number = get_option('sps_whatsapp_number', '');
-                                if (!empty($whatsapp_number)) {
-                                    $message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}');
-                                    $message = str_replace('{product_link}', get_permalink(), $message);
-                                    $message = str_replace('{product_name}', get_the_title(), $message);
-                                    $encoded_message = urlencode($message);
-                                    $whatsapp_url = "https://wa.me/{$whatsapp_number}?text={$encoded_message}";
-                                    echo '<a href="' . esc_url($whatsapp_url) . '" target="_blank" rel="noopener" class="sps-whatsapp-button">📱 Contact via WhatsApp</a>';
-                                } else {
-                                    echo '<p style="color: #666; font-size: 12px;">WhatsApp not configured</p>';
-                                }
-                                ?>
-                            </div>
-                        <?php endif; ?>
+                    <div class="sps-product-title">
+                        <p class="sps-product-title-text"><?php the_title(); ?></p>
                     </div>
+                    
+                    <a href="<?php the_permalink(); ?>" class="sps-detail-button">Detail</a>
                 </div>
             <?php endwhile; ?>
         </div>
