@@ -40,9 +40,11 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Navigation antar produk
 
 ### 🔧 Shortcode
-- `[sps_products]` - Menampilkan semua produk
+- `[sps_products]` - Menampilkan semua produk dalam grid
+- `[sps_detail_products]` - Menampilkan detail produk individual
 - **10 Parameter Lengkap**: `columns`, `category`, `limit`, `orderby`, `order`, `show_price`, `show_description`, `show_whatsapp`, `show_gallery`, `gallery_style`
 - **Gallery Support**: Tampilkan gallery images dengan berbagai style (grid, slider, carousel)
+- **Auto Product Detection**: Otomatis mendeteksi produk berdasarkan URL
 - **Responsive Design**: Otomatis menyesuaikan dengan tema WordPress
 
 ## 🚀 Instalasi
@@ -75,7 +77,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 ## 📖 Penggunaan Shortcode
 
-### Dasar
+### Shortcode Grid Produk
 ```
 [sps_products]
 ```
@@ -85,8 +87,17 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 [sps_products columns="3" category="shoes" limit="6"]
 ```
 
+### Shortcode Detail Produk
+```
+[sps_detail_products section="title"]
+[sps_detail_products section="image"]
+[sps_detail_products section="gallery" style="slider"]
+[sps_detail_products section="whatsapp"]
+```
+
 ### Atribut yang Tersedia
 
+#### Untuk `[sps_products]` (Grid Produk):
 | Atribut | Deskripsi | Default | Contoh |
 |---------|-----------|---------|---------|
 | `columns` | Jumlah kolom grid (1-6) | 3 | `columns="2"` |
@@ -99,6 +110,12 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 | `show_whatsapp` | Tampilkan tombol WhatsApp | true | `show_whatsapp="false"` |
 | `show_gallery` | Tampilkan gallery images | true | `show_gallery="false"` |
 | `gallery_style` | Style gallery: grid, slider, carousel | grid | `gallery_style="slider"` |
+
+#### Untuk `[sps_detail_products]` (Detail Produk):
+| Atribut | Deskripsi | Default | Contoh |
+|---------|-----------|---------|---------|
+| `section` | Bagian produk yang ditampilkan: title, image, description, gallery, whatsapp, price | title | `section="gallery"` |
+| `style` | Style gallery: grid, slider, carousel | grid | `style="slider"` |
 
 ### Contoh Penggunaan
 ```

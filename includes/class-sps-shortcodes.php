@@ -45,6 +45,7 @@ class SPS_Shortcodes {
      */
     public function register_shortcodes() {
         add_shortcode('sps_products', array($this, 'products_shortcode'));
+        add_shortcode('sps_detail_products', array($this, 'detail_products_shortcode'));
     }
     
     /**
@@ -230,6 +231,239 @@ class SPS_Shortcodes {
         wp_reset_postdata();
         
         return ob_get_clean();
+    }
+    
+    /**
+     * Shortcode untuk menampilkan detail produk
+     * 
+     * @param array $atts Attributes dari shortcode
+     * @return string HTML output
+     */
+    public function detail_products_shortcode($atts) {
+        // Default attributes
+        $atts = shortcode_atts(array(
+            'section' => 'title',
+            'style' => 'grid'
+        ), $atts, 'sps_detail_products');
+        
+        // Get current product
+        $product = $this->get_current_product();
+        
+        if (!$product) {
+            return '<p class="sps-no-product">' . __('No product found.', 'simple-product-showcase') . '</p>';
+        }
+        
+        // Switch berdasarkan section
+        switch ($atts['section']) {
+            case 'title':
+                return $this->render_product_title($product);
+                
+            case 'image':
+                return $this->render_product_image($product);
+                
+            case 'description':
+                return $this->render_product_description($product);
+                
+            case 'gallery':
+                return $this->render_product_gallery($product, $atts['style']);
+                
+            case 'whatsapp':
+                return $this->render_whatsapp_button($product);
+                
+            case 'price':
+                return $this->render_product_price($product);
+                
+            default:
+                return '<p class="sps-invalid-section">' . sprintf(__('Invalid section: %s', 'simple-product-showcase'), esc_html($atts['section'])) . '</p>';
+        }
+    }
+    
+    /**
+     * Get current product from URL
+     * 
+     * @return WP_Post|false Current product post or false if not found
+     */
+    private function get_current_product() {
+        global $post;
+        
+        // If we're on a single product page
+        if (is_singular('sps_product') && $post) {
+            return $post;
+        }
+        
+        // Try to get from URL parameters
+        $product_slug = get_query_var('product');
+        if ($product_slug) {
+            $product = get_page_by_path($product_slug, OBJECT, 'sps_product');
+            if ($product) {
+                return $product;
+            }
+        }
+        
+        // Try to get from post ID in URL
+        $product_id = get_query_var('p');
+        if ($product_id) {
+            $product = get_post($product_id);
+            if ($product && $product->post_type === 'sps_product') {
+                return $product;
+            }
+        }
+        
+        // Try to get from postname in URL
+        $postname = get_query_var('name');
+        if ($postname) {
+            $product = get_page_by_path($postname, OBJECT, 'sps_product');
+            if ($product) {
+                return $product;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Render product title
+     */
+    private function render_product_title($product) {
+        return '<h1 class="sps-product-detail-title">' . esc_html($product->post_title) . '</h1>';
+    }
+    
+    /**
+     * Render product image
+     */
+    private function render_product_image($product) {
+        if (has_post_thumbnail($product->ID)) {
+            return '<div class="sps-product-detail-image">' . get_the_post_thumbnail($product->ID, 'large', array('class' => 'sps-main-image')) . '</div>';
+        }
+        return '<div class="sps-product-detail-image"><p>' . __('No image available.', 'simple-product-showcase') . '</p></div>';
+    }
+    
+    /**
+     * Render product description
+     */
+    private function render_product_description($product) {
+        $content = apply_filters('the_content', $product->post_content);
+        return '<div class="sps-product-detail-description">' . $content . '</div>';
+    }
+    
+    /**
+     * Render product gallery
+     */
+    private function render_product_gallery($product, $style = 'grid') {
+        $gallery_images = array();
+        
+        // Get gallery images from meta
+        for ($i = 1; $i <= 5; $i++) {
+            $image_id = get_post_meta($product->ID, '_sps_gallery_' . $i, true);
+            if ($image_id) {
+                $gallery_images[] = $image_id;
+            }
+        }
+        
+        if (empty($gallery_images)) {
+            return '<div class="sps-product-gallery-empty"><p>' . __('No gallery images available.', 'simple-product-showcase') . '</p></div>';
+        }
+        
+        ob_start();
+        ?>
+        <div class="sps-product-gallery sps-gallery-<?php echo esc_attr($style); ?>">
+            <?php foreach ($gallery_images as $image_id) : ?>
+                <?php if ($style === 'slider') : ?>
+                    <div class="sps-gallery-slide">
+                        <?php echo wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-gallery-image')); ?>
+                    </div>
+                <?php else : ?>
+                    <div class="sps-gallery-item">
+                        <?php echo wp_get_attachment_image($image_id, 'medium', false, array('class' => 'sps-gallery-image')); ?>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+        
+        <?php if ($style === 'slider') : ?>
+        <div class="sps-gallery-controls">
+            <button class="sps-gallery-prev" onclick="spsGalleryPrev()">‹</button>
+            <button class="sps-gallery-next" onclick="spsGalleryNext()">›</button>
+        </div>
+        <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.sps-gallery-slide');
+        const totalSlides = slides.length;
+        
+        function spsGalleryNext() {
+            slides[currentSlide].style.display = 'none';
+            currentSlide = (currentSlide + 1) % totalSlides;
+            slides[currentSlide].style.display = 'block';
+        }
+        
+        function spsGalleryPrev() {
+            slides[currentSlide].style.display = 'none';
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            slides[currentSlide].style.display = 'block';
+        }
+        
+        // Initialize slider
+        document.addEventListener('DOMContentLoaded', function() {
+            slides.forEach((slide, index) => {
+                slide.style.display = index === 0 ? 'block' : 'none';
+            });
+        });
+        </script>
+        <?php endif; ?>
+        
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Render WhatsApp button
+     */
+    private function render_whatsapp_button($product) {
+        $whatsapp_number = get_option('sps_whatsapp_number', '');
+        
+        if (empty($whatsapp_number)) {
+            return '<p class="sps-whatsapp-error">' . __('WhatsApp number not configured.', 'simple-product-showcase') . '</p>';
+        }
+        
+        // Get custom message for this product or use global message
+        $custom_message = get_post_meta($product->ID, '_sps_whatsapp_message', true);
+        $global_message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}');
+        
+        $message = !empty($custom_message) ? $custom_message : $global_message;
+        
+        // Replace placeholders
+        $message = str_replace('{product_link}', get_permalink($product->ID), $message);
+        $message = str_replace('{product_name}', $product->post_title, $message);
+        
+        // URL encode the message
+        $encoded_message = urlencode($message);
+        
+        // Generate WhatsApp URL
+        $whatsapp_url = "https://wa.me/{$whatsapp_number}?text={$encoded_message}";
+        
+        return sprintf(
+            '<div class="sps-product-whatsapp">
+                <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
+                    <span class="sps-whatsapp-icon">📱</span>
+                    %s
+                </a>
+            </div>',
+            esc_url($whatsapp_url),
+            __('Contact via WhatsApp', 'simple-product-showcase')
+        );
+    }
+    
+    /**
+     * Render product price
+     */
+    private function render_product_price($product) {
+        $price = get_post_meta($product->ID, '_sps_product_price', true);
+        
+        if ($price) {
+            return '<div class="sps-product-detail-price">' . esc_html($price) . '</div>';
+        }
+        
+        return '<div class="sps-product-detail-price"><p>' . __('Price not available.', 'simple-product-showcase') . '</p></div>';
     }
     
     /**

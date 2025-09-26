@@ -3,17 +3,25 @@
 **Plugin Version:** 1.0.0  
 **Last Updated:** 2025-09-25
 
-## 🚀 Basic Usage
+## 🚀 Available Shortcodes
 
+### 1. Product Grid/List Display
 The main shortcode to display products:
 
 ```
 [sps_products]
 ```
 
+### 2. Product Detail Display
+New shortcode for displaying individual product details:
+
+```
+[sps_detail_products section="title"]
+```
+
 This will display all products in a responsive 3-column grid layout.
 
-## 📋 All Available Parameters
+## 📋 Product Grid Shortcode Parameters
 
 | Parameter | Description | Default | Example |
 |-----------|-------------|---------|---------|
@@ -28,7 +36,33 @@ This will display all products in a responsive 3-column grid layout.
 | `show_gallery` | Show product gallery images: true or false | true | `show_gallery="false"` |
 | `gallery_style` | Gallery display style: grid, slider, or carousel | grid | `gallery_style="slider"` |
 
+## 📋 Product Detail Shortcode Parameters
+
+The `[sps_detail_products]` shortcode automatically detects the current product from the URL and displays specific sections.
+
+| Parameter | Description | Options | Example |
+|-----------|-------------|---------|---------|
+| `section` | Which part of the product to display | `title`, `image`, `description`, `gallery`, `whatsapp`, `price` | `section="title"` |
+| `style` | Gallery display style (only for gallery section) | `grid`, `slider`, `carousel` | `style="slider"` |
+
+### Available Sections:
+
+- **`title`** - Display product title as H1 heading
+- **`image`** - Display main product image (featured image)
+- **`description`** - Display full product description/content
+- **`gallery`** - Display up to 5 gallery images
+- **`whatsapp`** - Display WhatsApp contact button
+- **`price`** - Display product price
+
+### Gallery Styles:
+
+- **`grid`** - Display images in a responsive grid (default)
+- **`slider`** - Display images in a slideshow with navigation
+- **`carousel`** - Display images in a horizontal scrolling carousel
+
 ## 💡 Usage Examples
+
+### Product Grid Examples
 
 ### Basic Grid (3 columns)
 ```
@@ -162,6 +196,74 @@ Use limit parameter to create "Featured Products" sections:
 - Use `limit` to control the number of products displayed
 - Combine with `orderby="menu_order"` for custom ordering
 - Use `show_description="false"` if you don't need descriptions
+
+## 📋 Product Detail Shortcode Examples
+
+### Basic Usage Examples
+
+**Display Product Title:**
+```
+[sps_detail_products section="title"]
+```
+
+**Display Main Product Image:**
+```
+[sps_detail_products section="image"]
+```
+
+**Display Product Description:**
+```
+[sps_detail_products section="description"]
+```
+
+**Display Gallery in Grid Layout:**
+```
+[sps_detail_products section="gallery" style="grid"]
+```
+
+**Display Gallery as Slider:**
+```
+[sps_detail_products section="gallery" style="slider"]
+```
+
+**Display Gallery as Carousel:**
+```
+[sps_detail_products section="gallery" style="carousel"]
+```
+
+**Display WhatsApp Contact Button:**
+```
+[sps_detail_products section="whatsapp"]
+```
+
+**Display Product Price:**
+```
+[sps_detail_products section="price"]
+```
+
+### Complete Product Detail Page Layout
+
+For a complete product detail page, use multiple shortcodes:
+
+```
+[sps_detail_products section="title"]
+[sps_detail_products section="image"]
+[sps_detail_products section="price"]
+[sps_detail_products section="description"]
+[sps_detail_products section="gallery" style="slider"]
+[sps_detail_products section="whatsapp"]
+```
+
+### How Product Detection Works
+
+The `[sps_detail_products]` shortcode automatically detects the current product based on the WordPress permalink structure:
+
+- **Post name** (`/product/product-name/`) - Detects by product slug
+- **Numeric** (`/archives/123`) - Detects by product ID  
+- **Date and name** (`/2025/09/26/product-name/`) - Detects by slug
+- **Custom structure** - Detects by configured structure
+
+This works seamlessly with all WordPress permalink settings without requiring additional configuration.
 
 ### 6. **Custom Styling**
 The shortcode generates HTML with CSS classes that you can customize:
