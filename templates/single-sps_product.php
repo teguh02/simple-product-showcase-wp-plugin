@@ -27,11 +27,8 @@ get_header(); ?>
                 ?>
                 
                 <header class="sps-product-header">
-                    <h1 class="sps-product-title"><?php echo esc_html($product_title); ?></h1>
-                    
-                    <?php if ($product_price) : ?>
-                        <div class="sps-product-price"><?php echo esc_html($product_price); ?></div>
-                    <?php endif; ?>
+                    <?php echo do_shortcode('[sps_detail_products section="title"]'); ?>
+                    <?php echo do_shortcode('[sps_detail_products section="price"]'); ?>
                     
                     <?php if ($product_categories && !is_wp_error($product_categories)) : ?>
                         <div class="sps-product-categories">
@@ -46,54 +43,18 @@ get_header(); ?>
                 </header>
                 
                 <div class="sps-product-content-wrapper">
-                    <?php if (has_post_thumbnail()) : ?>
-                        <div class="sps-product-image">
-                            <?php the_post_thumbnail('large', array('alt' => $product_title)); ?>
-                        </div>
-                    <?php endif; ?>
+                    <?php echo do_shortcode('[sps_detail_products section="image"]'); ?>
                     
                     <div class="sps-product-details">
-                        <?php if (get_the_content()) : ?>
-                            <div class="sps-product-description">
-                                <?php the_content(); ?>
-                            </div>
-                        <?php endif; ?>
+                        <?php echo do_shortcode('[sps_detail_products section="description"]'); ?>
                         
-                        <?php
-                        // WhatsApp contact section
-                        $whatsapp_number = get_option('sps_whatsapp_number', '');
-                        if (!empty($whatsapp_number)) :
-                            
-                            // Get custom message for this product or use global message
-                            $custom_message = get_post_meta(get_the_ID(), '_sps_whatsapp_message', true);
-                            $global_message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}');
-                            
-                            $message = !empty($custom_message) ? $custom_message : $global_message;
-                            
-                            // Replace placeholders
-                            $message = str_replace('{product_link}', get_permalink(), $message);
-                            $message = str_replace('{product_title}', $product_title, $message);
-                            
-                            // URL encode the message
-                            $encoded_message = urlencode($message);
-                            
-                            // Generate WhatsApp URL
-                            $whatsapp_url = "https://wa.me/{$whatsapp_number}?text={$encoded_message}";
-                            ?>
-                            
-                            <div class="sps-product-contact">
-                                <h3><?php _e('Interested in this product?', 'simple-product-showcase'); ?></h3>
-                                <p><?php _e('Contact us via WhatsApp for more information or to place an order.', 'simple-product-showcase'); ?></p>
-                                
-                                <a href="<?php echo esc_url($whatsapp_url); ?>" 
-                                   target="_blank" 
-                                   rel="noopener" 
-                                   class="sps-whatsapp-button">
-                                    <span class="sps-whatsapp-icon">📱</span>
-                                    <?php _e('Contact via WhatsApp', 'simple-product-showcase'); ?>
-                                </a>
-                            </div>
-                        <?php endif; ?>
+                        <div class="sps-product-gallery-section">
+                            <?php echo do_shortcode('[sps_detail_products section="gallery" style="slider"]'); ?>
+                        </div>
+                        
+                        <div class="sps-product-contact">
+                            <?php echo do_shortcode('[sps_detail_products section="whatsapp"]'); ?>
+                        </div>
                     </div>
                 </div>
                 
@@ -134,6 +95,171 @@ get_header(); ?>
 /* Additional styles for single product template */
 .sps-single-product-wrapper {
     padding: 20px 0;
+}
+
+.sps-product-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 30px 0;
+}
+
+.sps-product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.sps-product-gallery-section {
+    margin: 20px 0;
+}
+
+.sps-product-contact {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Product Detail Styles */
+.sps-product-detail-title {
+    color: #333;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px 0;
+    line-height: 1.2;
+}
+
+.sps-product-detail-image {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.sps-main-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.sps-product-detail-description {
+    margin: 20px 0;
+    line-height: 1.6;
+    color: #555;
+}
+
+.sps-product-detail-description p {
+    margin-bottom: 15px;
+}
+
+.sps-product-detail-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0073aa;
+    margin: 20px 0;
+}
+
+/* Gallery Styles */
+.sps-product-gallery {
+    margin: 20px 0;
+}
+
+.sps-gallery-slider {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.sps-gallery-slide {
+    display: none;
+    text-align: center;
+}
+
+.sps-gallery-slide.active {
+    display: block;
+}
+
+.sps-gallery-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sps-gallery-controls {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.sps-gallery-prev,
+.sps-gallery-next {
+    background: #0073aa;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.sps-gallery-prev:hover,
+.sps-gallery-next:hover {
+    background: #005a87;
+}
+
+/* WhatsApp Detail Button */
+.sps-product-whatsapp {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.sps-whatsapp-detail-button {
+    background: linear-gradient(to bottom, #25D366, #128C7E);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.sps-whatsapp-detail-button:hover {
+    background: linear-gradient(to bottom, #128C7E, #075E54);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+}
+
+.sps-whatsapp-icon {
+    margin-right: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sps-product-content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .sps-product-detail-title {
+        font-size: 24px;
+    }
+    
+    .sps-gallery-slider {
+        max-width: 100%;
+    }
+    
+    .sps-whatsapp-detail-button {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
 }
 
 .sps-product-navigation {
