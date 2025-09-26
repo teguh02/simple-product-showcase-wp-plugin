@@ -579,14 +579,20 @@ class Simple_Product_Showcase {
                 <hr style="margin: 30px 0;">
                 
                 <h2>🔧 How Product Detection Works</h2>
-                <p>The <code>[sps_detail_products]</code> shortcode automatically detects the current product based on the WordPress permalink structure:</p>
+                <p>The <code>[sps_detail_products]</code> shortcode automatically detects the current product using the <code>product_id</code> parameter from the URL:</p>
                 <ul>
-                    <li><strong>Post name</strong> (<code>/product/product-name/</code>) - Detects by product slug</li>
-                    <li><strong>Numeric</strong> (<code>/archives/123</code>) - Detects by product ID</li>
-                    <li><strong>Date and name</strong> (<code>/2025/09/26/product-name/</code>) - Detects by slug</li>
-                    <li><strong>Custom structure</strong> - Detects by configured structure</li>
+                    <li><strong>Product ID Detection</strong> (<code>/show-product/?product_id=123</code>) - Detects by product ID parameter</li>
+                    <li><strong>WordPress Permalinks</strong> - Works with any permalink structure (Post name, Numeric, etc.)</li>
+                    <li><strong>Automatic Fallback</strong> - If no product_id is found, displays "No product found" message</li>
                 </ul>
-                <p>This works seamlessly with all WordPress permalink settings without requiring additional configuration.</p>
+                
+                <h4>Example URLs:</h4>
+                <ul>
+                    <li><code>/show-product/?product_id=28</code> - Will display product with ID 28</li>
+                    <li><code>/product-detail/?product_id=15</code> - Will display product with ID 15</li>
+                </ul>
+                
+                <p>This approach ensures reliable product detection regardless of WordPress permalink settings.</p>
                 
                 <hr style="margin: 30px 0;">
                 

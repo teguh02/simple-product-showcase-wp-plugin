@@ -148,6 +148,20 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 [sps_products limit="4" orderby="menu_order" columns="2"]
 ```
 
+## 🔗 Cara Kerja Product Detection
+
+Shortcode `[sps_detail_products]` mendeteksi produk berdasarkan parameter `product_id` di URL:
+
+- **Deteksi Product ID** (`/show-product/?product_id=123`) - Mendeteksi berdasarkan parameter product_id
+- **WordPress Permalinks** - Bekerja dengan semua struktur permalink (Post name, Numeric, dll)
+- **Fallback Otomatis** - Jika tidak ada product_id, menampilkan pesan "No product found"
+
+**Contoh URL:**
+- `/show-product/?product_id=28` - Akan menampilkan produk dengan ID 28
+- `/product-detail/?product_id=15` - Akan menampilkan produk dengan ID 15
+
+Pendekatan ini memastikan deteksi produk yang andal terlepas dari pengaturan permalink WordPress.
+
 ## 🎨 Kustomisasi
 
 ### Template Override

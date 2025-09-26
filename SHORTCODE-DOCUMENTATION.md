@@ -276,14 +276,17 @@ For a complete product detail page, use multiple shortcodes:
 
 ### How Product Detection Works
 
-The `[sps_detail_products]` shortcode automatically detects the current product based on the WordPress permalink structure:
+The `[sps_detail_products]` shortcode automatically detects the current product using the `product_id` parameter from the URL:
 
-- **Post name** (`/product/product-name/`) - Detects by product slug
-- **Numeric** (`/archives/123`) - Detects by product ID  
-- **Date and name** (`/2025/09/26/product-name/`) - Detects by slug
-- **Custom structure** - Detects by configured structure
+- **Product ID Detection** (`/show-product/?product_id=123`) - Detects by product ID parameter
+- **WordPress Permalinks** - Works with any permalink structure (Post name, Numeric, etc.)
+- **Automatic Fallback** - If no product_id is found, displays "No product found" message
 
-This works seamlessly with all WordPress permalink settings without requiring additional configuration.
+**Example URLs:**
+- `/show-product/?product_id=28` - Will display product with ID 28
+- `/product-detail/?product_id=15` - Will display product with ID 15
+
+This approach ensures reliable product detection regardless of WordPress permalink settings.
 
 ### 6. **Custom Styling**
 The shortcode generates HTML with CSS classes that you can customize:
