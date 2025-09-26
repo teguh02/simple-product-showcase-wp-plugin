@@ -1281,6 +1281,32 @@ class Simple_Product_Showcase {
     }
     
     /**
+     * Normalize WhatsApp number format (fallback)
+     * 
+     * @param string $number Raw WhatsApp number
+     * @return string Normalized number
+     */
+    private function normalize_whatsapp_number_fallback($number) {
+        // Remove all non-numeric characters except +
+        $number = preg_replace('/[^0-9+]/', '', $number);
+        
+        // Handle different formats
+        if (strpos($number, '+62') === 0) {
+            // Format: +6289655541804 -> 6289655541804
+            return substr($number, 1);
+        } elseif (strpos($number, '62') === 0) {
+            // Format: 6289655541804 -> 6289655541804 (already correct)
+            return $number;
+        } elseif (strpos($number, '0') === 0) {
+            // Format: 089655541804 -> 6289655541804
+            return '62' . substr($number, 1);
+        } else {
+            // If none of the above, assume it needs 62 prefix
+            return '62' . $number;
+        }
+    }
+    
+    /**
      * Render WhatsApp fallback
      */
     private function render_whatsapp_fallback($product) {
@@ -1289,6 +1315,9 @@ class Simple_Product_Showcase {
         if (empty($whatsapp_number)) {
             return '<p class="sps-whatsapp-error">WhatsApp number not configured.</p>';
         }
+        
+        // Normalize WhatsApp number format
+        $whatsapp_number = $this->normalize_whatsapp_number_fallback($whatsapp_number);
         
         // Get custom message for this product or use global message
         $custom_message = get_post_meta($product->ID, '_sps_whatsapp_message', true);
