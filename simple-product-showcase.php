@@ -1159,8 +1159,8 @@ class Simple_Product_Showcase {
             font-size: 18px;
         }
         .sps-whatsapp-icon {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             margin-right: 8px;
             vertical-align: middle;
             display: inline-block;
