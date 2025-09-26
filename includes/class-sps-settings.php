@@ -274,14 +274,7 @@ class SPS_Settings {
         }
         
         // Default: use single product permalink
-        $permalink = get_permalink($product_id);
-        
-        // Debug: Log the URL being generated
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log("SPS Debug - Product ID: {$product_id}, Generated URL: {$permalink}");
-        }
-        
-        return $permalink;
+        return get_permalink($product_id);
     }
     
     /**
