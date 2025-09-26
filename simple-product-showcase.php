@@ -1052,6 +1052,10 @@ class Simple_Product_Showcase {
             $product = get_post($product_id);
             if ($product && $product->post_type === 'sps_product') {
                 return $product;
+            } else {
+                // Invalid product_id, redirect to homepage
+                wp_redirect(home_url());
+                exit;
             }
         }
         
@@ -1082,7 +1086,9 @@ class Simple_Product_Showcase {
             }
         }
         
-        return false;
+        // No valid product found and no product_id parameter, redirect to homepage
+        wp_redirect(home_url());
+        exit;
     }
     
     /**
@@ -1310,7 +1316,7 @@ class Simple_Product_Showcase {
             '<div class="sps-product-whatsapp">
                 <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
                     <img src="%s" alt="WhatsApp" class="sps-whatsapp-icon" />
-                    Tany Produk Ini
+                    Tanya Produk Ini
                 </a>
             </div>',
             esc_url($whatsapp_url),

@@ -297,6 +297,10 @@ class SPS_Shortcodes {
             $product = get_post($product_id);
             if ($product && $product->post_type === 'sps_product') {
                 return $product;
+            } else {
+                // Invalid product_id, redirect to homepage
+                wp_redirect(home_url());
+                exit;
             }
         }
         
@@ -327,7 +331,9 @@ class SPS_Shortcodes {
             }
         }
         
-        return false;
+        // No valid product found and no product_id parameter, redirect to homepage
+        wp_redirect(home_url());
+        exit;
     }
     
     /**
@@ -505,7 +511,7 @@ class SPS_Shortcodes {
             </div>',
             esc_url($whatsapp_url),
             esc_url(plugin_dir_url(dirname(__FILE__)) . 'assets/img/whatsapp.png'),
-            __('Tany Produk Ini', 'simple-product-showcase')
+            __('Tanya Produk Ini', 'simple-product-showcase')
         );
     }
     
