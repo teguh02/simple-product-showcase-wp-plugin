@@ -273,9 +273,6 @@ class SPS_Shortcodes {
             case 'whatsapp':
                 return $this->render_whatsapp_button($product);
                 
-            case 'price':
-                return $this->render_product_price($product);
-                
             default:
                 return '<p class="sps-invalid-section">' . sprintf(__('Invalid section: %s', 'simple-product-showcase'), esc_html($atts['section'])) . '</p>';
         }
@@ -463,19 +460,6 @@ class SPS_Shortcodes {
             esc_url($whatsapp_url),
             __('Contact via WhatsApp', 'simple-product-showcase')
         );
-    }
-    
-    /**
-     * Render product price
-     */
-    private function render_product_price($product) {
-        $price = get_post_meta($product->ID, '_sps_product_price', true);
-        
-        if ($price) {
-            return '<div class="sps-product-detail-price">' . esc_html($price) . '</div>';
-        }
-        
-        return '<div class="sps-product-detail-price"><p>' . __('Price not available.', 'simple-product-showcase') . '</p></div>';
     }
     
     /**

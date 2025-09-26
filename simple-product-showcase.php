@@ -474,7 +474,7 @@ class Simple_Product_Showcase {
                         <tr>
                             <td style="padding: 10px;"><code>section</code></td>
                             <td style="padding: 10px;">Which part of the product to display</td>
-                            <td style="padding: 10px;">title, image, description, gallery, whatsapp, price</td>
+                            <td style="padding: 10px;">title, image, description, gallery, whatsapp</td>
                             <td style="padding: 10px;"><code>section="title"</code></td>
                         </tr>
                         <tr>
@@ -493,7 +493,6 @@ class Simple_Product_Showcase {
                     <li><strong>description</strong> - Display full product description/content</li>
                     <li><strong>gallery</strong> - Display up to 5 gallery images</li>
                     <li><strong>whatsapp</strong> - Display WhatsApp contact button</li>
-                    <li><strong>price</strong> - Display product price</li>
                 </ul>
                 
                 <h3>Gallery Styles:</h3>
@@ -547,14 +546,10 @@ class Simple_Product_Showcase {
                 <h4>Display WhatsApp Contact Button</h4>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="whatsapp"]</code></pre>
                 
-                <h4>Display Product Price</h4>
-                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="price"]</code></pre>
-                
                 <h3>Complete Product Detail Page Layout</h3>
                 <p>For a complete product detail page, use multiple shortcodes:</p>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title"]
 [sps_detail_products section="image"]
-[sps_detail_products section="price"]
 [sps_detail_products section="description"]
 [sps_detail_products section="gallery" style="slider"]
 [sps_detail_products section="whatsapp"]</code></pre>
@@ -1003,13 +998,6 @@ class Simple_Product_Showcase {
                 
             case 'whatsapp':
                 return $this->render_whatsapp_fallback($product);
-                
-            case 'price':
-                $price = get_post_meta($product->ID, '_sps_product_price', true);
-                if ($price) {
-                    return '<div class="sps-product-detail-price">' . esc_html($price) . '</div>';
-                }
-                return '<div class="sps-product-detail-price"><p>Price not available.</p></div>';
                 
             default:
                 return '<p class="sps-invalid-section">Invalid section: ' . esc_html($atts['section']) . '</p>';
