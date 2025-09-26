@@ -1,13 +1,13 @@
 <?php
 /**
- * Test Horizontal Layout
- * Access via: wp.test/wp-content/plugins/simple-product-showcase/test-horizontal-layout.php
+ * Test Padding Layout
+ * Access via: wp.test/wp-content/plugins/simple-product-showcase/test-padding-layout.php
  */
 
 // Load WordPress
 require_once('../../../wp-load.php');
 
-echo '<h1>Test Horizontal Layout</h1>';
+echo '<h1>Test Padding Layout</h1>';
 
 // Check if plugin is active
 $active_plugins = get_option('active_plugins');
@@ -17,7 +17,7 @@ if (in_array($plugin_file, $active_plugins)) {
     echo '<p>✅ Plugin is active</p>';
     
     // Test the shortcode
-    echo '<h2>Testing Horizontal Layout:</h2>';
+    echo '<h2>Testing Padding Layout:</h2>';
     echo do_shortcode('[sps_products]');
     
 } else {

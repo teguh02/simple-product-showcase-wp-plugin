@@ -124,6 +124,11 @@ class SPS_Shortcodes {
             flex-direction: column;
             align-items: center;
             max-width: 300px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 15px;
         }
         .sps-product-image {
             margin-bottom: 15px;
@@ -132,8 +137,7 @@ class SPS_Shortcodes {
         .sps-product-image img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 4px;
         }
         .sps-product-info {
             display: flex;
@@ -188,6 +192,7 @@ class SPS_Shortcodes {
             }
             .sps-product-item {
                 max-width: 100%;
+                padding: 12px;
             }
             .sps-product-info {
                 flex-direction: column;
