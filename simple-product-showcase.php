@@ -73,6 +73,9 @@ class Simple_Product_Showcase {
         // Inisialisasi class-class utama
         SPS_Init::get_instance();
         
+        // Inisialisasi settings class dengan hook admin_init
+        add_action('admin_init', array($this, 'init_settings_class'));
+        
         // Inisialisasi shortcodes
         SPS_Shortcodes::get_instance();
         
@@ -85,6 +88,9 @@ class Simple_Product_Showcase {
         
         // Fallback: tambahkan menu admin langsung jika class tidak berfungsi
         add_action('admin_menu', array($this, 'add_fallback_admin_menu'));
+        
+        // Register settings directly
+        add_action('admin_init', array($this, 'register_fallback_settings'));
         
         // Fallback: daftarkan custom post type langsung jika class tidak berfungsi
         add_action('init', array($this, 'register_fallback_cpt'));
@@ -910,6 +916,108 @@ class Simple_Product_Showcase {
             </div>',
             esc_url($whatsapp_url)
         );
+    }
+    
+    /**
+     * Initialize settings class
+     */
+    public function init_settings_class() {
+        SPS_Settings::get_instance();
+    }
+    
+    /**
+     * Register fallback settings
+     */
+    public function register_fallback_settings() {
+        // Register settings
+        register_setting('sps_settings_group', 'sps_detail_page_mode', array(
+            'type' => 'string',
+            'default' => 'default'
+        ));
+        
+        register_setting('sps_settings_group', 'sps_custom_detail_page', array(
+            'type' => 'integer',
+            'default' => 0
+        ));
+        
+        // Add settings section
+        add_settings_section(
+            'sps_detail_page_section',
+            __('Detail Page Settings', 'simple-product-showcase'),
+            array($this, 'detail_page_section_callback'),
+            'sps-settings'
+        );
+        
+        // Add settings fields
+        add_settings_field(
+            'sps_detail_page_mode',
+            __('Detail Page Mode', 'simple-product-showcase'),
+            array($this, 'detail_page_mode_callback'),
+            'sps-settings',
+            'sps_detail_page_section'
+        );
+        
+        add_settings_field(
+            'sps_custom_detail_page',
+            __('Custom Detail Page', 'simple-product-showcase'),
+            array($this, 'custom_detail_page_callback'),
+            'sps-settings',
+            'sps_detail_page_section'
+        );
+    }
+    
+    /**
+     * Detail page section callback
+     */
+    public function detail_page_section_callback() {
+        echo '<p>' . __('Configure how product detail pages are displayed when users click the "Detail" button.', 'simple-product-showcase') . '</p>';
+    }
+    
+    /**
+     * Detail page mode field callback
+     */
+    public function detail_page_mode_callback() {
+        $value = get_option('sps_detail_page_mode', 'default');
+        ?>
+        <select name="sps_detail_page_mode" id="sps_detail_page_mode">
+            <option value="default" <?php selected($value, 'default'); ?>>
+                <?php _e('Default Single Product Page', 'simple-product-showcase'); ?>
+            </option>
+            <option value="custom" <?php selected($value, 'custom'); ?>>
+                <?php _e('Custom Page with Shortcodes', 'simple-product-showcase'); ?>
+            </option>
+        </select>
+        <p class="description">
+            <?php _e('Choose how product detail pages are displayed:', 'simple-product-showcase'); ?><br>
+            <strong><?php _e('Default:', 'simple-product-showcase'); ?></strong> <?php _e('Uses the built-in single product template with all information.', 'simple-product-showcase'); ?><br>
+            <strong><?php _e('Custom:', 'simple-product-showcase'); ?></strong> <?php _e('Redirects to a custom page where you can use shortcodes.', 'simple-product-showcase'); ?>
+        </p>
+        <?php
+    }
+    
+    /**
+     * Custom detail page field callback
+     */
+    public function custom_detail_page_callback() {
+        $value = get_option('sps_custom_detail_page', 0);
+        $pages = get_pages(array(
+            'post_status' => 'publish',
+            'sort_column' => 'post_title',
+            'sort_order' => 'ASC'
+        ));
+        ?>
+        <select name="sps_custom_detail_page" id="sps_custom_detail_page">
+            <option value="0"><?php _e('-- Select a page --', 'simple-product-showcase'); ?></option>
+            <?php foreach ($pages as $page) : ?>
+                <option value="<?php echo $page->ID; ?>" <?php selected($value, $page->ID); ?>>
+                    <?php echo esc_html($page->post_title); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <p class="description">
+            <?php _e('Select the page where you want to display product details using shortcodes. This page should contain shortcodes like [sps_detail_products section="title"].', 'simple-product-showcase'); ?>
+        </p>
+        <?php
     }
     
     /**
