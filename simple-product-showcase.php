@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Simple Product Showcase
- * Plugin URI: https://example.com/simple-product-showcase
+ * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
  * Version: 1.0.0
- * Author: Your Name
- * Author URI: https://example.com
+ * Author: Teguh Rijanandi
+ * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: simple-product-showcase
