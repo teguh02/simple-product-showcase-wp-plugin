@@ -245,6 +245,16 @@ class Simple_Product_Showcase {
                 array($this, 'fallback_settings_page')
             );
         }
+        
+        // Tambahkan submenu Documentation
+        add_submenu_page(
+            'edit.php?post_type=sps_product',
+            'Documentation',
+            'Documentation',
+            'manage_options',
+            'sps-documentation',
+            array($this, 'documentation_page')
+        );
     }
     
     /**
@@ -352,29 +362,250 @@ class Simple_Product_Showcase {
                 
                 <?php submit_button(); ?>
             </form>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Documentation page
+     */
+    public function documentation_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Simple Product Showcase - Documentation', 'simple-product-showcase'); ?></h1>
             
-            <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
-                <h2>Plugin Information</h2>
+            <div class="notice notice-info">
+                <p><strong>📚 Complete Shortcode Documentation</strong> - This page contains comprehensive documentation for all available shortcodes, parameters, and usage examples. <em>Last updated: <?php echo date('Y-m-d H:i:s'); ?></em></p>
+            </div>
+            
+            <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 4px; margin: 20px 0;">
                 
-                <h3><?php _e('Product Grid Shortcode', 'simple-product-showcase'); ?></h3>
-                <p><strong>Shortcode:</strong> <code>[sps_products]</code></p>
-                <p><strong>Available Attributes:</strong> <code>columns, category, limit, orderby, order, show_price, show_description, show_whatsapp</code></p>
+                <h2>🚀 Available Shortcodes</h2>
                 
-                <h3><?php _e('Product Detail Shortcode', 'simple-product-showcase'); ?> <span style="color: #0073aa; font-size: 12px;">(NEW)</span></h3>
-                <p><strong>Shortcode:</strong> <code>[sps_detail_products section="title"]</code></p>
-                <p><strong>Available Sections:</strong> <code>title, image, description, gallery, whatsapp, price</code></p>
-                <p><strong>Gallery Styles:</strong> <code>grid, slider, carousel</code></p>
+                <h3>1. Product Grid/List Display</h3>
+                <p>The main shortcode to display products:</p>
+                <code>[sps_products]</code>
                 
-                <h3><?php _e('Product Pages', 'simple-product-showcase'); ?></h3>
-                <p><strong>Default:</strong> <code><?php echo home_url('/product/product-name/'); ?></code></p>
-                <p><strong>Custom:</strong> <code><?php echo home_url('/custom-page/?product_id=123'); ?></code></p>
+                <h3>2. Product Detail Display</h3>
+                <p>New shortcode for displaying individual product details:</p>
+                <code>[sps_detail_products section="title"]</code>
                 
-                <div style="margin-top: 15px; padding: 15px; background: #e7f3ff; border-left: 4px solid #0073aa;">
-                    <h4><?php _e('Example Usage:', 'simple-product-showcase'); ?></h4>
-                    <p><code>[sps_detail_products section="title"]</code> - <?php _e('Display product title', 'simple-product-showcase'); ?></p>
-                    <p><code>[sps_detail_products section="gallery" style="slider"]</code> - <?php _e('Display gallery as slider', 'simple-product-showcase'); ?></p>
-                    <p><code>[sps_detail_products section="whatsapp"]</code> - <?php _e('Display WhatsApp button', 'simple-product-showcase'); ?></p>
+                <hr style="margin: 30px 0;">
+                
+                <h2>📋 Product Grid Shortcode Parameters</h2>
+                <p>The <code>[sps_products]</code> shortcode supports several attributes to customize the display of your products.</p>
+                
+                <table class="widefat" style="margin: 20px 0;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px; background: #f1f1f1;">Parameter</th>
+                            <th style="padding: 10px; background: #f1f1f1;">Description</th>
+                            <th style="padding: 10px; background: #f1f1f1;">Default</th>
+                            <th style="padding: 10px; background: #f1f1f1;">Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px;"><code>columns</code></td>
+                            <td style="padding: 10px;">Number of columns in the grid (1-6)</td>
+                            <td style="padding: 10px;">3</td>
+                            <td style="padding: 10px;"><code>columns="4"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>category</code></td>
+                            <td style="padding: 10px;">Filter by product category slug</td>
+                            <td style="padding: 10px;">-</td>
+                            <td style="padding: 10px;"><code>category="electronics"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>limit</code></td>
+                            <td style="padding: 10px;">Limit number of products (-1 for all)</td>
+                            <td style="padding: 10px;">-1</td>
+                            <td style="padding: 10px;"><code>limit="10"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>orderby</code></td>
+                            <td style="padding: 10px;">Order by: title, date, menu_order, price</td>
+                            <td style="padding: 10px;">date</td>
+                            <td style="padding: 10px;"><code>orderby="title"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>order</code></td>
+                            <td style="padding: 10px;">Sort order: ASC or DESC</td>
+                            <td style="padding: 10px;">DESC</td>
+                            <td style="padding: 10px;"><code>order="ASC"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>show_price</code></td>
+                            <td style="padding: 10px;">Show product price: true or false</td>
+                            <td style="padding: 10px;">true</td>
+                            <td style="padding: 10px;"><code>show_price="false"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>show_description</code></td>
+                            <td style="padding: 10px;">Show product description: true or false</td>
+                            <td style="padding: 10px;">true</td>
+                            <td style="padding: 10px;"><code>show_description="false"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>show_whatsapp</code></td>
+                            <td style="padding: 10px;">Show WhatsApp contact button: true or false</td>
+                            <td style="padding: 10px;">true</td>
+                            <td style="padding: 10px;"><code>show_whatsapp="false"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <hr style="margin: 30px 0;">
+                
+                <h2>📋 Product Detail Shortcode Parameters</h2>
+                <p>The <code>[sps_detail_products]</code> shortcode automatically detects the current product from the URL and displays specific sections.</p>
+                
+                <table class="widefat" style="margin: 20px 0;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px; background: #f1f1f1;">Parameter</th>
+                            <th style="padding: 10px; background: #f1f1f1;">Description</th>
+                            <th style="padding: 10px; background: #f1f1f1;">Options</th>
+                            <th style="padding: 10px; background: #f1f1f1;">Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px;"><code>section</code></td>
+                            <td style="padding: 10px;">Which part of the product to display</td>
+                            <td style="padding: 10px;">title, image, description, gallery, whatsapp, price</td>
+                            <td style="padding: 10px;"><code>section="title"</code></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><code>style</code></td>
+                            <td style="padding: 10px;">Gallery display style (only for gallery section)</td>
+                            <td style="padding: 10px;">grid, slider, carousel</td>
+                            <td style="padding: 10px;"><code>style="slider"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Available Sections:</h3>
+                <ul>
+                    <li><strong>title</strong> - Display product title as H1 heading</li>
+                    <li><strong>image</strong> - Display main product image (featured image)</li>
+                    <li><strong>description</strong> - Display full product description/content</li>
+                    <li><strong>gallery</strong> - Display up to 5 gallery images</li>
+                    <li><strong>whatsapp</strong> - Display WhatsApp contact button</li>
+                    <li><strong>price</strong> - Display product price</li>
+                </ul>
+                
+                <h3>Gallery Styles:</h3>
+                <ul>
+                    <li><strong>grid</strong> - Display images in a responsive grid (default)</li>
+                    <li><strong>slider</strong> - Display images in a slideshow with navigation</li>
+                    <li><strong>carousel</strong> - Display images in a horizontal scrolling carousel</li>
+                </ul>
+                
+                <hr style="margin: 30px 0;">
+                
+                <h2>💡 Usage Examples</h2>
+                
+                <h3>Product Grid Examples</h3>
+                
+                <h4>Basic Grid (3 columns)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_products]</code></pre>
+                
+                <h4>2 Columns, 6 Products</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_products columns="2" limit="6"]</code></pre>
+                
+                <h4>Filter by Category</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_products category="electronics" columns="4"]</code></pre>
+                
+                <h4>Custom Ordering</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_products orderby="title" order="ASC"]</code></pre>
+                
+                <h4>Featured Products Section</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_products limit="4" orderby="menu_order" columns="2"]</code></pre>
+                
+                <h3>Product Detail Examples</h3>
+                
+                <h4>Display Product Title</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title"]</code></pre>
+                
+                <h4>Display Main Product Image</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="image"]</code></pre>
+                
+                <h4>Display Product Description</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="description"]</code></pre>
+                
+                <h4>Display Gallery in Grid Layout</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="gallery" style="grid"]</code></pre>
+                
+                <h4>Display Gallery as Slider</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="gallery" style="slider"]</code></pre>
+                
+                <h4>Display Gallery as Carousel</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="gallery" style="carousel"]</code></pre>
+                
+                <h4>Display WhatsApp Contact Button</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="whatsapp"]</code></pre>
+                
+                <h4>Display Product Price</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="price"]</code></pre>
+                
+                <h3>Complete Product Detail Page Layout</h3>
+                <p>For a complete product detail page, use multiple shortcodes:</p>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title"]
+[sps_detail_products section="image"]
+[sps_detail_products section="price"]
+[sps_detail_products section="description"]
+[sps_detail_products section="gallery" style="slider"]
+[sps_detail_products section="whatsapp"]</code></pre>
+                
+                <hr style="margin: 30px 0;">
+                
+                <h2>🔧 How Product Detection Works</h2>
+                <p>The <code>[sps_detail_products]</code> shortcode automatically detects the current product based on the WordPress permalink structure:</p>
+                <ul>
+                    <li><strong>Post name</strong> (<code>/product/product-name/</code>) - Detects by product slug</li>
+                    <li><strong>Numeric</strong> (<code>/archives/123</code>) - Detects by product ID</li>
+                    <li><strong>Date and name</strong> (<code>/2025/09/26/product-name/</code>) - Detects by slug</li>
+                    <li><strong>Custom structure</strong> - Detects by configured structure</li>
+                </ul>
+                <p>This works seamlessly with all WordPress permalink settings without requiring additional configuration.</p>
+                
+                <hr style="margin: 30px 0;">
+                
+                <h2>📱 Responsive Design</h2>
+                <p>Both shortcodes are fully responsive and will automatically adapt to different screen sizes:</p>
+                <ul>
+                    <li><strong>Mobile</strong>: <code>columns="1"</code> or <code>columns="2"</code></li>
+                    <li><strong>Tablet</strong>: <code>columns="2"</code> or <code>columns="3"</code></li>
+                    <li><strong>Desktop</strong>: <code>columns="3"</code> or <code>columns="4"</code></li>
+                </ul>
+                
+                <hr style="margin: 30px 0;">
+                
+                <h2>🎨 Custom Styling</h2>
+                <p>The shortcodes generate HTML with CSS classes that you can customize:</p>
+                <ul>
+                    <li><code>.sps-products-grid</code> - Main container</li>
+                    <li><code>.sps-product-item</code> - Individual product</li>
+                    <li><code>.sps-product-title</code> - Product title</li>
+                    <li><code>.sps-detail-button</code> - Detail button</li>
+                    <li><code>.sps-product-gallery</code> - Gallery container</li>
+                    <li><code>.sps-gallery-slider</code> - Slider container</li>
+                    <li><code>.sps-gallery-carousel</code> - Carousel container</li>
+                </ul>
+                
+                <div style="margin-top: 30px; padding: 20px; background: #e7f3ff; border-left: 4px solid #0073aa; border-radius: 4px;">
+                    <h3>💡 Pro Tips</h3>
+                    <ul>
+                        <li>Use <code>limit</code> parameter to control the number of products displayed for better performance</li>
+                        <li>Combine with <code>orderby="menu_order"</code> for custom ordering</li>
+                        <li>Use <code>show_description="false"</code> if you don't need descriptions for faster loading</li>
+                        <li>Test different gallery styles to find what works best for your design</li>
+                        <li>Use the detail page settings to choose between default and custom layouts</li>
+                    </ul>
                 </div>
+                
             </div>
         </div>
         <?php
