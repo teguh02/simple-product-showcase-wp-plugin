@@ -579,23 +579,25 @@ class Simple_Product_Showcase {
             line-height: 1.3;
         }
         .sps-detail-button {
-            background-color: #FFD700;
+            background: linear-gradient(to bottom, #FFEB3B, #FFD700);
             color: #333;
-            padding: 8px 16px;
+            padding: 10px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 20px;
             text-decoration: none;
             display: inline-block;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 3px 6px rgba(255, 215, 0, 0.4);
+            min-width: 80px;
+            text-align: center;
         }
         .sps-detail-button:hover {
-            background-color: #FFC107;
+            background: linear-gradient(to bottom, #FFF176, #FFEB3B);
             color: #333;
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
         }
         .sps-detail-button:active {
             transform: translateY(0);
