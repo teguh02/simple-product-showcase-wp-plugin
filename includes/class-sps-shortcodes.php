@@ -453,12 +453,13 @@ class SPS_Shortcodes {
         return sprintf(
             '<div class="sps-product-whatsapp">
                 <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
-                    <span class="sps-whatsapp-icon">📱</span>
+                    <img src="%s" alt="WhatsApp" class="sps-whatsapp-icon" />
                     %s
                 </a>
             </div>',
             esc_url($whatsapp_url),
-            __('Contact via WhatsApp', 'simple-product-showcase')
+            esc_url(plugin_dir_url(dirname(__FILE__)) . 'assets/img/whatsapp.png'),
+            __('Tany Produk Ini', 'simple-product-showcase')
         );
     }
     

@@ -1202,11 +1202,12 @@ class Simple_Product_Showcase {
         return sprintf(
             '<div class="sps-product-whatsapp">
                 <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
-                    <span class="sps-whatsapp-icon">📱</span>
-                    Contact via WhatsApp
+                    <img src="%s" alt="WhatsApp" class="sps-whatsapp-icon" />
+                    Tany Produk Ini
                 </a>
             </div>',
-            esc_url($whatsapp_url)
+            esc_url($whatsapp_url),
+            esc_url(plugin_dir_url(__FILE__) . 'assets/img/whatsapp.png')
         );
     }
     
