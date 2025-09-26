@@ -71,11 +71,28 @@ class SPS_Settings {
             'sanitize_callback' => 'sanitize_textarea_field'
         ));
         
+        register_setting('sps_settings_group', 'sps_detail_page_mode', array(
+            'type' => 'string',
+            'default' => 'default'
+        ));
+        
+        register_setting('sps_settings_group', 'sps_custom_detail_page', array(
+            'type' => 'integer',
+            'default' => 0
+        ));
+        
         // Add settings section
         add_settings_section(
             'sps_whatsapp_section',
             __('WhatsApp Integration', 'simple-product-showcase'),
             array($this, 'whatsapp_section_callback'),
+            'sps-settings'
+        );
+        
+        add_settings_section(
+            'sps_detail_page_section',
+            __('Detail Page Settings', 'simple-product-showcase'),
+            array($this, 'detail_page_section_callback'),
             'sps-settings'
         );
         
@@ -94,6 +111,22 @@ class SPS_Settings {
             array($this, 'whatsapp_message_field_callback'),
             'sps-settings',
             'sps_whatsapp_section'
+        );
+        
+        add_settings_field(
+            'sps_detail_page_mode',
+            __('Detail Page Mode', 'simple-product-showcase'),
+            array($this, 'detail_page_mode_callback'),
+            'sps-settings',
+            'sps_detail_page_section'
+        );
+        
+        add_settings_field(
+            'sps_custom_detail_page',
+            __('Custom Detail Page', 'simple-product-showcase'),
+            array($this, 'custom_detail_page_callback'),
+            'sps-settings',
+            'sps_detail_page_section'
         );
     }
     
@@ -124,6 +157,13 @@ class SPS_Settings {
     }
     
     /**
+     * Detail Page section callback
+     */
+    public function detail_page_section_callback() {
+        echo '<p>' . __('Configure how product detail pages are displayed when users click the "Detail" button.', 'simple-product-showcase') . '</p>';
+    }
+    
+    /**
      * WhatsApp number field callback
      */
     public function whatsapp_message_field_callback() {
@@ -139,6 +179,53 @@ class SPS_Settings {
         ><?php echo esc_textarea($value); ?></textarea>
         <p class="description">
             <?php _e('Default message template for WhatsApp contact. Available placeholders: {product_link} for product URL, {product_name} for product title.', 'simple-product-showcase'); ?>
+        </p>
+        <?php
+    }
+    
+    /**
+     * Detail page mode field callback
+     */
+    public function detail_page_mode_callback() {
+        $value = get_option('sps_detail_page_mode', 'default');
+        ?>
+        <select name="sps_detail_page_mode" id="sps_detail_page_mode">
+            <option value="default" <?php selected($value, 'default'); ?>>
+                <?php _e('Default Single Product Page', 'simple-product-showcase'); ?>
+            </option>
+            <option value="custom" <?php selected($value, 'custom'); ?>>
+                <?php _e('Custom Page with Shortcodes', 'simple-product-showcase'); ?>
+            </option>
+        </select>
+        <p class="description">
+            <?php _e('Choose how product detail pages are displayed:', 'simple-product-showcase'); ?><br>
+            <strong><?php _e('Default:', 'simple-product-showcase'); ?></strong> <?php _e('Uses the built-in single product template with all information.', 'simple-product-showcase'); ?><br>
+            <strong><?php _e('Custom:', 'simple-product-showcase'); ?></strong> <?php _e('Redirects to a custom page where you can use shortcodes.', 'simple-product-showcase'); ?>
+        </p>
+        <?php
+    }
+    
+    /**
+     * Custom detail page field callback
+     */
+    public function custom_detail_page_callback() {
+        $value = get_option('sps_custom_detail_page', 0);
+        $pages = get_pages(array(
+            'post_status' => 'publish',
+            'sort_column' => 'post_title',
+            'sort_order' => 'ASC'
+        ));
+        ?>
+        <select name="sps_custom_detail_page" id="sps_custom_detail_page">
+            <option value="0"><?php _e('-- Select a page --', 'simple-product-showcase'); ?></option>
+            <?php foreach ($pages as $page) : ?>
+                <option value="<?php echo $page->ID; ?>" <?php selected($value, $page->ID); ?>>
+                    <?php echo esc_html($page->post_title); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <p class="description">
+            <?php _e('Select the page where you want to display product details using shortcodes. This page should contain shortcodes like [sps_detail_products section="title"].', 'simple-product-showcase'); ?>
         </p>
         <?php
     }
@@ -162,6 +249,27 @@ class SPS_Settings {
             <?php _e('Enter your WhatsApp number with country code (e.g., +6281234567890). This number will be used for all product contact buttons.', 'simple-product-showcase'); ?>
         </p>
         <?php
+    }
+    
+    /**
+     * Get product detail URL based on settings
+     */
+    public static function get_product_detail_url($product_id) {
+        $detail_mode = get_option('sps_detail_page_mode', 'default');
+        
+        if ($detail_mode === 'custom') {
+            $custom_page_id = get_option('sps_custom_detail_page', 0);
+            if ($custom_page_id) {
+                $product = get_post($product_id);
+                if ($product && $product->post_type === 'sps_product') {
+                    $page_url = get_permalink($custom_page_id);
+                    return add_query_arg('product_id', $product_id, $page_url);
+                }
+            }
+        }
+        
+        // Default: use single product permalink
+        return get_permalink($product_id);
     }
     
     /**

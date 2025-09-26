@@ -220,7 +220,10 @@ class SPS_Shortcodes {
                         <div class="sps-product-title">
                             <p class="sps-product-title-text"><?php the_title(); ?></p>
                         </div>
-                        <a href="<?php the_permalink(); ?>" class="sps-detail-button">Detail</a>
+                                <?php 
+                                $detail_url = SPS_Settings::get_product_detail_url(get_the_ID());
+                                ?>
+                                <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                     </div>
                 </div>
             <?php endwhile; ?>
@@ -291,6 +294,15 @@ class SPS_Shortcodes {
             return $post;
         }
         
+        // Try to get from product_id parameter (for custom pages)
+        $product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
+        if ($product_id) {
+            $product = get_post($product_id);
+            if ($product && $product->post_type === 'sps_product') {
+                return $product;
+            }
+        }
+        
         // Try to get from URL parameters
         $product_slug = get_query_var('product');
         if ($product_slug) {
@@ -301,9 +313,9 @@ class SPS_Shortcodes {
         }
         
         // Try to get from post ID in URL
-        $product_id = get_query_var('p');
-        if ($product_id) {
-            $product = get_post($product_id);
+        $post_id = get_query_var('p');
+        if ($post_id) {
+            $product = get_post($post_id);
             if ($product && $product->post_type === 'sps_product') {
                 return $product;
             }
