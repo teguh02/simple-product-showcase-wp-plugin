@@ -1152,6 +1152,19 @@ class Simple_Product_Showcase {
             cursor: pointer;
             font-size: 18px;
         }
+        .sps-whatsapp-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .sps-whatsapp-detail-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
         </style>
         <div class="sps-product-gallery sps-gallery-<?php echo esc_attr($style); ?>">
             <?php foreach ($gallery_images as $image_id) : ?>
