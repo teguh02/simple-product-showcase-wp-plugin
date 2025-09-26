@@ -259,11 +259,19 @@ class Simple_Product_Showcase {
             if (isset($_POST['sps_whatsapp_message'])) {
                 update_option('sps_whatsapp_message', sanitize_textarea_field($_POST['sps_whatsapp_message']));
             }
+            if (isset($_POST['sps_detail_page_mode'])) {
+                update_option('sps_detail_page_mode', sanitize_text_field($_POST['sps_detail_page_mode']));
+            }
+            if (isset($_POST['sps_custom_detail_page'])) {
+                update_option('sps_custom_detail_page', intval($_POST['sps_custom_detail_page']));
+            }
             echo '<div class="notice notice-success"><p>Settings saved successfully!</p></div>';
         }
         
         $whatsapp_number = get_option('sps_whatsapp_number', '');
         $whatsapp_message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}');
+        $detail_mode = get_option('sps_detail_page_mode', 'default');
+        $custom_page = get_option('sps_custom_detail_page', 0);
         ?>
         <div class="wrap">
             <h1>Simple Product Showcase Settings</h1>
@@ -294,14 +302,79 @@ class Simple_Product_Showcase {
                     </tr>
                 </table>
                 
+                <hr>
+                <h2><?php _e('Detail Page Settings', 'simple-product-showcase'); ?></h2>
+                <p><?php _e('Configure how product detail pages are displayed when users click the "Detail" button.', 'simple-product-showcase'); ?></p>
+                
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><?php _e('Detail Page Mode', 'simple-product-showcase'); ?></th>
+                        <td>
+                            <select name="sps_detail_page_mode" id="sps_detail_page_mode">
+                                <option value="default" <?php selected($detail_mode, 'default'); ?>>
+                                    <?php _e('Default Single Product Page', 'simple-product-showcase'); ?>
+                                </option>
+                                <option value="custom" <?php selected($detail_mode, 'custom'); ?>>
+                                    <?php _e('Custom Page with Shortcodes', 'simple-product-showcase'); ?>
+                                </option>
+                            </select>
+                            <p class="description">
+                                <?php _e('Choose how product detail pages are displayed:', 'simple-product-showcase'); ?><br>
+                                <strong><?php _e('Default:', 'simple-product-showcase'); ?></strong> <?php _e('Uses the built-in single product template with all information.', 'simple-product-showcase'); ?><br>
+                                <strong><?php _e('Custom:', 'simple-product-showcase'); ?></strong> <?php _e('Redirects to a custom page where you can use shortcodes.', 'simple-product-showcase'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php _e('Custom Detail Page', 'simple-product-showcase'); ?></th>
+                        <td>
+                            <?php
+                            $pages = get_pages(array(
+                                'post_status' => 'publish',
+                                'sort_column' => 'post_title',
+                                'sort_order' => 'ASC'
+                            ));
+                            ?>
+                            <select name="sps_custom_detail_page" id="sps_custom_detail_page">
+                                <option value="0"><?php _e('-- Select a page --', 'simple-product-showcase'); ?></option>
+                                <?php foreach ($pages as $page) : ?>
+                                    <option value="<?php echo $page->ID; ?>" <?php selected($custom_page, $page->ID); ?>>
+                                        <?php echo esc_html($page->post_title); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <p class="description">
+                                <?php _e('Select the page where you want to display product details using shortcodes. This page should contain shortcodes like [sps_detail_products section="title"].', 'simple-product-showcase'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                
                 <?php submit_button(); ?>
             </form>
             
             <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
                 <h2>Plugin Information</h2>
+                
+                <h3><?php _e('Product Grid Shortcode', 'simple-product-showcase'); ?></h3>
                 <p><strong>Shortcode:</strong> <code>[sps_products]</code></p>
-                <p><strong>Product Pages:</strong> <code><?php echo home_url('/product/product-name/'); ?></code></p>
-                <p><strong>Available Attributes:</strong> columns, category, limit, orderby, order, show_price, show_description, show_whatsapp</p>
+                <p><strong>Available Attributes:</strong> <code>columns, category, limit, orderby, order, show_price, show_description, show_whatsapp</code></p>
+                
+                <h3><?php _e('Product Detail Shortcode', 'simple-product-showcase'); ?> <span style="color: #0073aa; font-size: 12px;">(NEW)</span></h3>
+                <p><strong>Shortcode:</strong> <code>[sps_detail_products section="title"]</code></p>
+                <p><strong>Available Sections:</strong> <code>title, image, description, gallery, whatsapp, price</code></p>
+                <p><strong>Gallery Styles:</strong> <code>grid, slider, carousel</code></p>
+                
+                <h3><?php _e('Product Pages', 'simple-product-showcase'); ?></h3>
+                <p><strong>Default:</strong> <code><?php echo home_url('/product/product-name/'); ?></code></p>
+                <p><strong>Custom:</strong> <code><?php echo home_url('/custom-page/?product_id=123'); ?></code></p>
+                
+                <div style="margin-top: 15px; padding: 15px; background: #e7f3ff; border-left: 4px solid #0073aa;">
+                    <h4><?php _e('Example Usage:', 'simple-product-showcase'); ?></h4>
+                    <p><code>[sps_detail_products section="title"]</code> - <?php _e('Display product title', 'simple-product-showcase'); ?></p>
+                    <p><code>[sps_detail_products section="gallery" style="slider"]</code> - <?php _e('Display gallery as slider', 'simple-product-showcase'); ?></p>
+                    <p><code>[sps_detail_products section="whatsapp"]</code> - <?php _e('Display WhatsApp button', 'simple-product-showcase'); ?></p>
+                </div>
             </div>
         </div>
         <?php
