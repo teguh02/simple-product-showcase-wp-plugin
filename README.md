@@ -45,6 +45,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - **10 Parameter Lengkap**: `columns`, `category`, `limit`, `orderby`, `order`, `show_price`, `show_description`, `show_whatsapp`, `show_gallery`, `gallery_style`
 - **Gallery Support**: Tampilkan gallery images dengan berbagai style (grid, slider, carousel)
 - **Auto Product Detection**: Otomatis mendeteksi produk berdasarkan URL
+- **Category Filtering**: Filter otomatis berdasarkan URL parameter `?category=category_slug`
 - **Responsive Design**: Otomatis menyesuaikan dengan tema WordPress
 
 ## 🚀 Instalasi
@@ -97,6 +98,17 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 <!-- Contoh dengan title h3 dan gallery carousel -->
 [sps_detail_products section="title" style="h3"]
 [sps_detail_products section="gallery" style="carousel"]
+```
+
+### Category Filtering dari URL
+```
+<!-- URL: http://yoursite.com/produk/?category=shoes -->
+<!-- Shortcode akan otomatis filter produk kategori "shoes" -->
+[sps_products]
+
+<!-- URL: http://yoursite.com/produk/?category=electronics -->
+<!-- Shortcode akan otomatis filter produk kategori "electronics" -->
+[sps_products columns="4"]
 ```
 
 ### Atribut yang Tersedia
@@ -281,6 +293,12 @@ simple-product-showcase/
 3. Cek konflik dengan plugin lain
 
 ## 🔄 Changelog
+
+### Version 1.1.0
+- **Category Filtering**: Filter otomatis produk berdasarkan URL parameter `?category=category_slug`
+- **Enhanced URL Detection**: Shortcode `[sps_products]` otomatis mendeteksi kategori dari URL
+- **Improved Flexibility**: Prioritas shortcode attribute over URL parameter untuk fleksibilitas maksimal
+- **Updated Documentation**: Dokumentasi lengkap untuk fitur category filtering
 
 ### Version 1.0.0
 - Initial release

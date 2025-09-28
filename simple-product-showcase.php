@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.0.0');
+define('SPS_PLUGIN_VERSION', '1.1.0');
 
 /**
  * Class Simple_Product_Showcase
@@ -845,13 +845,26 @@ class Simple_Product_Showcase {
             'order' => $atts['order']
         );
         
-        // Add category filter if specified
+        // Add category filter if specified in shortcode attributes or URL parameter
+        $category_filter = '';
+        
+        // Check URL parameter first
+        if (isset($_GET['category']) && !empty($_GET['category'])) {
+            $category_filter = sanitize_text_field($_GET['category']);
+        }
+        
+        // Override with shortcode attribute if provided
         if (!empty($atts['category'])) {
+            $category_filter = $atts['category'];
+        }
+        
+        // Apply category filter
+        if (!empty($category_filter)) {
             $args['tax_query'] = array(
                 array(
                     'taxonomy' => 'sps_product_category',
                     'field' => 'slug',
-                    'terms' => $atts['category']
+                    'terms' => $category_filter
                 )
             );
         }

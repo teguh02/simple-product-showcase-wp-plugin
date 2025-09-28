@@ -91,13 +91,26 @@ class SPS_Shortcodes {
             )
         );
         
-        // Add category filter if specified
+        // Add category filter if specified in shortcode attributes or URL parameter
+        $category_filter = '';
+        
+        // Check URL parameter first
+        if (isset($_GET['category']) && !empty($_GET['category'])) {
+            $category_filter = sanitize_text_field($_GET['category']);
+        }
+        
+        // Override with shortcode attribute if provided
         if (!empty($atts['category'])) {
+            $category_filter = $atts['category'];
+        }
+        
+        // Apply category filter
+        if (!empty($category_filter)) {
             $args['tax_query'] = array(
                 array(
                     'taxonomy' => 'sps_product_category',
                     'field' => 'slug',
-                    'terms' => $atts['category']
+                    'terms' => $category_filter
                 )
             );
         }
