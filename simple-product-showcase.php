@@ -367,6 +367,26 @@ class Simple_Product_Showcase {
     }
     
     /**
+     * WhatsApp button text field callback
+     */
+    public function whatsapp_button_text_callback() {
+        $value = get_option('sps_whatsapp_button_text', 'Tanya Produk Ini');
+        ?>
+        <input 
+            type="text" 
+            name="sps_whatsapp_button_text" 
+            id="sps_whatsapp_button_text" 
+            value="<?php echo esc_attr($value); ?>" 
+            class="regular-text"
+            placeholder="Tanya Produk Ini"
+        />
+        <p class="description">
+            <?php _e('Customize the text displayed on the WhatsApp contact button. Default: "Tanya Produk Ini"', 'simple-product-showcase'); ?>
+        </p>
+        <?php
+    }
+    
+    /**
      * Documentation page
      */
     public function documentation_page() {
@@ -1401,6 +1421,9 @@ class Simple_Product_Showcase {
     public function init_settings_class() {
         SPS_Settings::get_instance();
         
+        // Force register WhatsApp button text setting
+        add_option('sps_whatsapp_button_text', 'Tanya Produk Ini');
+        
         // Add admin view link filter
         add_filter('post_row_actions', array($this, 'modify_admin_view_link'), 10, 2);
     }
@@ -1477,6 +1500,15 @@ class Simple_Product_Showcase {
             array($this, 'custom_detail_page_callback'),
             'sps-settings',
             'sps_detail_page_section'
+        );
+        
+        // Add WhatsApp button text field
+        add_settings_field(
+            'sps_whatsapp_button_text',
+            __('WhatsApp Button Text', 'simple-product-showcase'),
+            array($this, 'whatsapp_button_text_callback'),
+            'sps-settings',
+            'sps_whatsapp_section'
         );
     }
     
