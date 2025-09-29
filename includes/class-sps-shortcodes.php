@@ -298,13 +298,22 @@ class SPS_Shortcodes {
      */
     private function get_current_product() {
         global $post;
-        
+
         // If we're on a single product page
         if (is_singular('sps_product') && $post) {
             return $post;
         }
-        
-        // Try to get from product_id parameter (for custom pages)
+
+        // Try to get from slug parameter (for custom pages) - SEO friendly
+        $product_slug = isset($_GET['slug']) ? sanitize_text_field($_GET['slug']) : '';
+        if ($product_slug) {
+            $product = get_page_by_path($product_slug, OBJECT, 'sps_product');
+            if ($product) {
+                return $product;
+            }
+        }
+
+        // Try to get from product_id parameter (for backward compatibility)
         $product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
         if ($product_id) {
             $product = get_post($product_id);
@@ -312,7 +321,7 @@ class SPS_Shortcodes {
                 return $product;
             }
         }
-        
+
         // Try to get from URL parameters
         $product_slug = get_query_var('product');
         if ($product_slug) {
@@ -321,7 +330,7 @@ class SPS_Shortcodes {
                 return $product;
             }
         }
-        
+
         // Try to get from post ID in URL
         $post_id = get_query_var('p');
         if ($post_id) {
@@ -330,7 +339,7 @@ class SPS_Shortcodes {
                 return $product;
             }
         }
-        
+
         // Try to get from postname in URL
         $postname = get_query_var('name');
         if ($postname) {
@@ -339,7 +348,7 @@ class SPS_Shortcodes {
                 return $product;
             }
         }
-        
+
         return false;
     }
     
@@ -529,7 +538,8 @@ class SPS_Shortcodes {
         $message = !empty($custom_message) ? $custom_message : $global_message;
         
         // Replace placeholders
-        $message = str_replace('{product_link}', get_permalink($product->ID), $message);
+        $product_url = SPS_Settings::get_product_detail_url($product->ID);
+        $message = str_replace('{product_link}', $product_url, $message);
         $message = str_replace('{product_name}', $product->post_title, $message);
         
         // URL encode the message

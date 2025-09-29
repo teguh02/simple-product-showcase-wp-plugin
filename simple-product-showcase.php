@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.1.0');
+define('SPS_PLUGIN_VERSION', '1.2.0');
 
 /**
  * Class Simple_Product_Showcase
@@ -1053,13 +1053,22 @@ class Simple_Product_Showcase {
      */
     private function get_current_product_fallback() {
         global $post;
-        
+
         // If we're on a single product page
         if (is_singular('sps_product') && $post) {
             return $post;
         }
-        
-        // Try to get from product_id parameter (for custom pages)
+
+        // Try to get from slug parameter (for custom pages) - SEO friendly
+        $product_slug = isset($_GET['slug']) ? sanitize_text_field($_GET['slug']) : '';
+        if ($product_slug) {
+            $product = get_page_by_path($product_slug, OBJECT, 'sps_product');
+            if ($product) {
+                return $product;
+            }
+        }
+
+        // Try to get from product_id parameter (for backward compatibility)
         $product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
         if ($product_id) {
             $product = get_post($product_id);
@@ -1067,7 +1076,7 @@ class Simple_Product_Showcase {
                 return $product;
             }
         }
-        
+
         // Try to get from URL parameters
         $product_slug = get_query_var('product');
         if ($product_slug) {
@@ -1076,7 +1085,7 @@ class Simple_Product_Showcase {
                 return $product;
             }
         }
-        
+
         // Try to get from post ID in URL
         $post_id = get_query_var('p');
         if ($post_id) {
@@ -1085,7 +1094,7 @@ class Simple_Product_Showcase {
                 return $product;
             }
         }
-        
+
         // Try to get from postname in URL
         $postname = get_query_var('name');
         if ($postname) {
@@ -1094,7 +1103,7 @@ class Simple_Product_Showcase {
                 return $product;
             }
         }
-        
+
         return false;
     }
     
@@ -1320,6 +1329,27 @@ class Simple_Product_Showcase {
     }
     
     /**
+     * Get product detail URL fallback
+     */
+    private function get_product_detail_url_fallback($product_id) {
+        $detail_mode = get_option('sps_detail_page_mode', 'default');
+
+        if ($detail_mode === 'custom') {
+            $custom_page_id = get_option('sps_custom_detail_page', 0);
+            if ($custom_page_id) {
+                $product = get_post($product_id);
+                if ($product && $product->post_type === 'sps_product') {
+                    $page_url = get_permalink($custom_page_id);
+                    return add_query_arg('slug', $product->post_name, $page_url);
+                }
+            }
+        }
+
+        // Default: use single product permalink
+        return get_permalink($product_id);
+    }
+    
+    /**
      * Render WhatsApp fallback
      */
     private function render_whatsapp_fallback($product) {
@@ -1339,7 +1369,8 @@ class Simple_Product_Showcase {
         $message = !empty($custom_message) ? $custom_message : $global_message;
         
         // Replace placeholders
-        $message = str_replace('{product_link}', get_permalink($product->ID), $message);
+        $product_url = $this->get_product_detail_url_fallback($product->ID);
+        $message = str_replace('{product_link}', $product_url, $message);
         $message = str_replace('{product_name}', $product->post_title, $message);
         
         // URL encode the message
@@ -1365,6 +1396,37 @@ class Simple_Product_Showcase {
      */
     public function init_settings_class() {
         SPS_Settings::get_instance();
+        
+        // Add admin view link filter
+        add_filter('post_row_actions', array($this, 'modify_admin_view_link'), 10, 2);
+    }
+    
+    /**
+     * Modify admin view link fallback
+     */
+    public function modify_admin_view_link($actions, $post) {
+        // Only modify for sps_product post type
+        if ($post->post_type === 'sps_product') {
+            $detail_mode = get_option('sps_detail_page_mode', 'default');
+            
+            if ($detail_mode === 'custom') {
+                $custom_page_id = get_option('sps_custom_detail_page', 0);
+                if ($custom_page_id) {
+                    $page_url = get_permalink($custom_page_id);
+                    $slug_url = add_query_arg('slug', $post->post_name, $page_url);
+                    
+                    // Replace the view action with our custom URL
+                    $actions['view'] = sprintf(
+                        '<a href="%s" aria-label="%s" target="_blank" rel="noopener">%s</a>',
+                        esc_url($slug_url),
+                        esc_attr(sprintf('View &#8220;%s&#8221;', $post->post_title)),
+                        'Lihat'
+                    );
+                }
+            }
+        }
+        
+        return $actions;
     }
     
     /**

@@ -294,6 +294,13 @@ simple-product-showcase/
 
 ## 🔄 Changelog
 
+### Version 1.2.0
+- **SEO Friendly URLs**: Mengubah semua URL dari `product_id` parameter ke `slug` parameter
+- **Enhanced Detail Links**: Tombol "Detail" dan link "Lihat" admin menggunakan slug-based URLs
+- **WhatsApp URL Update**: Pesan WhatsApp menggunakan slug-based URLs untuk SEO
+- **Admin View Integration**: Link "Lihat" di admin menggunakan custom page dengan slug parameter
+- **Backward Compatibility**: Masih support `product_id` parameter untuk kompatibilitas
+
 ### Version 1.1.0
 - **Category Filtering**: Filter otomatis produk berdasarkan URL parameter `?category=category_slug`
 - **Enhanced URL Detection**: Shortcode `[sps_products]` otomatis mendeteksi kategori dari URL

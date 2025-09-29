@@ -39,6 +39,7 @@ class SPS_Settings {
     private function init_hooks() {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
+        add_filter('post_row_actions', array($this, 'modify_view_link'), 10, 2);
         
         // Fallback: register settings immediately if admin_init already passed
         if (did_action('admin_init')) {
@@ -257,22 +258,50 @@ class SPS_Settings {
     }
     
     /**
+     * Modify view link in admin post list
+     */
+    public function modify_view_link($actions, $post) {
+        // Only modify for sps_product post type
+        if ($post->post_type === 'sps_product') {
+            $detail_mode = get_option('sps_detail_page_mode', 'default');
+            
+            if ($detail_mode === 'custom') {
+                $custom_page_id = get_option('sps_custom_detail_page', 0);
+                if ($custom_page_id) {
+                    $page_url = get_permalink($custom_page_id);
+                    $slug_url = add_query_arg('slug', $post->post_name, $page_url);
+                    
+                    // Replace the view action with our custom URL
+                    $actions['view'] = sprintf(
+                        '<a href="%s" aria-label="%s" target="_blank" rel="noopener">%s</a>',
+                        esc_url($slug_url),
+                        esc_attr(sprintf(__('View &#8220;%s&#8221;'), $post->post_title)),
+                        __('Lihat')
+                    );
+                }
+            }
+        }
+        
+        return $actions;
+    }
+    
+    /**
      * Get product detail URL based on settings
      */
     public static function get_product_detail_url($product_id) {
         $detail_mode = get_option('sps_detail_page_mode', 'default');
-        
+
         if ($detail_mode === 'custom') {
             $custom_page_id = get_option('sps_custom_detail_page', 0);
             if ($custom_page_id) {
                 $product = get_post($product_id);
                 if ($product && $product->post_type === 'sps_product') {
                     $page_url = get_permalink($custom_page_id);
-                    return add_query_arg('product_id', $product_id, $page_url);
+                    return add_query_arg('slug', $product->post_name, $page_url);
                 }
             }
         }
-        
+
         // Default: use single product permalink
         return get_permalink($product_id);
     }
