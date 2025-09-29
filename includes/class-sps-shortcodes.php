@@ -304,8 +304,8 @@ class SPS_Shortcodes {
             return $post;
         }
 
-        // Try to get from slug parameter (for custom pages) - SEO friendly
-        $product_slug = isset($_GET['slug']) ? sanitize_text_field($_GET['slug']) : '';
+        // Try to get from product parameter (for custom pages) - SEO friendly
+        $product_slug = isset($_GET['product']) ? sanitize_text_field($_GET['product']) : '';
         if ($product_slug) {
             $product = get_page_by_path($product_slug, OBJECT, 'sps_product');
             if ($product) {
@@ -548,6 +548,9 @@ class SPS_Shortcodes {
         // Generate WhatsApp URL
         $whatsapp_url = "https://wa.me/{$whatsapp_number}?text={$encoded_message}";
         
+        // Get button text from settings
+        $button_text = get_option('sps_whatsapp_button_text', 'Tanya Produk Ini');
+        
         return sprintf(
             '<div class="sps-product-whatsapp">
                 <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
@@ -557,7 +560,7 @@ class SPS_Shortcodes {
             </div>',
             esc_url($whatsapp_url),
             esc_url(plugin_dir_url(dirname(__FILE__)) . 'assets/img/whatsapp.png'),
-            __('Tanya Produk Ini', 'simple-product-showcase')
+            esc_html($button_text)
         );
     }
     

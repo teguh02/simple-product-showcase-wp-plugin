@@ -31,6 +31,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Pesan default yang dapat dikustomisasi
 - Placeholder untuk link produk dan nama produk
 - Pesan custom per produk (opsional)
+- **Teks tombol WhatsApp yang dapat dikustomisasi**
 
 ### 🎨 Tampilan Frontend
 - Template single product yang responsif
@@ -44,8 +45,9 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - `[sps_detail_products]` - Menampilkan detail produk individual
 - **10 Parameter Lengkap**: `columns`, `category`, `limit`, `orderby`, `order`, `show_price`, `show_description`, `show_whatsapp`, `show_gallery`, `gallery_style`
 - **Gallery Support**: Tampilkan gallery images dengan berbagai style (grid, slider, carousel)
-- **Auto Product Detection**: Otomatis mendeteksi produk berdasarkan URL
+- **Auto Product Detection**: Otomatis mendeteksi produk berdasarkan URL dengan parameter `?product=` (SEO friendly)
 - **Category Filtering**: Filter otomatis berdasarkan URL parameter `?category=category_slug`
+- **Clean URLs**: URL dengan parameter `?product=` untuk SEO friendly dan reliability
 - **Responsive Design**: Otomatis menyesuaikan dengan tema WordPress
 
 ## 🚀 Instalasi
@@ -63,7 +65,8 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 3. Kustomisasi pesan default dengan placeholder:
    - `{product_link}` - URL produk
    - `{product_name}` - Nama produk
-4. Simpan pengaturan
+4. **Kustomisasi teks tombol WhatsApp** (contoh: "Tanya Produk Ini", "Hubungi Kami", "Chat WhatsApp")
+5. Simpan pengaturan
 
 ### Menambah Produk
 1. Pergi ke **Products → Add New**
@@ -109,6 +112,17 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 <!-- URL: http://yoursite.com/produk/?category=electronics -->
 <!-- Shortcode akan otomatis filter produk kategori "electronics" -->
 [sps_products columns="4"]
+```
+
+### Product Detail URLs
+```
+<!-- URL dengan parameter product untuk SEO friendly -->
+<!-- http://yoursite.com/show-product/?product=paku-tembak-polos-ukuran-50mm-x-2-1mm -->
+<!-- Shortcode akan otomatis detect produk berdasarkan slug -->
+
+<!-- URL dengan parameter product_id untuk backward compatibility -->
+<!-- http://yoursite.com/show-product/?product_id=28 -->
+<!-- Shortcode akan otomatis detect produk berdasarkan ID -->
 ```
 
 ### Atribut yang Tersedia
@@ -292,13 +306,29 @@ simple-product-showcase/
 2. Cek apakah ada produk yang di-publish
 3. Cek konflik dengan plugin lain
 
+### Produk Tidak Muncul dengan URL Parameter
+1. Pastikan slug produk benar: `/show-product/?product=slug-yang-benar`
+2. Cek apakah produk sudah di-publish (bukan draft)
+3. Pastikan slug sesuai dengan nama produk (case-sensitive)
+4. Coba fallback dengan product_id: `/show-product/?product_id=123`
+5. Pastikan halaman custom sudah dikonfigurasi di Settings
+
 ## 🔄 Changelog
 
+### Version 1.3.0
+- **Reliable URL Parameters**: Changed from `?=` to `?product=` parameter for better reliability
+- **Enhanced Product Detection**: More robust product detection with standard parameter format
+- **Improved Documentation**: Comprehensive documentation for URL parameters and troubleshooting
+- **Better Compatibility**: Enhanced WordPress compatibility with standard parameter handling
+- **Admin Integration**: Updated admin "Lihat" links to use reliable parameter format
+- **WhatsApp Integration**: All WhatsApp links now use reliable parameter format
+
 ### Version 1.2.0
-- **SEO Friendly URLs**: Mengubah semua URL dari `product_id` parameter ke `slug` parameter
-- **Enhanced Detail Links**: Tombol "Detail" dan link "Lihat" admin menggunakan slug-based URLs
-- **WhatsApp URL Update**: Pesan WhatsApp menggunakan slug-based URLs untuk SEO
-- **Admin View Integration**: Link "Lihat" di admin menggunakan custom page dengan slug parameter
+- **SEO Friendly URLs**: Mengubah semua URL dari `product_id` parameter ke `?product=` parameter
+- **Enhanced Detail Links**: Tombol "Detail" dan link "Lihat" admin menggunakan clean URLs
+- **WhatsApp URL Update**: Pesan WhatsApp menggunakan clean URLs untuk SEO
+- **Admin View Integration**: Link "Lihat" di admin menggunakan custom page dengan clean parameter
+- **Customizable WhatsApp Button Text**: Pengaturan teks tombol WhatsApp yang dapat dikustomisasi
 - **Backward Compatibility**: Masih support `product_id` parameter untuk kompatibilitas
 
 ### Version 1.1.0

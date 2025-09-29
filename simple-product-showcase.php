@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.2.0');
+define('SPS_PLUGIN_VERSION', '1.3.0');
 
 /**
  * Class Simple_Product_Showcase
@@ -1059,8 +1059,8 @@ class Simple_Product_Showcase {
             return $post;
         }
 
-        // Try to get from slug parameter (for custom pages) - SEO friendly
-        $product_slug = isset($_GET['slug']) ? sanitize_text_field($_GET['slug']) : '';
+        // Try to get from product parameter (for custom pages) - SEO friendly
+        $product_slug = isset($_GET['product']) ? sanitize_text_field($_GET['product']) : '';
         if ($product_slug) {
             $product = get_page_by_path($product_slug, OBJECT, 'sps_product');
             if ($product) {
@@ -1340,7 +1340,7 @@ class Simple_Product_Showcase {
                 $product = get_post($product_id);
                 if ($product && $product->post_type === 'sps_product') {
                     $page_url = get_permalink($custom_page_id);
-                    return add_query_arg('slug', $product->post_name, $page_url);
+                    return add_query_arg('product', $product->post_name, $page_url);
                 }
             }
         }
@@ -1379,15 +1379,19 @@ class Simple_Product_Showcase {
         // Generate WhatsApp URL
         $whatsapp_url = "https://wa.me/{$whatsapp_number}?text={$encoded_message}";
         
+        // Get button text from settings
+        $button_text = get_option('sps_whatsapp_button_text', 'Tanya Produk Ini');
+        
         return sprintf(
             '<div class="sps-product-whatsapp">
                 <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
                     <img src="%s" alt="WhatsApp" class="sps-whatsapp-icon" />
-                    Tanya Produk Ini
+                    %s
                 </a>
             </div>',
             esc_url($whatsapp_url),
-            esc_url(plugin_dir_url(__FILE__) . 'assets/img/whatsapp.png')
+            esc_url(plugin_dir_url(__FILE__) . 'assets/img/whatsapp.png'),
+            esc_html($button_text)
         );
     }
     
@@ -1413,7 +1417,7 @@ class Simple_Product_Showcase {
                 $custom_page_id = get_option('sps_custom_detail_page', 0);
                 if ($custom_page_id) {
                     $page_url = get_permalink($custom_page_id);
-                    $slug_url = add_query_arg('slug', $post->post_name, $page_url);
+                    $slug_url = add_query_arg('product', $post->post_name, $page_url);
                     
                     // Replace the view action with our custom URL
                     $actions['view'] = sprintf(
@@ -1442,6 +1446,12 @@ class Simple_Product_Showcase {
         register_setting('sps_settings_group', 'sps_custom_detail_page', array(
             'type' => 'integer',
             'default' => 0
+        ));
+        
+        register_setting('sps_settings_group', 'sps_whatsapp_button_text', array(
+            'type' => 'string',
+            'default' => 'Tanya Produk Ini',
+            'sanitize_callback' => 'sanitize_text_field'
         ));
         
         // Add settings section

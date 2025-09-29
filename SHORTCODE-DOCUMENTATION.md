@@ -1,7 +1,7 @@
 # 📚 Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.0.0  
-**Last Updated:** 2025-09-25
+**Plugin Version:** 1.3.0  
+**Last Updated:** 2025-09-29
 
 ## 🚀 Available Shortcodes
 
@@ -139,7 +139,16 @@ Automatic WhatsApp contact buttons on all products:
 - **Number:** Uses the WhatsApp number configured in plugin settings
 - **Message:** Pre-filled message with product link
 - **Customization:** Customizable message per product
+- **Button Text:** Customizable button text in plugin settings
 - **Control:** Can be disabled per shortcode with `show_whatsapp="false"`
+
+### WhatsApp Settings Configuration
+
+In **Products → Settings**, you can configure:
+
+1. **WhatsApp Number:** Your WhatsApp number with country code
+2. **Default WhatsApp Message:** Template for the message sent
+3. **WhatsApp Button Text:** Customize the button text (default: "Tanya Produk Ini")
 
 ### Default Message Template
 ```
@@ -149,6 +158,13 @@ Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}
 Available placeholders:
 - `{product_link}` - Will be replaced with the actual product URL
 - `{product_name}` - Will be replaced with the product title
+
+### Button Text Customization Examples
+- Default: "Tanya Produk Ini"
+- Custom: "Hubungi Kami"
+- Custom: "Chat WhatsApp"
+- Custom: "Beli Sekarang"
+- Custom: "Info Produk"
 
 ## 🌐 Frontend Display
 
@@ -276,15 +292,30 @@ For a complete product detail page, use multiple shortcodes:
 
 ### How Product Detection Works
 
-The `[sps_detail_products]` shortcode automatically detects the current product using the `product_id` parameter from the URL:
+The `[sps_detail_products]` shortcode automatically detects the current product using clean URL parameters:
 
-- **Product ID Detection** (`/show-product/?product_id=123`) - Detects by product ID parameter
+- **SEO Friendly Detection** (`/show-product/?product=product-slug`) - Detects by product slug parameter (primary)
+- **Product ID Detection** (`/show-product/?product_id=123`) - Fallback detection by product ID parameter
 - **WordPress Permalinks** - Works with any permalink structure (Post name, Numeric, etc.)
-- **Automatic Fallback** - If no product_id is found, displays "No product found" message
+- **Automatic Fallback** - If no product is found, displays "No product found" message
 
 **Example URLs:**
+
+**Primary Method (SEO Friendly):**
+- `/show-product/?product=paku-tembak-polos-ukuran-50mm-x-2-1mm` - Will display product by slug
+- `/show-product/?product=contoh-produk-1` - Will display product by slug
+- `/product-detail/?product=smartphone-terbaru-2024` - Will display product by slug
+
+**Fallback Method (Backward Compatibility):**
 - `/show-product/?product_id=28` - Will display product with ID 28
 - `/product-detail/?product_id=15` - Will display product with ID 15
+- `/show-product/?product_id=123` - Will display product with ID 123
+
+**URL Structure Benefits:**
+- **SEO Friendly**: Clean URLs with readable product slugs
+- **Reliable**: Standard parameter format that works consistently
+- **Backward Compatible**: Still supports legacy product_id parameter
+- **WordPress Compatible**: Works with any permalink structure
 
 This approach ensures reliable product detection regardless of WordPress permalink settings.
 
@@ -378,6 +409,13 @@ Add custom CSS to your theme to style the product grid:
    - Add custom CSS to override styles
    - Test on different screen sizes
 
+5. **Product not found with URL parameter**
+   - Ensure the product slug exists: `/show-product/?product=correct-slug`
+   - Check if the product is published and not in draft
+   - Verify the slug matches exactly (case-sensitive)
+   - Try fallback with product_id: `/show-product/?product_id=123`
+   - Check if custom page is properly configured in settings
+
 ### Debug Mode
 Enable WordPress debug mode to see any errors:
 
@@ -397,8 +435,39 @@ If you need help with the shortcode:
 4. **Check WordPress error logs**
 5. **Contact plugin support** with specific error messages
 
+## 🔄 Changelog
+
+### Version 1.3.0
+- **Reliable URL Parameters**: Changed from `?=` to `?product=` parameter for better reliability
+- **Enhanced Product Detection**: More robust product detection with standard parameter format
+- **Improved Documentation**: Comprehensive documentation for URL parameters and troubleshooting
+- **Better Compatibility**: Enhanced WordPress compatibility with standard parameter handling
+- **Admin Integration**: Updated admin "Lihat" links to use reliable parameter format
+- **WhatsApp Integration**: All WhatsApp links now use reliable parameter format
+
+### Version 1.2.0
+- **SEO Friendly URLs**: Changed from `product_id` parameter to clean `?product=` parameter
+- **Enhanced Detail Links**: All detail links use clean URLs for better SEO
+- **WhatsApp URL Update**: WhatsApp messages use clean URLs
+- **Customizable WhatsApp Button Text**: New setting to customize button text
+- **Admin View Integration**: Admin "Lihat" links use clean URLs
+- **Backward Compatibility**: Still supports `product_id` parameter
+
+### Version 1.1.0
+- **Category Filtering**: Automatic filtering based on URL parameter `?category=category_slug`
+- **Enhanced URL Detection**: Shortcode `[sps_products]` detects categories from URL
+- **Improved Flexibility**: Shortcode attribute overrides URL parameter
+- **Updated Documentation**: Comprehensive documentation for category filtering
+
+### Version 1.0.0
+- Initial release with basic functionality
+- Custom Post Type for products
+- WhatsApp integration
+- Basic shortcode `[sps_products]`
+- Template system
+
 ---
 
 **Plugin:** Simple Product Showcase  
-**Version:** 1.0.0  
-**Last Updated:** 2025-09-25
+**Version:** 1.3.0  
+**Last Updated:** 2025-09-29

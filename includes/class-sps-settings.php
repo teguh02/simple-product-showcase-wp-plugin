@@ -77,6 +77,12 @@ class SPS_Settings {
             'sanitize_callback' => 'sanitize_textarea_field'
         ));
         
+        register_setting('sps_settings_group', 'sps_whatsapp_button_text', array(
+            'type' => 'string',
+            'default' => 'Tanya Produk Ini',
+            'sanitize_callback' => 'sanitize_text_field'
+        ));
+        
         register_setting('sps_settings_group', 'sps_detail_page_mode', array(
             'type' => 'string',
             'default' => 'default'
@@ -115,6 +121,14 @@ class SPS_Settings {
             'sps_whatsapp_message',
             __('Default WhatsApp Message', 'simple-product-showcase'),
             array($this, 'whatsapp_message_field_callback'),
+            'sps-settings',
+            'sps_whatsapp_section'
+        );
+        
+        add_settings_field(
+            'sps_whatsapp_button_text',
+            __('WhatsApp Button Text', 'simple-product-showcase'),
+            array($this, 'whatsapp_button_text_field_callback'),
             'sps-settings',
             'sps_whatsapp_section'
         );
@@ -170,7 +184,7 @@ class SPS_Settings {
     }
     
     /**
-     * WhatsApp number field callback
+     * WhatsApp message field callback
      */
     public function whatsapp_message_field_callback() {
         $value = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tentang produk {product_name} ini yaa: {product_link}');
@@ -185,6 +199,26 @@ class SPS_Settings {
         ><?php echo esc_textarea($value); ?></textarea>
         <p class="description">
             <?php _e('Default message template for WhatsApp contact. Available placeholders: {product_link} for product URL, {product_name} for product title.', 'simple-product-showcase'); ?>
+        </p>
+        <?php
+    }
+    
+    /**
+     * WhatsApp button text field callback
+     */
+    public function whatsapp_button_text_field_callback() {
+        $value = get_option('sps_whatsapp_button_text', 'Tanya Produk Ini');
+        ?>
+        <input 
+            type="text" 
+            name="sps_whatsapp_button_text" 
+            id="sps_whatsapp_button_text" 
+            value="<?php echo esc_attr($value); ?>" 
+            class="regular-text"
+            placeholder="Tanya Produk Ini"
+        />
+        <p class="description">
+            <?php _e('Customize the text displayed on the WhatsApp contact button. Default: "Tanya Produk Ini"', 'simple-product-showcase'); ?>
         </p>
         <?php
     }
@@ -269,7 +303,7 @@ class SPS_Settings {
                 $custom_page_id = get_option('sps_custom_detail_page', 0);
                 if ($custom_page_id) {
                     $page_url = get_permalink($custom_page_id);
-                    $slug_url = add_query_arg('slug', $post->post_name, $page_url);
+                    $slug_url = add_query_arg('product', $post->post_name, $page_url);
                     
                     // Replace the view action with our custom URL
                     $actions['view'] = sprintf(
@@ -297,7 +331,7 @@ class SPS_Settings {
                 $product = get_post($product_id);
                 if ($product && $product->post_type === 'sps_product') {
                     $page_url = get_permalink($custom_page_id);
-                    return add_query_arg('slug', $product->post_name, $page_url);
+                    return add_query_arg('product', $product->post_name, $page_url);
                 }
             }
         }
