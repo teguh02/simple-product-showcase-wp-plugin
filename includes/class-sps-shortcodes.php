@@ -367,9 +367,39 @@ class SPS_Shortcodes {
      * Render product image
      */
     private function render_product_image($product) {
+        // Get thumbnail parameter from URL
+        $thumbnail_param = isset($_GET['thumbnail']) ? intval($_GET['thumbnail']) : 0;
+        
+        // If thumbnail parameter exists and is valid, get specific image from gallery
+        if ($thumbnail_param > 0) {
+            $gallery_images = array();
+            
+            // Add thumbnail as first image
+            $thumbnail_id = get_post_thumbnail_id($product->ID);
+            if ($thumbnail_id) {
+                $gallery_images[] = $thumbnail_id;
+            }
+            
+            // Get gallery images from meta
+            for ($i = 1; $i <= 5; $i++) {
+                $image_id = get_post_meta($product->ID, '_sps_gallery_' . $i, true);
+                if ($image_id) {
+                    $gallery_images[] = $image_id;
+                }
+            }
+            
+            // Check if thumbnail parameter is within valid range
+            if ($thumbnail_param <= count($gallery_images)) {
+                $image_id = $gallery_images[$thumbnail_param - 1]; // Convert to 0-based index
+                return '<div class="sps-product-detail-image">' . wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-main-image')) . '</div>';
+            }
+        }
+        
+        // Default: show thumbnail or first available image
         if (has_post_thumbnail($product->ID)) {
             return '<div class="sps-product-detail-image">' . get_the_post_thumbnail($product->ID, 'large', array('class' => 'sps-main-image')) . '</div>';
         }
+        
         return '<div class="sps-product-detail-image"><p>' . __('No image available.', 'simple-product-showcase') . '</p></div>';
     }
     
@@ -407,15 +437,39 @@ class SPS_Shortcodes {
         
         ob_start();
         ?>
+        <style>
+        .sps-gallery-image-link {
+            display: block;
+            text-decoration: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .sps-gallery-image-link:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        .sps-gallery-image-link .sps-gallery-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        </style>
         <div class="sps-product-gallery sps-gallery-<?php echo esc_attr($style); ?>">
-            <?php foreach ($gallery_images as $image_id) : ?>
+            <?php foreach ($gallery_images as $index => $image_id) : 
+                $thumbnail_number = $index + 1; // Start from 1
+                $current_url = $_SERVER['REQUEST_URI'];
+                $click_url = add_query_arg('thumbnail', $thumbnail_number, $current_url);
+            ?>
                 <?php if ($style === 'slider') : ?>
                     <div class="sps-gallery-slide">
-                        <?php echo wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-gallery-image')); ?>
+                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link">
+                            <?php echo wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-gallery-image')); ?>
+                        </a>
                     </div>
                 <?php else : ?>
                     <div class="sps-gallery-item">
-                        <?php echo wp_get_attachment_image($image_id, 'medium', false, array('class' => 'sps-gallery-image')); ?>
+                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link">
+                            <?php echo wp_get_attachment_image($image_id, 'medium', false, array('class' => 'sps-gallery-image')); ?>
+                        </a>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
