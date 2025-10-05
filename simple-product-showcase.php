@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.3.3
+ * Version: 1.3.4
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.3.3');
+define('SPS_PLUGIN_VERSION', '1.3.4');
 
 /**
  * Class Simple_Product_Showcase
@@ -1269,32 +1269,47 @@ class Simple_Product_Showcase {
             display: block;
             text-decoration: none;
             transition: transform 0.3s ease, opacity 0.3s ease;
+            border: 3px solid transparent;
+            border-radius: 8px;
         }
         .sps-gallery-image-link:hover {
             transform: scale(1.05);
             opacity: 0.9;
         }
+        .sps-gallery-image-link.active {
+            border-color: #0073aa !important;
+            box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.2);
+        }
         .sps-gallery-image-link .sps-gallery-image {
             display: block;
             width: 100%;
             height: auto;
+            border-radius: 5px;
         }
         </style>
         <div class="sps-product-gallery sps-gallery-<?php echo esc_attr($style); ?>">
-            <?php foreach ($gallery_images as $index => $image_id) : 
+            <?php 
+            // Get current thumbnail parameter
+            $current_thumbnail = isset($_GET['thumbnail']) ? intval($_GET['thumbnail']) : 1;
+            
+            foreach ($gallery_images as $index => $image_id) : 
                 $thumbnail_number = $index + 1; // Start from 1
                 $current_url = $_SERVER['REQUEST_URI'];
                 $click_url = add_query_arg('thumbnail', $thumbnail_number, $current_url);
+                
+                // Check if this image is currently active
+                $is_active = ($thumbnail_number == $current_thumbnail);
+                $active_class = $is_active ? ' active' : '';
             ?>
                 <?php if ($style === 'slider') : ?>
                     <div class="sps-gallery-slide">
-                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link">
+                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link<?php echo $active_class; ?>">
                             <?php echo wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-gallery-image')); ?>
                         </a>
                     </div>
                 <?php else : ?>
                     <div class="sps-gallery-item">
-                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link">
+                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link<?php echo $active_class; ?>">
                             <?php echo wp_get_attachment_image($image_id, 'medium', false, array('class' => 'sps-gallery-image')); ?>
                         </a>
                     </div>
