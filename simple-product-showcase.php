@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.3.1');
+define('SPS_PLUGIN_VERSION', '1.3.2');
 
 /**
  * Class Simple_Product_Showcase
@@ -1132,6 +1132,12 @@ class Simple_Product_Showcase {
      */
     private function render_gallery_fallback($product, $style = 'grid') {
         $gallery_images = array();
+        
+        // Add thumbnail as first image
+        $thumbnail_id = get_post_thumbnail_id($product->ID);
+        if ($thumbnail_id) {
+            $gallery_images[] = $thumbnail_id;
+        }
         
         // Get gallery images from meta
         for ($i = 1; $i <= 5; $i++) {

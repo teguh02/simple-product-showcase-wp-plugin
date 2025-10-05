@@ -387,6 +387,12 @@ class SPS_Shortcodes {
     private function render_product_gallery($product, $style = 'grid') {
         $gallery_images = array();
         
+        // Add thumbnail as first image
+        $thumbnail_id = get_post_thumbnail_id($product->ID);
+        if ($thumbnail_id) {
+            $gallery_images[] = $thumbnail_id;
+        }
+        
         // Get gallery images from meta
         for ($i = 1; $i <= 5; $i++) {
             $image_id = get_post_meta($product->ID, '_sps_gallery_' . $i, true);

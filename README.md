@@ -10,7 +10,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Mengintegrasikan tombol WhatsApp untuk setiap produk
 - Menggunakan shortcode untuk menampilkan produk di halaman manapun
 - Mengorganisir produk dengan kategori
-- Menambahkan hingga 5 gambar gallery untuk setiap produk
+- Menambahkan hingga 5 gambar gallery untuk setiap produk (ditambah 1 thumbnail = total 6 gambar)
 - Duplikasi produk dengan mudah
 - Data produk tetap tersimpan meskipun plugin dinonaktifkan
 
@@ -314,6 +314,18 @@ simple-product-showcase/
 5. Pastikan halaman custom sudah dikonfigurasi di Settings
 
 ## 🔄 Changelog
+
+### Version 1.3.2
+- **Enhanced Gallery**: Thumbnail otomatis ditambahkan sebagai gambar pertama dalam galeri produk
+- **Total 6 Images**: Sekarang galeri menampilkan 1 thumbnail + 5 gambar tambahan = 6 gambar total
+- **Improved UX**: Konsistensi tampilan dengan thumbnail sebagai gambar pertama
+- **Documentation Update**: Update dokumentasi untuk menjelaskan fitur galeri yang ditingkatkan
+- **Better Visual Experience**: Pengalaman visual yang lebih baik dengan thumbnail terintegrasi
+
+### Version 1.3.1
+- **WhatsApp Button Text Field Fix**: Perbaikan field "WhatsApp Button Text" yang tidak muncul di admin settings
+- **Settings Reliability**: Peningkatan keandalan inisialisasi settings dan field registration
+- **User Experience**: Field sekarang dapat digunakan untuk mengatur teks tombol WhatsApp
 
 ### Version 1.3.0
 - **Reliable URL Parameters**: Changed from `?=` to `?product=` parameter for better reliability

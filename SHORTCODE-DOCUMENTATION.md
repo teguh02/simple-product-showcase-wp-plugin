@@ -50,7 +50,7 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 - **`title`** - Display product title as heading (supports h1, h2, h3, h4, h5 styles)
 - **`image`** - Display main product image (featured image)
 - **`description`** - Display full product description/content
-- **`gallery`** - Display up to 5 gallery images (supports grid, slider, carousel styles)
+- **`gallery`** - Display up to 6 images (1 thumbnail + up to 5 gallery images) (supports grid, slider, carousel styles)
 - **`whatsapp`** - Display WhatsApp contact button
 
 ### Title Styles:
@@ -63,9 +63,9 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 
 ### Gallery Styles:
 
-- **`grid`** - Display images in a responsive grid (default)
-- **`slider`** - Display images in a slideshow with navigation
-- **`carousel`** - Display images in a horizontal scrolling carousel
+- **`grid`** - Display up to 6 images in a responsive grid (1 thumbnail + 5 gallery images) (default)
+- **`slider`** - Display up to 6 images in a slideshow with navigation (1 thumbnail + 5 gallery images)
+- **`carousel`** - Display up to 6 images in a horizontal scrolling carousel (1 thumbnail + 5 gallery images)
 
 ## 💡 Usage Examples
 
@@ -436,6 +436,18 @@ If you need help with the shortcode:
 5. **Contact plugin support** with specific error messages
 
 ## 🔄 Changelog
+
+### Version 1.3.2
+- **Enhanced Gallery**: Thumbnail automatically added as first image in product gallery
+- **Total 6 Images**: Gallery now displays 1 thumbnail + 5 additional images = 6 images total
+- **Improved UX**: Consistent display with thumbnail as first image
+- **Documentation Update**: Updated documentation to explain enhanced gallery feature
+- **Better Visual Experience**: Enhanced visual experience with integrated thumbnail
+
+### Version 1.3.1
+- **WhatsApp Button Text Field Fix**: Fixed WhatsApp Button Text field not appearing in admin settings
+- **Settings Reliability**: Improved settings initialization and field registration reliability
+- **User Experience**: Field now available for customizing WhatsApp button text
 
 ### Version 1.3.0
 - **Reliable URL Parameters**: Changed from `?=` to `?product=` parameter for better reliability
