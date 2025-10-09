@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.3.4
+ * Version: 1.3.5
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.3.4');
+define('SPS_PLUGIN_VERSION', '1.3.5');
 
 /**
  * Class Simple_Product_Showcase
@@ -1204,6 +1204,57 @@ class Simple_Product_Showcase {
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
+        
+        /* Mobile and Tablet Slider Layout */
+        @media (max-width: 1024px) {
+            .sps-product-gallery {
+                position: relative;
+            }
+            
+            .sps-gallery-grid {
+                display: flex;
+                overflow-x: auto;
+                gap: 15px;
+                padding: 10px 0;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .sps-gallery-item {
+                flex: 0 0 auto;
+                width: 120px;
+                min-width: 120px;
+            }
+            
+        }
+
+        @media (max-width: 768px) {
+            .sps-gallery-item {
+                width: 100px;
+                min-width: 100px;
+            }
+        }
+
+        /* Scrollbar styling for mobile gallery */
+        @media (max-width: 1024px) {
+            .sps-gallery-grid::-webkit-scrollbar {
+                height: 6px;
+            }
+            
+            .sps-gallery-grid::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+            
+            .sps-gallery-grid::-webkit-scrollbar-thumb {
+                background: #0073aa;
+                border-radius: 3px;
+            }
+            
+            .sps-gallery-grid::-webkit-scrollbar-thumb:hover {
+                background: #005a87;
+            }
+        }
         .sps-gallery-carousel {
             display: flex;
             overflow: hidden;
@@ -1247,6 +1298,76 @@ class Simple_Product_Showcase {
             border-radius: 5px;
             cursor: pointer;
             font-size: 18px;
+        }
+        
+        /* Mobile and Tablet - Larger Navigation Arrows */
+        @media (max-width: 1024px) {
+            .sps-gallery-controls {
+                position: relative;
+                margin: 20px 0;
+                padding: 0 20px;
+            }
+            
+            .sps-gallery-prev,
+            .sps-gallery-next {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(0, 115, 170, 0.9);
+                color: white;
+                border: none;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                font-size: 24px;
+                font-weight: bold;
+                cursor: pointer;
+                z-index: 10;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .sps-gallery-prev {
+                left: 10px;
+            }
+            
+            .sps-gallery-next {
+                right: 10px;
+            }
+            
+            .sps-gallery-prev:hover,
+            .sps-gallery-next:hover {
+                background: rgba(0, 115, 170, 1);
+                transform: translateY(-50%) scale(1.1);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            }
+            
+            .sps-gallery-prev:active,
+            .sps-gallery-next:active {
+                transform: translateY(-50%) scale(0.95);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sps-gallery-prev,
+            .sps-gallery-next {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+            
+            .sps-gallery-prev {
+                left: 5px;
+            }
+            
+            .sps-gallery-next {
+                right: 5px;
+            }
         }
         .sps-whatsapp-icon {
             width: 20px;
