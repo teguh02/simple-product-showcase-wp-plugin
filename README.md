@@ -11,6 +11,8 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Menggunakan shortcode untuk menampilkan produk di halaman manapun
 - Mengorganisir produk dengan kategori
 - Menambahkan hingga 5 gambar gallery untuk setiap produk (ditambah 1 thumbnail = total 6 gambar)
+- **AJAX Gallery**: Interaktif gallery dengan perubahan gambar utama tanpa reload halaman
+- **Hash URL Support**: URL dengan parameter `#thumbnail=X` untuk direct access ke gambar tertentu
 - Duplikasi produk dengan mudah
 - Data produk tetap tersimpan meskipun plugin dinonaktifkan
 
@@ -39,6 +41,9 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Grid layout yang dapat dikustomisasi
 - Search dan filter berdasarkan kategori
 - Navigation antar produk
+- **Interactive Gallery**: Gallery dengan AJAX untuk perubahan gambar utama yang smooth
+- **Responsive Gallery**: Gallery horizontal slider di mobile/tablet, grid di desktop
+- **Visual Feedback**: Border biru pada gambar aktif di gallery
 
 ### 🔧 Shortcode
 - `[sps_products]` - Menampilkan semua produk dalam grid
@@ -48,6 +53,8 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - **Auto Product Detection**: Otomatis mendeteksi produk berdasarkan URL dengan parameter `?product=` (SEO friendly)
 - **Category Filtering**: Filter otomatis berdasarkan URL parameter `?category=category_slug`
 - **Clean URLs**: URL dengan parameter `?product=` untuk SEO friendly dan reliability
+- **AJAX Gallery**: Gallery interaktif dengan perubahan gambar utama via AJAX tanpa reload halaman
+- **Hash URL Support**: URL dengan `#thumbnail=X` untuk direct access ke gambar tertentu
 - **Responsive Design**: Otomatis menyesuaikan dengan tema WordPress
 
 ## 🚀 Instalasi
@@ -103,6 +110,23 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 [sps_detail_products section="gallery" style="carousel"]
 ```
 
+### AJAX Gallery Implementation
+```
+<!-- AJAX Gallery bekerja otomatis dengan shortcode gallery -->
+[sps_detail_products section="gallery" style="grid"]
+<!-- atau -->
+[sps_detail_products section="gallery" style="slider"]
+<!-- atau -->
+[sps_detail_products section="gallery" style="carousel"]
+
+<!-- Fitur yang didapat: -->
+<!-- 1. Klik gambar gallery → gambar utama berubah tanpa reload -->
+<!-- 2. URL berubah ke #thumbnail=X -->
+<!-- 3. Border biru pada gambar aktif -->
+<!-- 4. Responsive di semua device -->
+<!-- 5. URL dapat di-share dan dibuka langsung -->
+```
+
 ### Category Filtering dari URL
 ```
 <!-- URL: http://yoursite.com/produk/?category=shoes -->
@@ -123,6 +147,25 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 <!-- URL dengan parameter product_id untuk backward compatibility -->
 <!-- http://yoursite.com/show-product/?product_id=28 -->
 <!-- Shortcode akan otomatis detect produk berdasarkan ID -->
+```
+
+### AJAX Gallery dengan Hash URL Support
+```
+<!-- URL dengan hash thumbnail untuk direct access ke gambar tertentu -->
+<!-- http://yoursite.com/show-product/?product=contoh-produk-1#thumbnail=1 -->
+<!-- Gambar utama akan menampilkan thumbnail (gambar pertama) -->
+
+<!-- http://yoursite.com/show-product/?product=contoh-produk-1#thumbnail=3 -->
+<!-- Gambar utama akan menampilkan gambar gallery ke-3 -->
+
+<!-- http://yoursite.com/show-product/?product=contoh-produk-1#thumbnail=6 -->
+<!-- Gambar utama akan menampilkan gambar gallery ke-6 (gambar terakhir) -->
+
+<!-- Fitur AJAX Gallery: -->
+<!-- 1. Klik gambar di gallery → URL berubah ke #thumbnail=X -->
+<!-- 2. Gambar utama berubah tanpa reload halaman -->
+<!-- 3. Border biru muncul pada gambar aktif di gallery -->
+<!-- 4. URL dapat di-share dan dibuka langsung -->
 ```
 
 ### Atribut yang Tersedia
@@ -313,7 +356,43 @@ simple-product-showcase/
 4. Coba fallback dengan product_id: `/show-product/?product_id=123`
 5. Pastikan halaman custom sudah dikonfigurasi di Settings
 
+### AJAX Gallery Tidak Berfungsi
+1. **Buka Developer Tools (F12)** dan cek tab Console untuk error messages
+2. **Cek AJAX Response**: Lihat apakah AJAX request berhasil (status 200)
+3. **Verify Image IDs**: Pastikan `data-image-id` pada gallery links valid
+4. **Check Nonce**: Pastikan nonce security tidak expired (refresh halaman)
+5. **Browser Compatibility**: Test di browser yang berbeda (Chrome, Firefox, Safari)
+6. **JavaScript Conflicts**: Disable plugin lain untuk cek konflik JavaScript
+7. **Cache Issues**: Clear browser cache dan WordPress cache
+8. **Console Debugging**: Lihat console logs untuk tracking AJAX requests
+
+### Hash URL (#thumbnail=X) Tidak Berfungsi
+1. **URL Format**: Pastikan format URL benar: `#thumbnail=1`, `#thumbnail=2`, dst.
+2. **Image Range**: Pastikan angka dalam range yang valid (1-6 untuk 6 gambar)
+3. **Page Load**: Pastikan JavaScript sudah loaded saat page load
+4. **Hash Detection**: Cek console untuk log "checkHashParameter" function
+5. **Gallery Links**: Pastikan gallery memiliki `data-thumbnail` dan `data-image-id`
+
 ## 🔄 Changelog
+
+### Version 1.3.5
+- **AJAX Gallery System**: Implementasi gallery interaktif dengan AJAX untuk perubahan gambar utama tanpa reload halaman
+- **Hash URL Support**: URL dengan parameter `#thumbnail=X` untuk direct access ke gambar tertentu (contoh: `#thumbnail=4`)
+- **Interactive Gallery**: Klik gambar di gallery → URL berubah ke `#thumbnail=X` → gambar utama berubah secara instant
+- **Visual Feedback**: Border biru pada gambar aktif di gallery untuk indikator visual yang jelas
+- **Responsive Gallery**: Gallery horizontal slider di mobile/tablet, grid layout di desktop
+- **SEO Friendly URLs**: Hash parameters tidak mempengaruhi SEO dan dapat di-share/bookmark
+- **Enhanced User Experience**: Perubahan gambar yang smooth dan responsif di semua device
+- **Technical Improvements**: DOM manipulation yang robust dengan penghapusan srcset conflicts
+- **Debugging Features**: Console logging untuk troubleshooting dan development
+- **Backward Compatibility**: Tetap kompatibel dengan semua fitur sebelumnya
+
+### Version 1.3.4
+- **Gallery Navigation Removal**: Menghapus tombol panah kiri-kanan dari gallery slider
+- **Clean Slider Design**: Gallery horizontal slider yang bersih dengan scrollbar biru sebagai indikator
+- **Mobile Optimization**: Gallery slider yang touch-friendly tanpa overlay buttons
+- **Responsive Design**: Slider horizontal di mobile/tablet, grid di desktop
+- **Visual Enhancement**: Scrollbar biru untuk visual feedback pada mobile gallery
 
 ### Version 1.3.2
 - **Enhanced Gallery**: Thumbnail otomatis ditambahkan sebagai gambar pertama dalam galeri produk
