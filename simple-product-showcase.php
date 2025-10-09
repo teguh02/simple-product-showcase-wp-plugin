@@ -1183,6 +1183,19 @@ class Simple_Product_Showcase {
         ob_start();
         ?>
         <style>
+        .sps-product-detail-image {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .sps-main-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: block;
+            margin: 0 auto;
+        }
         .sps-product-gallery {
             margin: 20px 0;
         }
