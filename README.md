@@ -375,6 +375,19 @@ simple-product-showcase/
 
 ## 🔄 Changelog
 
+### Version 1.3.6
+- **AJAX Gallery System Complete**: Implementasi lengkap gallery interaktif dengan AJAX untuk perubahan gambar utama tanpa reload halaman
+- **Hash URL Support Finalized**: URL dengan parameter `#thumbnail=X` untuk direct access ke gambar tertentu dengan reliability tinggi
+- **Interactive Gallery Optimized**: Klik gambar di gallery → URL berubah ke `#thumbnail=X` → gambar utama berubah secara instant dengan smooth transition
+- **Visual Feedback Enhanced**: Border biru pada gambar aktif di gallery untuk indikator visual yang jelas dan konsisten
+- **Responsive Gallery Perfected**: Gallery horizontal slider di mobile/tablet, grid layout di desktop dengan touch-friendly navigation
+- **SEO Friendly URLs Finalized**: Hash parameters tidak mempengaruhi SEO dan dapat di-share/bookmark dengan reliability tinggi
+- **Enhanced User Experience**: Perubahan gambar yang smooth dan responsif di semua device dengan performance optimal
+- **Technical Improvements**: DOM manipulation yang robust dengan penghapusan srcset conflicts dan enhanced error handling
+- **Debugging Features Complete**: Console logging untuk troubleshooting dan development dengan comprehensive error reporting
+- **Documentation Updated**: README dan changelog diperbarui dengan comprehensive documentation untuk AI dan developer understanding
+- **Backward Compatibility Maintained**: Tetap kompatibel dengan semua fitur sebelumnya tanpa breaking changes
+
 ### Version 1.3.5
 - **AJAX Gallery System**: Implementasi gallery interaktif dengan AJAX untuk perubahan gambar utama tanpa reload halaman
 - **Hash URL Support**: URL dengan parameter `#thumbnail=X` untuk direct access ke gambar tertentu (contoh: `#thumbnail=4`)
