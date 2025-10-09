@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.3.6
+ * Version: 1.3.7
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.3.6');
+define('SPS_PLUGIN_VERSION', '1.3.7');
 
 /**
  * Class Simple_Product_Showcase
@@ -1197,17 +1197,31 @@ class Simple_Product_Showcase {
             }
             
             .sps-gallery-item {
-                flex: 0 0 auto;
-                width: 120px;
-                min-width: 120px;
+                flex: 0 0 auto !important;
+                width: 100px !important;
+                min-width: 100px !important;
+            }
+            
+            .sps-gallery-item .sps-gallery-image {
+                width: 100px !important;
+                height: 100px !important;
+                max-width: 100px !important;
+                max-height: 100px !important;
             }
             
         }
 
         @media (max-width: 768px) {
             .sps-gallery-item {
-                width: 100px;
-                min-width: 100px;
+                width: 80px !important;
+                min-width: 80px !important;
+            }
+            
+            .sps-gallery-item .sps-gallery-image {
+                width: 80px !important;
+                height: 80px !important;
+                max-width: 80px !important;
+                max-height: 80px !important;
             }
         }
 

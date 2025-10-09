@@ -375,6 +375,16 @@ simple-product-showcase/
 
 ## 🔄 Changelog
 
+### Version 1.3.7
+- **Gallery Image Size Optimization**: Optimasi ukuran gambar gallery untuk mobile dan tablet dengan ukuran yang lebih proporsional
+- **Mobile Gallery Enhancement**: Gallery images di mobile (80px) dan tablet (100px) dengan ukuran yang ideal dan mudah di-tap
+- **CSS Override Enhancement**: Menambahkan `!important` pada CSS gallery untuk memastikan ukuran yang konsisten
+- **Responsive Gallery Perfected**: Gallery horizontal slider dengan ukuran yang sesuai untuk setiap device
+- **Visual Balance Improved**: Ukuran gallery yang tidak terlalu kecil maupun terlalu besar, perfect untuk user experience
+- **Touch-Friendly Navigation**: Gallery images dengan ukuran optimal untuk navigasi touch di mobile dan tablet
+- **Cross-Device Consistency**: Ukuran gallery yang konsisten dan proporsional di semua device
+- **User Experience Enhanced**: Gallery navigation yang smooth dan responsive dengan visual feedback yang jelas
+
 ### Version 1.3.6
 - **AJAX Gallery System Complete**: Implementasi lengkap gallery interaktif dengan AJAX untuk perubahan gambar utama tanpa reload halaman
 - **Hash URL Support Finalized**: URL dengan parameter `#thumbnail=X` untuk direct access ke gambar tertentu dengan reliability tinggi

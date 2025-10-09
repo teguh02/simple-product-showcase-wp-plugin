@@ -190,17 +190,31 @@ get_header(); ?>
     }
     
     .sps-gallery-item {
-        flex: 0 0 auto;
-        width: 120px;
-        min-width: 120px;
+        flex: 0 0 auto !important;
+        width: 100px !important;
+        min-width: 100px !important;
+    }
+    
+    .sps-gallery-item .sps-gallery-image {
+        width: 100px !important;
+        height: 100px !important;
+        max-width: 100px !important;
+        max-height: 100px !important;
     }
     
 }
 
 @media (max-width: 768px) {
     .sps-gallery-item {
-        width: 100px;
-        min-width: 100px;
+        width: 80px !important;
+        min-width: 80px !important;
+    }
+    
+    .sps-gallery-item .sps-gallery-image {
+        width: 80px !important;
+        height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
     }
 }
 
