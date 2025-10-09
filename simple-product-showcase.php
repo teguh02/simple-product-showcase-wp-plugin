@@ -106,6 +106,10 @@ class Simple_Product_Showcase {
         
         // Initialize meta box class
         SPS_Metabox::get_instance();
+        
+        // Register AJAX actions
+        add_action('wp_ajax_get_gallery_image', array($this, 'ajax_get_gallery_image'));
+        add_action('wp_ajax_nopriv_get_gallery_image', array($this, 'ajax_get_gallery_image'));
     }
     
     /**
@@ -1048,39 +1052,11 @@ class Simple_Product_Showcase {
                 return '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
                 
             case 'image':
-                // Get thumbnail parameter from URL
-                $thumbnail_param = isset($_GET['thumbnail']) ? intval($_GET['thumbnail']) : 0;
-                
-                // If thumbnail parameter exists and is valid, get specific image from gallery
-                if ($thumbnail_param > 0) {
-                    $gallery_images = array();
-                    
-                    // Add thumbnail as first image
-                    $thumbnail_id = get_post_thumbnail_id($product->ID);
-                    if ($thumbnail_id) {
-                        $gallery_images[] = $thumbnail_id;
-                    }
-                    
-                    // Get gallery images from meta
-                    for ($i = 1; $i <= 5; $i++) {
-                        $image_id = get_post_meta($product->ID, '_sps_gallery_' . $i, true);
-                        if ($image_id) {
-                            $gallery_images[] = $image_id;
-                        }
-                    }
-                    
-                    // Check if thumbnail parameter is within valid range
-                    if ($thumbnail_param <= count($gallery_images)) {
-                        $image_id = $gallery_images[$thumbnail_param - 1]; // Convert to 0-based index
-                        return '<div class="sps-product-detail-image">' . wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-main-image')) . '</div>';
-                    }
-                }
-                
-                // Default: show thumbnail or first available image
+                // Default: show thumbnail or first available image (PHP loads this initially)
                 if (has_post_thumbnail($product->ID)) {
-                    return '<div class="sps-product-detail-image">' . get_the_post_thumbnail($product->ID, 'large', array('class' => 'sps-main-image')) . '</div>';
+                    return '<div class="sps-product-detail-image" id="sps-main-image-container">' . get_the_post_thumbnail($product->ID, 'large', array('class' => 'sps-main-image')) . '</div>';
                 }
-                return '<div class="sps-product-detail-image"><p>No image available.</p></div>';
+                return '<div class="sps-product-detail-image" id="sps-main-image-container"><p>No image available.</p></div>';
                 
             case 'description':
                 $content = apply_filters('the_content', $product->post_content);
@@ -1421,29 +1397,21 @@ class Simple_Product_Showcase {
             border-radius: 5px;
         }
         </style>
-        <div class="sps-product-gallery sps-gallery-<?php echo esc_attr($style); ?>">
+        <div class="sps-product-gallery sps-gallery-<?php echo esc_attr($style); ?>" data-product-id="<?php echo esc_attr($product->ID); ?>">
             <?php 
-            // Get current thumbnail parameter
-            $current_thumbnail = isset($_GET['thumbnail']) ? intval($_GET['thumbnail']) : 1;
-            
             foreach ($gallery_images as $index => $image_id) : 
                 $thumbnail_number = $index + 1; // Start from 1
-                $current_url = $_SERVER['REQUEST_URI'];
-                $click_url = add_query_arg('thumbnail', $thumbnail_number, $current_url);
-                
-                // Check if this image is currently active
-                $is_active = ($thumbnail_number == $current_thumbnail);
-                $active_class = $is_active ? ' active' : '';
+                $active_class = ($thumbnail_number == 1) ? ' active' : ''; // First image is active by default
             ?>
                 <?php if ($style === 'slider') : ?>
                     <div class="sps-gallery-slide">
-                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link<?php echo $active_class; ?>">
+                        <a href="#thumbnail=<?php echo $thumbnail_number; ?>" class="sps-gallery-image-link<?php echo $active_class; ?>" data-thumbnail="<?php echo $thumbnail_number; ?>" data-image-id="<?php echo esc_attr($image_id); ?>">
                             <?php echo wp_get_attachment_image($image_id, 'large', false, array('class' => 'sps-gallery-image')); ?>
                         </a>
                     </div>
                 <?php else : ?>
                     <div class="sps-gallery-item">
-                        <a href="<?php echo esc_url($click_url); ?>" class="sps-gallery-image-link<?php echo $active_class; ?>">
+                        <a href="#thumbnail=<?php echo $thumbnail_number; ?>" class="sps-gallery-image-link<?php echo $active_class; ?>" data-thumbnail="<?php echo $thumbnail_number; ?>" data-image-id="<?php echo esc_attr($image_id); ?>">
                             <?php echo wp_get_attachment_image($image_id, 'medium', false, array('class' => 'sps-gallery-image')); ?>
                         </a>
                     </div>
@@ -1523,6 +1491,154 @@ class Simple_Product_Showcase {
         });
         </script>
         <?php endif; ?>
+        
+        <script>
+        // AJAX Gallery Image Changer (Fallback)
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryLinks = document.querySelectorAll('.sps-gallery-image-link');
+            const mainImageContainer = document.getElementById('sps-main-image-container');
+            
+            // Check for hash parameter on page load
+            checkHashParameter();
+            
+            // Listen for hash changes
+            window.addEventListener('hashchange', checkHashParameter);
+            
+            // Add click event listeners to gallery images
+            galleryLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const thumbnailNumber = this.getAttribute('data-thumbnail');
+                    const imageId = this.getAttribute('data-image-id');
+                    
+                    // Update URL hash
+                    window.location.hash = 'thumbnail=' + thumbnailNumber;
+                    
+                    // Update active state
+                    updateActiveGalleryImage(thumbnailNumber);
+                    
+                    // Change main image via AJAX
+                    changeMainImage(imageId);
+                });
+            });
+            
+            function checkHashParameter() {
+                const hash = window.location.hash;
+                const thumbnailMatch = hash.match(/thumbnail=(\d+)/);
+                
+                if (thumbnailMatch) {
+                    const thumbnailNumber = parseInt(thumbnailMatch[1]);
+                    const galleryLink = document.querySelector(`[data-thumbnail="${thumbnailNumber}"]`);
+                    
+                    if (galleryLink) {
+                        const imageId = galleryLink.getAttribute('data-image-id');
+                        
+                        // Update active state
+                        updateActiveGalleryImage(thumbnailNumber);
+                        
+                        // Change main image
+                        changeMainImage(imageId);
+                    }
+                } else {
+                    // No hash parameter, show first image (default)
+                    updateActiveGalleryImage(1);
+                    // Main image is already loaded by PHP, no need to change
+                }
+            }
+            
+            function updateActiveGalleryImage(thumbnailNumber) {
+                // Remove active class from all gallery links
+                galleryLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                });
+                
+                // Add active class to clicked image
+                const activeLink = document.querySelector(`[data-thumbnail="${thumbnailNumber}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            }
+            
+            function changeMainImage(imageId) {
+                if (!mainImageContainer || !imageId) {
+                    console.log('Missing mainImageContainer or imageId:', mainImageContainer, imageId);
+                    return;
+                }
+                
+                console.log('Changing main image for imageId:', imageId);
+                
+                // Create AJAX request to get image URL
+                const xhr = new XMLHttpRequest();
+                const nonce = '<?php echo wp_create_nonce('sps_gallery_image_nonce'); ?>';
+                const ajaxUrl = '<?php echo admin_url('admin-ajax.php'); ?>?action=get_gallery_image&image_id=' + imageId + '&nonce=' + nonce;
+                
+                console.log('AJAX URL:', ajaxUrl);
+                
+                xhr.open('GET', ajaxUrl, true);
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log('AJAX Response:', xhr.responseText);
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            console.log('Parsed response:', response);
+                            
+                            if (response.success && response.data.image_url) {
+                                console.log('Updating image with URL:', response.data.image_url);
+                                
+                                // Find main image element
+                                const mainImage = mainImageContainer.querySelector('.sps-main-image');
+                                console.log('Found main image element:', mainImage);
+                                
+                                if (mainImage) {
+                                    // Update existing image
+                                    mainImage.src = response.data.image_url;
+                                    mainImage.alt = response.data.image_alt || '';
+                                    // Remove srcset to prevent conflicts
+                                    mainImage.removeAttribute('srcset');
+                                    mainImage.removeAttribute('sizes');
+                                    console.log('Updated existing image src to:', mainImage.src);
+                                    console.log('Removed srcset and sizes attributes');
+                                } else {
+                                    // Create new image if not exists
+                                    const newImage = document.createElement('img');
+                                    newImage.src = response.data.image_url;
+                                    newImage.alt = response.data.image_alt || '';
+                                    newImage.className = 'sps-main-image';
+                                    newImage.style.width = '100%';
+                                    newImage.style.maxWidth = '100%';
+                                    newImage.style.height = 'auto';
+                                    newImage.style.borderRadius = '8px';
+                                    newImage.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                    newImage.style.display = 'block';
+                                    newImage.style.margin = '0 auto';
+                                    
+                                    // Clear container and add new image
+                                    mainImageContainer.innerHTML = '';
+                                    mainImageContainer.appendChild(newImage);
+                                    console.log('Created new image element with src:', newImage.src);
+                                }
+                            } else {
+                                console.error('AJAX response failed:', response);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing AJAX response:', e);
+                            console.error('Raw response:', xhr.responseText);
+                        }
+                    } else if (xhr.readyState === 4) {
+                        console.error('AJAX request failed with status:', xhr.status);
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    console.error('AJAX request error');
+                };
+                
+                xhr.send();
+            }
+        });
+        </script>
         
         <?php
         return ob_get_clean();
@@ -1917,6 +2033,35 @@ class Simple_Product_Showcase {
             esc_url($whatsapp_url),
             __('Contact via WhatsApp', 'simple-product-showcase')
         );
+    }
+    
+    /**
+     * AJAX handler untuk mendapatkan URL gambar gallery
+     */
+    public function ajax_get_gallery_image() {
+        // Verify nonce for security
+        if (!wp_verify_nonce($_GET['nonce'], 'sps_gallery_image_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        $image_id = intval($_GET['image_id']);
+        
+        if (!$image_id) {
+            wp_send_json_error('Invalid image ID');
+        }
+        
+        // Get image URL and alt text
+        $image_url = wp_get_attachment_image_url($image_id, 'large');
+        $image_alt = get_post_meta($image_id, '_wp_attachment_image_alt', true);
+        
+        if (!$image_url) {
+            wp_send_json_error('Image not found');
+        }
+        
+        wp_send_json_success(array(
+            'image_url' => $image_url,
+            'image_alt' => $image_alt
+        ));
     }
     
 }
