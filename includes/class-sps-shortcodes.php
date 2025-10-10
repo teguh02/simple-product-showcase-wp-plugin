@@ -195,6 +195,58 @@ class SPS_Shortcodes {
         .sps-detail-button:active {
             transform: translateY(0);
         }
+        /* Tablet specific improvements */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .sps-products-grid {
+                grid-template-columns: repeat(<?php echo min($columns, 3); ?>, 1fr);
+                gap: 20px;
+            }
+            .sps-product-item {
+                padding: 20px;
+                min-height: 280px;
+            }
+            .sps-product-title {
+                font-size: 15px;
+                line-height: 1.4;
+                margin-bottom: 15px;
+                min-height: 42px;
+            }
+            .sps-product-actions {
+                margin-top: 15px;
+            }
+            .sps-detail-button {
+                padding: 12px 20px;
+                font-size: 13px;
+                min-width: 90px;
+            }
+        }
+        
+        /* Smaller tablet improvements */
+        @media (max-width: 992px) and (min-width: 769px) {
+            .sps-products-grid {
+                grid-template-columns: repeat(<?php echo min($columns, 2); ?>, 1fr);
+                gap: 25px;
+            }
+            .sps-product-item {
+                padding: 18px;
+                min-height: 260px;
+            }
+            .sps-product-title {
+                font-size: 14px;
+                line-height: 1.3;
+                margin-bottom: 12px;
+                min-height: 36px;
+            }
+            .sps-product-actions {
+                margin-top: 12px;
+            }
+            .sps-detail-button {
+                padding: 10px 18px;
+                font-size: 12px;
+                min-width: 85px;
+            }
+        }
+
         @media (max-width: 768px) {
             .sps-products-grid {
                 grid-template-columns: repeat(<?php echo min($columns, 2); ?>, 1fr);
