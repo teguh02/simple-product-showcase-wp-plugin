@@ -375,6 +375,17 @@ simple-product-showcase/
 
 ## 🔄 Changelog
 
+### Version 1.3.9
+- **Smart Gallery Display**: Gallery HTML element disembunyikan otomatis ketika hanya ada 1 gambar (thumbnail saja)
+- **Enhanced User Experience**: Tidak lagi menampilkan box gallery kosong untuk produk dengan 1 gambar
+- **Clean Product Layout**: Layout produk lebih bersih dan professional untuk kasus single image
+- **Conditional Gallery Rendering**: Gallery hanya ditampilkan ketika ada multiple images (2+ gambar)
+- **Improved Visual Design**: Menghilangkan elemen visual yang tidak perlu dan mengganggu
+- **Backward Compatibility**: Semua fitur gallery AJAX dan multiple images tetap berfungsi normal
+- **Consistent Behavior**: Logic yang sama diterapkan di main shortcode class dan fallback methods
+- **Smart Image Detection**: Otomatis mendeteksi jumlah gambar dan menyesuaikan tampilan gallery
+- **Production Ready**: Optimasi UI/UX untuk berbagai skenario penggunaan produk
+
 ### Version 1.3.8
 - **Tablet Responsiveness Optimization**: Optimasi responsivitas untuk perangkat tablet dengan breakpoint yang lebih granular dan spacing yang optimal
 - **Enhanced Tablet Breakpoints**: Breakpoint khusus untuk tablet besar (1024px) dan tablet kecil (992px) untuk layout yang lebih proporsional

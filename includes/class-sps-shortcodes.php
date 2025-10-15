@@ -60,8 +60,8 @@ class SPS_Shortcodes {
             'columns' => '3',
             'category' => '',
             'limit' => '-1',
-            'orderby' => 'date',
-            'order' => 'DESC',
+            'orderby' => 'title',
+            'order' => 'ASC',
             'show_price' => 'true',
             'show_description' => 'false',
             'show_whatsapp' => 'true'
@@ -457,6 +457,11 @@ class SPS_Shortcodes {
         
         if (empty($gallery_images)) {
             return '<div class="sps-product-gallery-empty"><p>' . __('No gallery images available.', 'simple-product-showcase') . '</p></div>';
+        }
+        
+        // If only thumbnail exists (1 image), don't show gallery
+        if (count($gallery_images) == 1) {
+            return '';
         }
         
         ob_start();

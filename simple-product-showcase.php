@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.3.8
+ * Version: 1.3.9
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.3.8');
+define('SPS_PLUGIN_VERSION', '1.3.9');
 
 /**
  * Class Simple_Product_Showcase
@@ -841,8 +841,8 @@ class Simple_Product_Showcase {
             'columns' => '3',
             'category' => '',
             'limit' => '-1',
-            'orderby' => 'date',
-            'order' => 'DESC',
+            'orderby' => 'title',
+            'order' => 'ASC',
             'show_price' => 'true',
             'show_description' => 'true',
             'show_whatsapp' => 'true'
@@ -1206,6 +1206,11 @@ class Simple_Product_Showcase {
         
         if (empty($gallery_images)) {
             return '<div class="sps-product-gallery-empty"><p>No gallery images available.</p></div>';
+        }
+        
+        // If only thumbnail exists (1 image), don't show gallery
+        if (count($gallery_images) == 1) {
+            return '';
         }
         
         ob_start();
@@ -1970,8 +1975,8 @@ class Simple_Product_Showcase {
             'columns' => '3',
             'category' => '',
             'limit' => '-1',
-            'orderby' => 'date',
-            'order' => 'DESC',
+            'orderby' => 'title',
+            'order' => 'ASC',
             'show_price' => 'true',
             'show_description' => 'true',
             'show_whatsapp' => 'true'
