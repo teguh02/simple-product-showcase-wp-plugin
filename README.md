@@ -375,6 +375,17 @@ simple-product-showcase/
 
 ## 🔄 Changelog
 
+### Version 1.4.0
+- **Enhanced Gallery Logic**: Updated gallery display logic to hide gallery when ≤2 images (thumbnail + 1 gallery) and show when ≥3 images
+- **WhatsApp Button CSS Fix**: Fixed WhatsApp button CSS breaking when gallery shortcode is missing or no gallery images exist
+- **Improved Gallery Threshold**: Gallery now hides for 1-2 images and shows for 3+ images for better user experience
+- **Independent WhatsApp CSS**: WhatsApp button CSS now loads independently from gallery, preventing styling issues
+- **Consistent Button Styling**: WhatsApp buttons maintain proper styling regardless of gallery presence
+- **Better Visual Hierarchy**: Cleaner product layout with smarter gallery display logic
+- **Enhanced User Experience**: No more broken WhatsApp buttons when gallery is not present
+- **Smart Gallery Detection**: Automatic detection of image count with appropriate gallery display
+- **Production Ready**: Robust CSS loading system for consistent button appearance
+
 ### Version 1.3.9
 - **Smart Gallery Display**: Gallery HTML element disembunyikan otomatis ketika hanya ada 1 gambar (thumbnail saja)
 - **Enhanced User Experience**: Tidak lagi menampilkan box gallery kosong untuk produk dengan 1 gambar

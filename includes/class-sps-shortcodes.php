@@ -459,8 +459,8 @@ class SPS_Shortcodes {
             return '<div class="sps-product-gallery-empty"><p>' . __('No gallery images available.', 'simple-product-showcase') . '</p></div>';
         }
         
-        // If only thumbnail exists (1 image), don't show gallery
-        if (count($gallery_images) == 1) {
+        // If only thumbnail exists (1 image) or thumbnail + 1 gallery (2 images), don't show gallery
+        if (count($gallery_images) <= 2) {
             return '';
         }
         
@@ -795,17 +795,60 @@ class SPS_Shortcodes {
         // Get button text from settings
         $button_text = get_option('sps_whatsapp_button_text', 'Tanya Produk Ini');
         
-        return sprintf(
-            '<div class="sps-product-whatsapp">
-                <a href="%s" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
-                    <img src="%s" alt="WhatsApp" class="sps-whatsapp-icon" />
-                    %s
-                </a>
-            </div>',
-            esc_url($whatsapp_url),
-            esc_url(plugin_dir_url(dirname(__FILE__)) . 'assets/img/whatsapp.png'),
-            esc_html($button_text)
-        );
+        ob_start();
+        ?>
+        <style>
+        .sps-product-whatsapp {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .sps-whatsapp-detail-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #25D366; /* WhatsApp green */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .sps-whatsapp-detail-button:hover {
+            background: #128C7E; /* Darker green on hover */
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        .sps-whatsapp-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+            display: inline-block;
+            filter: invert(1); /* Invert black icon to white */
+        }
+        .sps-whatsapp-error {
+            color: #d63638;
+            background: #ffeaea;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        </style>
+        <div class="sps-product-whatsapp">
+            <a href="<?php echo esc_url($whatsapp_url); ?>" target="_blank" rel="noopener" class="sps-whatsapp-detail-button">
+                <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__)) . 'assets/img/whatsapp.png'); ?>" alt="WhatsApp" class="sps-whatsapp-icon" />
+                <?php echo esc_html($button_text); ?>
+            </a>
+        </div>
+        <?php
+        return ob_get_clean();
     }
     
     /**
