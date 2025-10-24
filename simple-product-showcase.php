@@ -118,12 +118,15 @@ class Simple_Product_Showcase {
     private function load_dependencies() {
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-init.php';
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-cpt.php';
-        require_once SPS_PLUGIN_PATH . 'includes/class-sps-settings.php';
+        // require_once SPS_PLUGIN_PATH . 'includes/class-sps-settings.php'; // BACKUP: Uncomment if Configuration page has issues
+        require_once SPS_PLUGIN_PATH . 'includes/class-sps-configuration.php'; // NEW: Button Configuration Page
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-shortcodes.php';
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-frontend.php';
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-duplicate.php';
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-persistent.php';
         require_once SPS_PLUGIN_PATH . 'includes/class-sps-metabox.php';
+        
+        // DEBUG: Removed debug-settings.php - no longer needed
     }
     
     /**
@@ -279,6 +282,41 @@ class Simple_Product_Showcase {
             if (isset($_POST['sps_custom_detail_page'])) {
                 update_option('sps_custom_detail_page', intval($_POST['sps_custom_detail_page']));
             }
+            
+            // Save button settings
+            $button_ids = array('main', 'custom1', 'custom2');
+            foreach ($button_ids as $button_id) {
+                // Save boolean values
+                update_option('sps_' . $button_id . '_is_whatsapp', isset($_POST['sps_' . $button_id . '_is_whatsapp']) ? (bool) $_POST['sps_' . $button_id . '_is_whatsapp'] : false);
+                update_option('sps_' . $button_id . '_visible', isset($_POST['sps_' . $button_id . '_visible']) ? (bool) $_POST['sps_' . $button_id . '_visible'] : false);
+                
+                // Save text values
+                if (isset($_POST['sps_' . $button_id . '_text'])) {
+                    update_option('sps_' . $button_id . '_text', sanitize_text_field($_POST['sps_' . $button_id . '_text']));
+                }
+                
+                // Save URL values
+                if (isset($_POST['sps_' . $button_id . '_icon'])) {
+                    update_option('sps_' . $button_id . '_icon', esc_url_raw($_POST['sps_' . $button_id . '_icon']));
+                }
+                if (isset($_POST['sps_' . $button_id . '_url'])) {
+                    update_option('sps_' . $button_id . '_url', esc_url_raw($_POST['sps_' . $button_id . '_url']));
+                }
+                
+                // Save target
+                if (isset($_POST['sps_' . $button_id . '_target'])) {
+                    update_option('sps_' . $button_id . '_target', sanitize_text_field($_POST['sps_' . $button_id . '_target']));
+                }
+                
+                // Save colors
+                if (isset($_POST['sps_' . $button_id . '_background_color'])) {
+                    update_option('sps_' . $button_id . '_background_color', sanitize_hex_color($_POST['sps_' . $button_id . '_background_color']));
+                }
+                if (isset($_POST['sps_' . $button_id . '_text_color'])) {
+                    update_option('sps_' . $button_id . '_text_color', sanitize_hex_color($_POST['sps_' . $button_id . '_text_color']));
+                }
+            }
+            
             echo '<div class="notice notice-success"><p>Settings saved successfully!</p></div>';
         }
         
@@ -1120,6 +1158,9 @@ class Simple_Product_Showcase {
             case 'whatsapp':
                 return $this->render_whatsapp_fallback($product);
                 
+            case 'button':
+                return $this->render_all_buttons_fallback($product);
+                
             default:
                 return '<p class="sps-invalid-section">Invalid section: ' . esc_html($atts['section']) . '</p>';
         }
@@ -1849,6 +1890,174 @@ class Simple_Product_Showcase {
         </div>
         <?php
         return ob_get_clean();
+    }
+    
+    /**
+     * Render all buttons fallback (WhatsApp + Custom 1 + Custom 2)
+     */
+    private function render_all_buttons_fallback($product) {
+        $buttons = array();
+        
+        // Main button (WhatsApp or Custom)
+        $main_is_whatsapp = get_option('sps_main_is_whatsapp', true);
+        $main_visible = get_option('sps_main_visible', true);
+        
+        if ($main_visible) {
+            if ($main_is_whatsapp) {
+                $buttons[] = $this->render_whatsapp_fallback($product);
+            } else {
+                $buttons[] = $this->render_custom_button_fallback($product, 'main');
+            }
+        }
+        
+        // Custom Button 1
+        $custom1_visible = get_option('sps_custom1_visible', true);
+        if ($custom1_visible) {
+            $buttons[] = $this->render_custom_button_fallback($product, 'custom1');
+        }
+        
+        // Custom Button 2
+        $custom2_visible = get_option('sps_custom2_visible', true);
+        if ($custom2_visible) {
+            $buttons[] = $this->render_custom_button_fallback($product, 'custom2');
+        }
+        
+        if (empty($buttons)) {
+            return '<p class="sps-no-buttons">No buttons configured.</p>';
+        }
+        
+        ob_start();
+        ?>
+        <style>
+        .sps-all-buttons {
+            margin: 30px 0;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sps-all-buttons .sps-button-item {
+            flex: 0 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-all-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .sps-all-buttons .sps-button-item {
+                width: 100%;
+            }
+            
+            .sps-all-buttons .sps-button-item a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        </style>
+        <div class="sps-all-buttons">
+            <?php foreach ($buttons as $button): ?>
+                <div class="sps-button-item">
+                    <?php echo $button; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Render custom button fallback
+     */
+    private function render_custom_button_fallback($product, $button_id) {
+        $button_text = get_option('sps_' . $button_id . '_text', 'Custom Button');
+        $button_icon = get_option('sps_' . $button_id . '_icon', '');
+        $button_url = get_option('sps_' . $button_id . '_url', '#');
+        $button_target = get_option('sps_' . $button_id . '_target', '_self');
+        $button_bg_color = get_option('sps_' . $button_id . '_background_color', '#007cba');
+        $button_text_color = get_option('sps_' . $button_id . '_text_color', '#ffffff');
+        
+        // Generate unique ID and class for custom styling
+        $button_class = 'sps-custom-button-' . $button_id;
+        $button_html_id = 'sps-button-' . $button_id;
+        
+        ob_start();
+        ?>
+        <style>
+        .<?php echo esc_attr($button_class); ?> {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: <?php echo esc_attr($button_bg_color); ?>;
+            color: <?php echo esc_attr($button_text_color); ?>;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 140px;
+        }
+        
+        .<?php echo esc_attr($button_class); ?>:hover {
+            background: <?php echo esc_attr($this->darken_color_fallback($button_bg_color, 10)); ?>;
+            color: <?php echo esc_attr($button_text_color); ?>;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .<?php echo esc_attr($button_class); ?> .sps-button-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .<?php echo esc_attr($button_class); ?> .sps-button-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            vertical-align: middle;
+        }
+        </style>
+        <a href="<?php echo esc_url($button_url); ?>" 
+           target="<?php echo esc_attr($button_target); ?>" 
+           rel="<?php echo ($button_target === '_blank') ? 'noopener' : ''; ?>"
+           class="<?php echo esc_attr($button_class); ?>" 
+           id="<?php echo esc_attr($button_html_id); ?>">
+            <?php if ($button_icon): ?>
+                <span class="sps-button-icon">
+                    <img src="<?php echo esc_url($button_icon); ?>" alt="<?php echo esc_attr($button_text); ?> Icon">
+                </span>
+            <?php endif; ?>
+            <span class="sps-button-text"><?php echo esc_html($button_text); ?></span>
+        </a>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Darken a hex color by percentage (fallback)
+     */
+    private function darken_color_fallback($hex, $percent) {
+        $hex = str_replace('#', '', $hex);
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        
+        $r = max(0, min(255, $r - ($r * $percent / 100)));
+        $g = max(0, min(255, $g - ($g * $percent / 100)));
+        $b = max(0, min(255, $b - ($b * $percent / 100)));
+        
+        return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
+               str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 
+               str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
     }
     
     /**

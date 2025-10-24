@@ -42,7 +42,7 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 
 | Parameter | Description | Options | Example |
 |-----------|-------------|---------|---------|
-| `section` | Which part of the product to display | `title`, `image`, `description`, `gallery`, `whatsapp` | `section="title"` |
+| `section` | Which part of the product to display | `title`, `image`, `description`, `gallery`, `whatsapp`, `button` | `section="title"` |
 | `style` | Display style based on section:<br>• Title: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel | Title: `h1`, `h2`, `h3`, `h4`, `h5`<br>Gallery: `grid`, `slider`, `carousel` | `style="h2"` or `style="slider"` |
 
 ### Available Sections:
@@ -52,6 +52,7 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 - **`description`** - Display full product description/content
 - **`gallery`** - Display up to 6 images (1 thumbnail + up to 5 gallery images) (supports grid, slider, carousel styles)
 - **`whatsapp`** - Display WhatsApp contact button
+- **`button`** - Display all configured buttons (WhatsApp + Custom 1 + Custom 2)
 
 ### Title Styles:
 
@@ -269,6 +270,11 @@ Use limit parameter to create "Featured Products" sections:
 [sps_detail_products section="whatsapp"]
 ```
 
+**Display All Buttons (WhatsApp + Custom 1 + Custom 2):**
+```
+[sps_detail_products section="button"]
+```
+
 ### Complete Product Detail Page Layout
 
 For a complete product detail page, use multiple shortcodes:
@@ -279,6 +285,7 @@ For a complete product detail page, use multiple shortcodes:
 [sps_detail_products section="description"]
 [sps_detail_products section="gallery" style="slider"]
 [sps_detail_products section="whatsapp"]
+[sps_detail_products section="button"]
 ```
 
 **Alternative Layout with H3 Title and Carousel:**

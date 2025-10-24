@@ -338,6 +338,9 @@ class SPS_Shortcodes {
             case 'whatsapp':
                 return $this->render_whatsapp_button($product);
                 
+            case 'button':
+                return $this->render_all_buttons($product);
+                
             default:
                 return '<p class="sps-invalid-section">' . sprintf(__('Invalid section: %s', 'simple-product-showcase'), esc_html($atts['section'])) . '</p>';
         }
@@ -849,6 +852,174 @@ class SPS_Shortcodes {
         </div>
         <?php
         return ob_get_clean();
+    }
+    
+    /**
+     * Render all buttons (WhatsApp + Custom 1 + Custom 2)
+     */
+    private function render_all_buttons($product) {
+        $buttons = array();
+        
+        // Main button (WhatsApp or Custom)
+        $main_is_whatsapp = get_option('sps_main_is_whatsapp', true);
+        $main_visible = get_option('sps_main_visible', true);
+        
+        if ($main_visible) {
+            if ($main_is_whatsapp) {
+                $buttons[] = $this->render_whatsapp_button($product);
+            } else {
+                $buttons[] = $this->render_custom_button($product, 'main');
+            }
+        }
+        
+        // Custom Button 1
+        $custom1_visible = get_option('sps_custom1_visible', true);
+        if ($custom1_visible) {
+            $buttons[] = $this->render_custom_button($product, 'custom1');
+        }
+        
+        // Custom Button 2
+        $custom2_visible = get_option('sps_custom2_visible', true);
+        if ($custom2_visible) {
+            $buttons[] = $this->render_custom_button($product, 'custom2');
+        }
+        
+        if (empty($buttons)) {
+            return '<p class="sps-no-buttons">' . __('No buttons configured.', 'simple-product-showcase') . '</p>';
+        }
+        
+        ob_start();
+        ?>
+        <style>
+        .sps-all-buttons {
+            margin: 30px 0;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sps-all-buttons .sps-button-item {
+            flex: 0 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-all-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .sps-all-buttons .sps-button-item {
+                width: 100%;
+            }
+            
+            .sps-all-buttons .sps-button-item a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        </style>
+        <div class="sps-all-buttons">
+            <?php foreach ($buttons as $button): ?>
+                <div class="sps-button-item">
+                    <?php echo $button; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Render custom button
+     */
+    private function render_custom_button($product, $button_id) {
+        $button_text = get_option('sps_' . $button_id . '_text', 'Custom Button');
+        $button_icon = get_option('sps_' . $button_id . '_icon', '');
+        $button_url = get_option('sps_' . $button_id . '_url', '#');
+        $button_target = get_option('sps_' . $button_id . '_target', '_self');
+        $button_bg_color = get_option('sps_' . $button_id . '_background_color', '#007cba');
+        $button_text_color = get_option('sps_' . $button_id . '_text_color', '#ffffff');
+        
+        // Generate unique ID and class for custom styling
+        $button_class = 'sps-custom-button-' . $button_id;
+        $button_html_id = 'sps-button-' . $button_id;
+        
+        ob_start();
+        ?>
+        <style>
+        .<?php echo esc_attr($button_class); ?> {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: <?php echo esc_attr($button_bg_color); ?>;
+            color: <?php echo esc_attr($button_text_color); ?>;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 140px;
+        }
+        
+        .<?php echo esc_attr($button_class); ?>:hover {
+            background: <?php echo esc_attr($this->darken_color($button_bg_color, 10)); ?>;
+            color: <?php echo esc_attr($button_text_color); ?>;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .<?php echo esc_attr($button_class); ?> .sps-button-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .<?php echo esc_attr($button_class); ?> .sps-button-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            vertical-align: middle;
+        }
+        </style>
+        <a href="<?php echo esc_url($button_url); ?>" 
+           target="<?php echo esc_attr($button_target); ?>" 
+           rel="<?php echo ($button_target === '_blank') ? 'noopener' : ''; ?>"
+           class="<?php echo esc_attr($button_class); ?>" 
+           id="<?php echo esc_attr($button_html_id); ?>">
+            <?php if ($button_icon): ?>
+                <span class="sps-button-icon">
+                    <img src="<?php echo esc_url($button_icon); ?>" alt="<?php echo esc_attr($button_text); ?> Icon">
+                </span>
+            <?php endif; ?>
+            <span class="sps-button-text"><?php echo esc_html($button_text); ?></span>
+        </a>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Darken a hex color by percentage
+     */
+    private function darken_color($hex, $percent) {
+        $hex = str_replace('#', '', $hex);
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        
+        $r = max(0, min(255, $r - ($r * $percent / 100)));
+        $g = max(0, min(255, $g - ($g * $percent / 100)));
+        $b = max(0, min(255, $b - ($b * $percent / 100)));
+        
+        return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
+               str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 
+               str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
     }
     
     /**

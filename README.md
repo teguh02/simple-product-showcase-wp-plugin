@@ -66,14 +66,22 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 ## ⚙️ Konfigurasi
 
-### Pengaturan WhatsApp
+### Pengaturan WhatsApp dan Tombol
 1. Buka **Products → Settings**
 2. Masukkan nomor WhatsApp dengan kode negara (contoh: +6281234567890)
 3. Kustomisasi pesan default dengan placeholder:
    - `{product_link}` - URL produk
    - `{product_name}` - Nama produk
 4. **Kustomisasi teks tombol WhatsApp** (contoh: "Tanya Produk Ini", "Hubungi Kami", "Chat WhatsApp")
-5. Simpan pengaturan
+5. **Konfigurasi Tombol Custom**: Atur 3 tombol (Main Button + Custom 1 + Custom 2) dengan:
+   - Visibility (tampil/sembunyi)
+   - Text customization
+   - Icon upload (PNG/JPG/SVG)
+   - URL configuration
+   - Target setting (_self/_blank)
+   - Color picker (background & text color)
+   - Live preview
+6. Simpan pengaturan
 
 ### Menambah Produk
 1. Pergi ke **Products → Add New**
@@ -104,6 +112,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 [sps_detail_products section="image"]
 [sps_detail_products section="gallery" style="slider"]
 [sps_detail_products section="whatsapp"]
+[sps_detail_products section="button"]
 
 <!-- Contoh dengan title h3 dan gallery carousel -->
 [sps_detail_products section="title" style="h3"]
