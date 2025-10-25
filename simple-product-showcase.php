@@ -1978,6 +1978,7 @@ class Simple_Product_Showcase {
     private function render_custom_button_fallback($product, $button_id) {
         $button_text = get_option('sps_' . $button_id . '_text', 'Custom Button');
         $button_icon = get_option('sps_' . $button_id . '_icon', '');
+        $button_icon_size = get_option('sps_' . $button_id . '_icon_size', 20);
         $button_url = get_option('sps_' . $button_id . '_url', '#');
         $button_target = get_option('sps_' . $button_id . '_target', '_self');
         $button_bg_color = get_option('sps_' . $button_id . '_background_color', '#007cba');
@@ -2016,15 +2017,16 @@ class Simple_Product_Showcase {
         }
         
         .<?php echo esc_attr($button_class); ?> .sps-button-icon {
-            width: 20px;
-            height: 20px;
+            width: <?php echo esc_attr($button_icon_size); ?>px;
+            height: <?php echo esc_attr($button_icon_size); ?>px;
             display: inline-block;
             vertical-align: middle;
         }
         
         .<?php echo esc_attr($button_class); ?> .sps-button-icon img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             vertical-align: middle;
         }
         </style>
@@ -2053,9 +2055,9 @@ class Simple_Product_Showcase {
         $g = hexdec(substr($hex, 2, 2));
         $b = hexdec(substr($hex, 4, 2));
         
-        $r = max(0, min(255, $r - ($r * $percent / 100)));
-        $g = max(0, min(255, $g - ($g * $percent / 100)));
-        $b = max(0, min(255, $b - ($b * $percent / 100)));
+        $r = (int) max(0, min(255, $r - ($r * $percent / 100)));
+        $g = (int) max(0, min(255, $g - ($g * $percent / 100)));
+        $b = (int) max(0, min(255, $b - ($b * $percent / 100)));
         
         return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
                str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 

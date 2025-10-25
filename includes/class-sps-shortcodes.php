@@ -945,9 +945,6 @@ class SPS_Shortcodes {
         $button_bg_color = get_option('sps_' . $button_id . '_background_color', '#007cba');
         $button_text_color = get_option('sps_' . $button_id . '_text_color', '#ffffff');
         
-        // DEBUG: Output icon size to HTML comment
-        error_log("SPS Debug - Button ID: {$button_id}, Icon Size: {$button_icon_size}");
-        
         // Generate unique ID and class for custom styling
         $button_class = 'sps-custom-button-' . $button_id;
         $button_html_id = 'sps-button-' . $button_id;
@@ -1020,9 +1017,9 @@ class SPS_Shortcodes {
         $g = hexdec(substr($hex, 2, 2));
         $b = hexdec(substr($hex, 4, 2));
         
-        $r = max(0, min(255, $r - ($r * $percent / 100)));
-        $g = max(0, min(255, $g - ($g * $percent / 100)));
-        $b = max(0, min(255, $b - ($b * $percent / 100)));
+        $r = (int) max(0, min(255, $r - ($r * $percent / 100)));
+        $g = (int) max(0, min(255, $g - ($g * $percent / 100)));
+        $b = (int) max(0, min(255, $b - ($b * $percent / 100)));
         
         return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
                str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 
