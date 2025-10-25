@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.4.0');
+define('SPS_PLUGIN_VERSION', '1.5.0');
 
 /**
  * Class Simple_Product_Showcase
@@ -242,18 +242,19 @@ class Simple_Product_Showcase {
         }
         
         // Jika Settings submenu belum ada, tambahkan fallback
-        if (!$settings_exists) {
-            add_submenu_page(
-                'edit.php?post_type=sps_product',
-                'Settings',
-                'Settings',
-                'manage_options',
-                'sps-settings',
-                array($this, 'fallback_settings_page')
-            );
-        }
+        // if (!$settings_exists) {
+        //     add_submenu_page(
+        //         'edit.php?post_type=sps_product',
+        //         'Settings',
+        //         'Settings',
+        //         'manage_options',
+        //         'sps-settings',
+        //         array($this, 'fallback_settings_page')
+        //     );
+        // }
         
-        // Tambahkan submenu Documentation
+        // REMOVED: Documentation menu - refer to SHORTCODE-DOCUMENTATION.md file instead
+        /*
         add_submenu_page(
             'edit.php?post_type=sps_product',
             'Documentation',
@@ -262,6 +263,7 @@ class Simple_Product_Showcase {
             'sps-documentation',
             array($this, 'documentation_page')
         );
+        */
     }
     
     /**
@@ -1102,7 +1104,7 @@ class Simple_Product_Showcase {
                             <p class="sps-product-title-text"><?php the_title(); ?></p>
                         </div>
                                 <?php 
-                                $detail_url = SPS_Settings::get_product_detail_url(get_the_ID());
+                                $detail_url = SPS_Configuration::get_product_detail_url(get_the_ID());
                                 ?>
                                 <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                     </div>
@@ -2061,10 +2063,11 @@ class Simple_Product_Showcase {
     }
     
     /**
-     * Initialize settings class
+     * Initialize settings class (DEPRECATED - now using Configuration)
      */
     public function init_settings_class() {
-        SPS_Settings::get_instance();
+        // Using new Configuration class instead
+        // SPS_Settings::get_instance(); // REMOVED
         
         // Force register WhatsApp button text setting
         add_option('sps_whatsapp_button_text', 'Tanya Produk Ini');

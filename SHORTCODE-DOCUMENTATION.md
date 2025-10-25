@@ -1,7 +1,25 @@
 # 📚 Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.3.0  
-**Last Updated:** 2025-09-29
+**Plugin Version:** 1.4.0  
+**Last Updated:** 2025-10-24
+
+---
+
+## 🎨 Button Configuration
+
+The plugin now features a **new Configuration page** where you can customize up to **3 buttons** for your products:
+
+### Button Types:
+1. **Main Button (WhatsApp/Custom)** - Primary action button with 2 modes:
+   - **WhatsApp Mode**: Simplified settings (text, phone number, message, colors)
+   - **Custom Mode**: Full control (text, icon, URL, target, colors)
+   
+2. **Custom Button 1** - Second action button (full customization)
+3. **Custom Button 2** - Third action button (full customization)
+
+**Access Configuration:** WordPress Admin → Products → **Configuration**
+
+---
 
 ## 🚀 Available Shortcodes
 
@@ -42,7 +60,7 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 
 | Parameter | Description | Options | Example |
 |-----------|-------------|---------|---------|
-| `section` | Which part of the product to display | `title`, `image`, `description`, `gallery`, `whatsapp`, `button` | `section="title"` |
+| `section` | Which part of the product to display | `title`, `image`, `description`, `gallery`, `button` | `section="title"` |
 | `style` | Display style based on section:<br>• Title: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel | Title: `h1`, `h2`, `h3`, `h4`, `h5`<br>Gallery: `grid`, `slider`, `carousel` | `style="h2"` or `style="slider"` |
 
 ### Available Sections:
@@ -50,6 +68,8 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 - **`title`** - Display product title as heading (supports h1, h2, h3, h4, h5 styles)
 - **`image`** - Display main product image (featured image)
 - **`description`** - Display full product description/content
+- **`gallery`** - Display product image gallery (supports grid, slider, carousel styles)
+- **`button`** - Display configured action buttons (up to 3 buttons: Main, Custom 1, Custom 2)
 - **`gallery`** - Display up to 6 images (1 thumbnail + up to 5 gallery images) (supports grid, slider, carousel styles)
 - **`whatsapp`** - Display WhatsApp contact button
 - **`button`** - Display all configured buttons (WhatsApp + Custom 1 + Custom 2)

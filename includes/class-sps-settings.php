@@ -35,17 +35,21 @@ class SPS_Settings {
     
     /**
      * Inisialisasi hooks WordPress
+     * DISABLED: Menu Settings digantikan dengan Configuration page
      */
     private function init_hooks() {
-        add_action('admin_menu', array($this, 'add_admin_menu'));
-        add_action('admin_init', array($this, 'register_settings'));
+        // COMMENTED OUT: Settings menu replaced by Configuration
+        // add_action('admin_menu', array($this, 'add_admin_menu'));
+        // add_action('admin_init', array($this, 'register_settings'));
+        
         add_filter('post_row_actions', array($this, 'modify_view_link'), 10, 2);
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         
         // Fallback: register settings immediately if admin_init already passed
-        if (did_action('admin_init')) {
-            $this->register_settings();
-        }
+        // COMMENTED OUT: Not needed for Configuration page
+        // if (did_action('admin_init')) {
+        //     $this->register_settings();
+        // }
     }
     
     /**

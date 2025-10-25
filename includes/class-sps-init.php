@@ -77,13 +77,13 @@ class SPS_Init {
      * Inisialisasi admin menu
      */
     public function init_admin_menu() {
-        // Pastikan class sudah loaded
-        if (class_exists('SPS_Settings')) {
-            SPS_Settings::get_instance();
+        // Load Configuration page (replaced old Settings)
+        if (class_exists('SPS_Configuration')) {
+            SPS_Configuration::get_instance();
         } else {
             // Fallback: load class manual jika belum loaded
-            require_once SPS_PLUGIN_PATH . 'includes/class-sps-settings.php';
-            SPS_Settings::get_instance();
+            require_once SPS_PLUGIN_PATH . 'includes/class-sps-configuration.php';
+            SPS_Configuration::get_instance();
         }
     }
     

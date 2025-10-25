@@ -499,6 +499,27 @@ class SPS_Configuration {
     }
     
     /**
+     * Get product detail URL based on settings (static method for backward compatibility)
+     */
+    public static function get_product_detail_url($product_id) {
+        $detail_mode = get_option('sps_detail_page_mode', 'default');
+
+        if ($detail_mode === 'custom') {
+            $custom_page_id = get_option('sps_custom_detail_page', 0);
+            if ($custom_page_id) {
+                $product = get_post($product_id);
+                if ($product && $product->post_type === 'sps_product') {
+                    $page_url = get_permalink($custom_page_id);
+                    return add_query_arg('product', $product->post_name, $page_url);
+                }
+            }
+        }
+
+        // Default: use single product permalink
+        return get_permalink($product_id);
+    }
+    
+    /**
      * Save configuration
      */
     private function save_configuration() {
