@@ -989,8 +989,9 @@ class SPS_Shortcodes {
         }
         
         .<?php echo esc_attr($button_class); ?> .sps-button-icon img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             vertical-align: middle;
         }
         </style>
