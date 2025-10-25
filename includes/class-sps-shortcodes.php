@@ -770,6 +770,7 @@ class SPS_Shortcodes {
      */
     private function render_whatsapp_button($product) {
         $whatsapp_number = get_option('sps_whatsapp_number', '');
+        $button_icon_size = get_option('sps_main_icon_size', 20);
         
         if (empty($whatsapp_number)) {
             return '<p class="sps-whatsapp-error">' . __('WhatsApp number not configured.', 'simple-product-showcase') . '</p>';
@@ -828,8 +829,8 @@ class SPS_Shortcodes {
             box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
         }
         .sps-whatsapp-icon {
-            width: 20px;
-            height: 20px;
+            width: <?php echo esc_attr($button_icon_size); ?>px;
+            height: <?php echo esc_attr($button_icon_size); ?>px;
             margin-right: 8px;
             vertical-align: middle;
             display: inline-block;
