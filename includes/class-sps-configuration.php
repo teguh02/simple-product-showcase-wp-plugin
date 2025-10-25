@@ -436,16 +436,6 @@ class SPS_Configuration {
                     <input type="text" name="sps_<?php echo esc_attr($button_id); ?>_text_color" value="<?php echo esc_attr($text_color); ?>" class="sps-color-picker">
                 </div>
             <?php endif; ?>
-            
-            <div class="sps-form-row">
-                <label><?php _e('Preview:', 'simple-product-showcase'); ?></label>
-                <a href="#" class="button" style="background-color: <?php echo esc_attr($bg_color); ?>; color: <?php echo esc_attr($text_color); ?>; border: none; display: inline-flex; align-items: center; gap: 8px;">
-                    <?php if ($icon && (!$is_main_button || $main_mode === 'custom')): ?>
-                        <img src="<?php echo esc_url($icon); ?>" style="width: 20px; height: 20px;">
-                    <?php endif; ?>
-                    <?php echo $text ? esc_html($text) : __('Button Preview', 'simple-product-showcase'); ?>
-                </a>
-            </div>
         </div>
         <?php
     }
