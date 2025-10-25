@@ -1,61 +1,134 @@
 # Simple Product Showcase
 
-Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
+**Version:** 1.5.0  
+**Author:** Teguh Rijanandi  
+**License:** GPL v2 or later  
+**Requires:** WordPress 5.0+  
+**Tested up to:** WordPress 6.4  
+
+Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran. Plugin ini fokus pada showcase produk dengan 3 tombol action yang dapat dikustomisasi penuh (Main Button dengan mode WhatsApp/Custom, Custom Button 1, Custom Button 2).
+
+---
 
 ## 📋 Deskripsi
 
 Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
-- Menambahkan dan mengelola produk dengan mudah
-- Menampilkan produk dalam grid yang responsif
-- Mengintegrasikan tombol WhatsApp untuk setiap produk
-- Menggunakan shortcode untuk menampilkan produk di halaman manapun
-- Mengorganisir produk dengan kategori
-- Menambahkan hingga 5 gambar gallery untuk setiap produk (ditambah 1 thumbnail = total 6 gambar)
-- **AJAX Gallery**: Interaktif gallery dengan perubahan gambar utama tanpa reload halaman
-- **Hash URL Support**: URL dengan parameter `#thumbnail=X` untuk direct access ke gambar tertentu
-- Duplikasi produk dengan mudah
-- Data produk tetap tersimpan meskipun plugin dinonaktifkan
+- Menambahkan dan mengelola produk dengan Custom Post Type (`sps_product`)
+- Menampilkan produk dalam grid responsif dengan berbagai layout options
+- Mengintegrasikan **3 tombol custom** untuk setiap produk:
+  - **Main Button** dengan 2 mode (WhatsApp Mode atau Custom Mode)
+  - **Custom Button 1** dengan full customization
+  - **Custom Button 2** dengan full customization
+- Menggunakan shortcode `[sps_products]` dan `[sps_detail_products]` untuk menampilkan produk
+- Mengorganisir produk dengan kategori taksonomi (`sps_product_category`)
+- Menambahkan hingga **5 gambar gallery** untuk setiap produk (+ 1 thumbnail = total 6 gambar)
+- **AJAX Gallery Interaktif**: Perubahan gambar utama tanpa reload halaman dengan hash URL support
+- Duplikasi produk dengan satu klik untuk mempercepat workflow
+- **Data persistence**: Data produk tetap tersimpan meskipun plugin dinonaktifkan
+
+---
 
 ## ✨ Fitur Utama
 
 ### 🛍️ Manajemen Produk
-- Custom Post Type untuk produk (`sps_product`)
-- Field: Nama, Deskripsi, Harga, Gambar, Kategori
-- Meta box untuk harga dan pesan WhatsApp custom
-- **Gallery Images**: Hingga 5 gambar tambahan per produk
-- Kolom custom di admin list produk
-- **Duplicate Functionality**: Duplikasi produk dengan satu klik
-- **Persistent Data**: Data tetap tersimpan meskipun plugin dinonaktifkan
+- **Custom Post Type** `sps_product` untuk produk dengan full WordPress admin UI
+- **Fields**: Title, Content (description), Featured Image (thumbnail), Custom Meta Fields
+- **Meta Box Harga**: Input field untuk harga produk (disimpan sebagai `_sps_product_price`)
+- **Meta Box Gallery**: Upload hingga 5 gambar tambahan per produk (disimpan sebagai `_sps_gallery_1` sampai `_sps_gallery_5`)
+- **Kolom Custom** di admin list: harga, kategori, featured image untuk quick overview
+- **Duplicate Functionality**: Tombol "Duplicate" di quick actions untuk clone produk
+- **Persistent Data**: Data tetap di database meskipun plugin dinonaktifkan (soft uninstall)
 
-### 📱 Integrasi WhatsApp
-- Pengaturan nomor WhatsApp global
-- Tombol WhatsApp di setiap produk
-- Pesan default yang dapat dikustomisasi
-- Placeholder untuk link produk dan nama produk
-- Pesan custom per produk (opsional)
-- **Teks tombol WhatsApp yang dapat dikustomisasi**
+### 🎯 Sistem 3 Tombol Custom (Button Configuration)
+**Lokasi**: `Products → Configuration` (menu admin baru di version 1.5.0)
+
+#### Main Button (Mode Selector)
+- **WhatsApp Mode** (Simplified):
+  - Button Text: Teks tombol (default: "Tanya Produk")
+  - WhatsApp Number: Nomor WhatsApp tujuan dengan kode negara
+  - WhatsApp Message: Template pesan dengan placeholders `{product_name}` dan `{product_link}`
+  - Background Color: Warna background tombol (color picker)
+  - Text Color: Warna teks tombol (color picker)
+  
+- **Custom Mode** (Full Control):
+  - Button Text: Teks tombol custom
+  - Button Icon: Upload icon PNG/JPG/SVG dengan WordPress Media Library
+  - Button URL: URL tujuan tombol (support external links)
+  - Open in: Target window (_self atau _blank)
+  - Background Color: Warna background tombol
+  - Text Color: Warna teks tombol
+
+#### Custom Button 1 & 2 (Full Customization)
+- **Show this button**: Checkbox visibility (default: hidden)
+- **Button Text**: Teks tombol bebas
+- **Button Icon**: Upload icon dengan Media Library
+- **Button URL**: URL tujuan custom
+- **Open in**: Target window setting
+- **Background Color**: Color picker untuk background
+- **Text Color**: Color picker untuk teks
+
+**Storage**: Semua settings disimpan di `wp_options` table dengan prefix `sps_`:
+- Main: `sps_main_button_mode`, `sps_main_visible`, `sps_main_text`, `sps_main_bg_color`, `sps_main_text_color`, dll
+- Custom 1: `sps_custom1_visible`, `sps_custom1_text`, `sps_custom1_icon`, `sps_custom1_url`, dll
+- Custom 2: `sps_custom2_visible`, `sps_custom2_text`, `sps_custom2_icon`, `sps_custom2_url`, dll
+
+### 📱 Detail Page Settings (Configuration)
+- **Detail Page Mode**:
+  - `default`: Gunakan template single product bawaan plugin (`single-sps_product.php`)
+  - `custom`: Redirect ke halaman custom WordPress dengan shortcode support
+- **Custom Detail Page**: Dropdown untuk memilih WordPress page tujuan
+- **URL Generation**: Static method `SPS_Configuration::get_product_detail_url($product_id)` untuk generate URL detail produk
 
 ### 🎨 Tampilan Frontend
-- Template single product yang responsif
-- Halaman archive produk dengan filter
-- Grid layout yang dapat dikustomisasi
-- Search dan filter berdasarkan kategori
-- Navigation antar produk
-- **Interactive Gallery**: Gallery dengan AJAX untuk perubahan gambar utama yang smooth
-- **Responsive Gallery**: Gallery horizontal slider di mobile/tablet, grid di desktop
-- **Visual Feedback**: Border biru pada gambar aktif di gallery
+- **Template Hierarchy**: WordPress standard dengan override support di theme
+  - `single-sps_product.php`: Detail produk (full layout dengan gallery, buttons, description)
+  - `archive-sps_product.php`: List semua produk dengan pagination
+  - `taxonomy-sps_product_category.php`: Produk filtered by category
+- **Responsive Grid Layout**: CSS Grid dengan auto-fit minmax untuk berbagai screen sizes
+- **Interactive Gallery**: AJAX-powered gallery dengan:
+  - Hash URL support (`#thumbnail=1`, `#thumbnail=2`, dst)
+  - Smooth image transition tanpa page reload
+  - Visual feedback (border biru) pada active thumbnail
+  - Horizontal slider di mobile/tablet, grid di desktop
+- **Navigation**: Prev/Next product links di single product page
 
-### 🔧 Shortcode
-- `[sps_products]` - Menampilkan semua produk dalam grid
-- `[sps_detail_products]` - Menampilkan detail produk individual
-- **10 Parameter Lengkap**: `columns`, `category`, `limit`, `orderby`, `order`, `show_price`, `show_description`, `show_whatsapp`, `show_gallery`, `gallery_style`
-- **Gallery Support**: Tampilkan gallery images dengan berbagai style (grid, slider, carousel)
-- **Auto Product Detection**: Otomatis mendeteksi produk berdasarkan URL dengan parameter `?product=` (SEO friendly)
-- **Category Filtering**: Filter otomatis berdasarkan URL parameter `?category=category_slug`
-- **Clean URLs**: URL dengan parameter `?product=` untuk SEO friendly dan reliability
-- **AJAX Gallery**: Gallery interaktif dengan perubahan gambar utama via AJAX tanpa reload halaman
-- **Hash URL Support**: URL dengan `#thumbnail=X` untuk direct access ke gambar tertentu
-- **Responsive Design**: Otomatis menyesuaikan dengan tema WordPress
+### 🔧 Shortcode System
+**Main Shortcode**: `[sps_products]`
+- Display grid produk dengan 10+ parameters
+- Support category filtering dari URL `?category=slug`
+- Auto-responsive dengan CSS Grid
+
+**Detail Shortcode**: `[sps_detail_products section="..." style="..."]`
+- Modular display untuk custom page layouts
+- Sections: `title`, `image`, `description`, `gallery`, `button`
+- Styles: Title (h1-h5), Gallery (grid/slider/carousel)
+
+### 🔌 Architecture & Code Structure
+**Main Plugin File**: `simple-product-showcase.php`
+- Bootstrap file dengan class `Simple_Product_Showcase` (Singleton pattern)
+- Registrasi activation/deactivation hooks
+- Load dependencies dari `/includes/` folder
+
+**Core Classes** (`/includes/`):
+1. `SPS_Init`: Plugin initialization coordinator
+2. `SPS_CPT`: Register Custom Post Type & Taxonomy
+3. `SPS_Configuration`: Button configuration page (NEW in v1.5.0, replaces Settings)
+4. `SPS_Settings`: Legacy settings class (commented out, backup only)
+5. `SPS_Shortcodes`: Shortcode handler untuk `[sps_products]` dan `[sps_detail_products]`
+6. `SPS_Frontend`: Template loader dan frontend rendering
+7. `SPS_Metabox`: Gallery meta box dengan WordPress Media Library integration
+8. `SPS_Duplicate`: Product duplication functionality
+9. `SPS_Persistent`: Ensure data persistence saat plugin deactivated
+
+**Assets** (`/assets/`):
+- `css/`: Frontend styles, admin styles, gallery styles
+- `js/`: AJAX gallery handler, admin scripts, color picker integration
+- `img/`: Placeholder images dan icons
+
+**Templates** (`/templates/`):
+- Override-able di theme dengan folder `simple-product-showcase/`
+
+---
 
 ## 🚀 Instalasi
 
@@ -66,7 +139,84 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 ## ⚙️ Konfigurasi
 
-### Pengaturan WhatsApp dan Tombol
+### Setup Awal (First Time)
+1. Aktifkan plugin melalui **Plugins** menu di WordPress admin
+2. Plugin akan otomatis:
+   - Register Custom Post Type `sps_product`
+   - Register Taxonomy `sps_product_category`
+   - Flush rewrite rules untuk permalink
+   - Set default options di `wp_options` table
+3. Menu **Products** akan muncul di sidebar admin
+
+### Konfigurasi 3 Tombol Custom (Button Configuration)
+**Lokasi**: `Products → Configuration`
+
+#### Setup Main Button (Pilih Mode)
+1. **WhatsApp Mode** (Simplified untuk toko online):
+   - Centang "Show this button" untuk visibility
+   - Isi "Button Text" (contoh: "Tanya Produk", "Hubungi Kami")
+   - Isi "WhatsApp Number" dengan kode negara (contoh: `+6281234567890`)
+   - Kustomisasi "WhatsApp Message Template":
+     ```
+     Hai kak, saya mau tanya tentang {product_name}. Link: {product_link}
+     ```
+   - Pilih warna background (default: `#25D366` WhatsApp green)
+   - Pilih warna text (default: `#FFFFFF` white)
+
+2. **Custom Mode** (Full control untuk website profesional):
+   - Toggle mode selector ke "Custom"
+   - Isi "Button Text" bebas
+   - Upload "Button Icon" (PNG/JPG/SVG) via Media Library
+   - Isi "Button URL" (contoh: `/contact-us/` atau `https://external-site.com`)
+   - Pilih "Open in" (_blank untuk tab baru, _self untuk tab sama)
+   - Kustomisasi warna background dan text
+
+#### Setup Custom Button 1 & 2
+1. Centang "Show this button" untuk menampilkan
+2. Isi semua field yang tersedia:
+   - Button Text: Label tombol (contoh: "Catalog PDF", "Video Tutorial")
+   - Button Icon: Upload icon (optional)
+   - Button URL: Link tujuan (internal atau external)
+   - Open in: Target window preference
+   - Background Color: Sesuaikan branding
+   - Text Color: Contrast untuk readability
+3. Klik "Save Configuration"
+
+**Database**: Settings disimpan di `wp_options` dengan prefix `sps_*`:
+```sql
+-- Contoh options yang disimpan:
+sps_main_button_mode = 'whatsapp' atau 'custom'
+sps_main_visible = '1' atau '0'
+sps_main_text = 'Tanya Produk'
+sps_main_bg_color = '#25D366'
+sps_main_text_color = '#FFFFFF'
+sps_custom1_visible = '0' -- Hidden by default
+sps_custom2_visible = '0' -- Hidden by default
+```
+
+### Setup Detail Page Settings
+1. Buka `Products → Configuration`
+2. Scroll ke bagian "Detail Page Settings"
+3. Pilih **Detail Page Mode**:
+   - **Default**: Gunakan template bawaan plugin dengan full layout
+   - **Custom**: Redirect ke page WordPress dengan shortcodes
+4. Jika pilih Custom:
+   - Pilih WordPress Page dari dropdown
+   - Tambahkan shortcodes di page editor:
+     ```
+     [sps_detail_products section="title" style="h2"]
+     [sps_detail_products section="image"]
+     [sps_detail_products section="gallery" style="slider"]
+     [sps_detail_products section="description"]
+     [sps_detail_products section="button"]
+     ```
+5. Save settings
+
+**URL Generation**: Plugin akan otomatis generate URL detail:
+- Default mode: `/product/nama-produk/` (WordPress permalink)
+- Custom mode: `/your-page/?product_id=123` (URL parameter)
+
+### Pengaturan WhatsApp (Legacy - untuk backward compatibility)
 1. Buka **Products → Settings**
 2. Masukkan nomor WhatsApp dengan kode negara (contoh: +6281234567890)
 3. Kustomisasi pesan default dengan placeholder:
@@ -83,7 +233,66 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
    - Live preview
 6. Simpan pengaturan
 
-### Menambah Produk
+### Menambah Produk Baru
+1. Buka **Products → Add New**
+2. **Title**: Nama produk (contoh: "Laptop ASUS ROG Strix G15")
+3. **Content Editor**: Deskripsi lengkap produk dengan formatting
+4. **Featured Image**: Upload gambar utama (thumbnail) - klik "Set featured image"
+5. **Product Price** (Meta Box):
+   - Isi harga tanpa simbol currency (contoh: `15000000`)
+   - Atau dengan pemisah ribuan (contoh: `15.000.000`)
+   - Currency symbol akan otomatis ditambahkan di frontend
+6. **Product Gallery** (Meta Box):
+   - Klik "Upload Image" untuk gambar 1-5
+   - Maksimal 5 gambar tambahan (+ 1 thumbnail = 6 total)
+   - Drag & drop untuk reorder
+   - Klik "Remove" untuk delete gambar
+7. **Categories**: Pilih atau buat kategori produk
+8. **Publish**: Klik tombol "Publish" untuk publikasi
+
+**Data Storage**:
+```sql
+-- wp_posts table
+post_type = 'sps_product'
+post_status = 'publish'
+post_title = 'Nama Produk'
+post_content = 'Deskripsi'
+
+-- wp_postmeta table
+meta_key = '_sps_product_price', meta_value = '15000000'
+meta_key = '_sps_gallery_1', meta_value = '123' (attachment ID)
+meta_key = '_sps_gallery_2', meta_value = '124'
+... dst sampai _sps_gallery_5
+
+-- wp_term_relationships table
+Relationship antara product dan category taxonomy
+```
+
+### Duplikasi Produk (Quick Clone)
+1. Hover produk di list **Products → All Products**
+2. Klik link **"Duplicate"** di quick actions
+3. Plugin akan:
+   - Clone semua post data (title, content, excerpt)
+   - Copy semua meta fields (price, gallery images)
+   - Copy taxonomy terms (categories)
+   - Set status sebagai 'draft' untuk review
+   - Append "(Copy)" di title untuk identifikasi
+4. Edit duplikat produk sesuai kebutuhan
+5. Publish saat siap
+
+**Technical**: Class `SPS_Duplicate` menggunakan:
+```php
+// Hook registration
+add_filter('post_row_actions', array($this, 'add_duplicate_link'))
+add_action('admin_action_sps_duplicate_product', array($this, 'duplicate_product'))
+
+// Duplication logic
+wp_insert_post() // Create new post
+copy_post_metadata() // Clone all meta
+wp_set_post_terms() // Assign categories
+```
+
+---
 1. Pergi ke **Products → Add New**
 2. Isi nama produk (title)
 3. Tambahkan deskripsi di editor
@@ -305,41 +514,262 @@ add_filter('sps_whatsapp_message', function($message, $product_id) {
 }, 10, 2);
 ```
 
-## 📁 Struktur File
+## 📁 Struktur File & Arsitektur Plugin
 
 ```
 simple-product-showcase/
-├── simple-product-showcase.php          # File utama plugin
-├── includes/                            # Class-class utama
-│   ├── class-sps-init.php              # Inisialisasi plugin
-│   ├── class-sps-cpt.php               # Custom Post Type
-│   ├── class-sps-settings.php          # Halaman settings
-│   ├── class-sps-shortcodes.php        # Shortcode handler
-│   ├── class-sps-frontend.php          # Frontend template
-│   ├── class-sps-metabox.php           # Gallery meta box
-│   ├── class-sps-duplicate.php         # Duplicate functionality
-│   └── class-sps-persistent.php        # Data persistence
-├── assets/                             # Assets (CSS & JS)
+├── simple-product-showcase.php          # 🔷 MAIN PLUGIN FILE (Bootstrap)
+│   │   - Plugin header metadata (Name, Version, Author, etc)
+│   │   - Class Simple_Product_Showcase (Singleton pattern)
+│   │   - Activation/Deactivation hooks (flush rewrite, set defaults)
+│   │   - Load all dependencies dari /includes/
+│   │   - Fallback methods untuk CPT, shortcodes, admin menu
+│   │   - Direct shortcode registration untuk reliability
+│   │
+├── includes/                             # 🔷 CORE CLASS FILES
+│   ├── class-sps-init.php               # Plugin Initialization Coordinator
+│   │   │   - Singleton class untuk init semua components
+│   │   │   - Load semua class files (CPT, Configuration, Frontend, dll)
+│   │   │   - Enqueue CSS/JS untuk frontend dan admin
+│   │   │   - Priority: Initialization → Enqueue → Component Load
+│   │   │
+│   ├── class-sps-cpt.php                # Custom Post Type & Taxonomy Registration
+│   │   │   - Register 'sps_product' post type dengan full labels
+│   │   │   - Register 'sps_product_category' taxonomy (hierarchical)
+│   │   │   - Admin columns customization (thumbnail, price, category)
+│   │   │   - Custom admin styles untuk better UX
+│   │   │
+│   ├── class-sps-configuration.php      # ⭐ Button Configuration Page (NEW v1.5.0)
+│   │   │   - Replaces old Settings class dengan improved UI
+│   │   │   - Admin menu: "Products → Configuration"
+│   │   │   - 3 Button Settings: Main (WhatsApp/Custom mode), Custom1, Custom2
+│   │   │   - Detail Page Settings (default/custom mode)
+│   │   │   - WordPress Settings API untuk form handling
+│   │   │   - Color Picker & Media Library integration
+│   │   │   - Static method: get_product_detail_url($product_id)
+│   │   │   - Save logic: validate, sanitize, update_option()
+│   │   │
+│   ├── class-sps-settings.php           # ⚠️ DEPRECATED (Backup only, not loaded)
+│   │   │   - Old settings class (commented out di main file line 121)
+│   │   │   - Kept for emergency restore jika Configuration error
+│   │   │   - Hooks commented: add_action('admin_menu') & register_settings
+│   │   │
+│   ├── class-sps-shortcodes.php         # Shortcode Handler & Rendering
+│   │   │   - [sps_products]: Grid display dengan 10+ attributes
+│   │   │   - [sps_detail_products]: Modular detail sections
+│   │   │   - Product detection: URL params (?product=, ?product_id=)
+│   │   │   - Category filtering dari URL (?category=slug)
+│   │   │   - WP_Query generation dengan tax_query support
+│   │   │   - Responsive CSS generation (inline styles)
+│   │   │   - AJAX gallery integration untuk interactive images
+│   │   │
+│   ├── class-sps-frontend.php           # Frontend Template Loader
+│   │   │   - Template hierarchy: theme override → plugin templates
+│   │   │   - Load templates: single, archive, taxonomy
+│   │   │   - Body class injection untuk styling
+│   │   │   - Enqueue frontend CSS/JS berdasarkan page type
+│   │   │
+│   ├── class-sps-metabox.php            # Gallery Meta Box & Price Field
+│   │   │   - Meta box "Product Price" dengan currency formatting
+│   │   │   - Meta box "Product Gallery" dengan 5 upload slots
+│   │   │   - WordPress Media Library integration
+│   │   │   - AJAX upload & remove functionality
+│   │   │   - Save logic: sanitize, validate, update_post_meta()
+│   │   │   - Gallery data: _sps_gallery_1 s/d _sps_gallery_5
+│   │   │
+│   ├── class-sps-duplicate.php          # Product Duplication Feature
+│   │   │   - Add "Duplicate" link di post row actions
+│   │   │   - admin_action hook: 'sps_duplicate_product'
+│   │   │   - Clone logic: wp_insert_post() + copy metadata
+│   │   │   - Taxonomy terms copy dengan wp_set_post_terms()
+│   │   │   - Security: nonce verification, capability check
+│   │   │
+│   └── class-sps-persistent.php         # Data Persistence Manager
+│       │   - Ensure data tetap di database saat plugin deactivated
+│       │   - No cleanup pada deactivation (only on uninstall)
+│       │   - Custom deactivation logic untuk preserve products
+│       │
+├── assets/                               # 🔷 FRONTEND & ADMIN ASSETS
 │   ├── css/
-│   │   ├── style.css                   # CSS frontend
-│   │   ├── admin-style.css             # CSS admin
-│   │   ├── duplicate-style.css         # CSS duplicate button
-│   │   └── gallery-metabox.css         # CSS gallery meta box
-│   ├── js/
-│   │   ├── script.js                   # JavaScript frontend
-│   │   ├── admin-script.js             # JavaScript admin
-│   │   ├── gallery-metabox.js          # JavaScript gallery
-│   │   └── gallery-admin.js            # JavaScript gallery admin
-│   └── images/
-│       └── placeholder.png             # Placeholder image
-├── templates/                          # Template files
-│   ├── single-sps_product.php          # Template single product
-│   ├── archive-sps_product.php         # Template archive
-│   └── taxonomy-sps_product_category.php # Template kategori
-├── SHORTCODE-DOCUMENTATION.md          # Dokumentasi shortcode lengkap
-├── uninstall.php                       # Cleanup script
-└── README.md                           # Dokumentasi ini
+│   │   ├── style.css                    # Frontend product grid & detail styles
+│   │   │   - Grid layout dengan CSS Grid (responsive)
+│   │   │   - Product card styling dengan shadow & hover effects
+│   │   │   - Button styles untuk WhatsApp & custom buttons
+│   │   │   - Mobile breakpoints (@media queries)
+│   │   │
+│   │   ├── product-detail.css           # Single product detail page styles
+│   │   │   - Gallery grid/slider/carousel layouts
+│   │   │   - Image zoom & lightbox effects
+│   │   │   - Button group positioning
+│   │   │   - Responsive image handling
+│   │   │
+│   │   ├── admin-style.css              # Admin area custom styles
+│   │   │   - Configuration page styling
+│   │   │   - Meta box custom layouts
+│   │   │   - Color picker integration
+│   │   │
+│   │   ├── gallery-admin.css            # Gallery meta box specific styles
+│   │   │   - Upload slot styling dengan drag & drop
+│   │   │   - Preview thumbnail dengan remove button
+│   │   │   - Grid layout untuk 5 slots
+│   │   │
+│   │   ├── gallery-metabox.css          # Gallery admin UI enhancements
+│   │   │   - WordPress Media Library modal styling
+│   │   │   - Image preview cards
+│   │   │
+│   │   └── duplicate-style.css          # Duplicate link styling
+│   │       - "Duplicate" link colors & hover states
+│   │
+│   └── js/
+│       ├── script.js                    # ⭐ Frontend AJAX Gallery Handler
+│       │   │   - AJAX gallery click handler untuk image switching
+│       │   │   - Hash URL support (#thumbnail=1, #thumbnail=2, etc)
+│       │   │   - Active thumbnail visual feedback (border biru)
+│       │   │   - DOM manipulation untuk main image replacement
+│       │   │   - srcset conflict removal untuk smooth transition
+│       │   │   - Console logging untuk debugging
+│       │   │   - Event listeners: DOMContentLoaded, hashchange, click
+│       │   │
+│       ├── admin-script.js              # Admin area JavaScript
+│       │   │   - Color picker initialization (wpColorPicker)
+│       │   │   - Form validation untuk Configuration page
+│       │   │   - Media Library modal handling
+│       │   │
+│       ├── gallery-metabox.js           # Gallery Meta Box JavaScript
+│       │   │   - WordPress Media Library integration
+│       │   │   - Upload button click handlers
+│       │   │   - Remove button functionality
+│       │   │   - Image preview generation
+│       │   │   - AJAX save untuk instant feedback
+│       │   │
+│       └── gallery-admin.js             # Gallery Admin Enhancements
+│           │   - Drag & drop reordering
+│           │   - Bulk upload support
+│           │   - Progress bar untuk upload
+│           │
+├── templates/                            # 🔷 FRONTEND TEMPLATE FILES
+│   ├── single-sps_product.php           # Single Product Detail Template
+│   │   │   - Full product layout: image, gallery, description, buttons
+│   │   │   - AJAX gallery integration dengan hash URL
+│   │   │   - Prev/Next navigation links
+│   │   │   - Breadcrumb navigation
+│   │   │   - Responsive layout untuk mobile/desktop
+│   │   │   - Override-able di theme folder
+│   │   │
+│   ├── archive-sps_product.php          # All Products Archive Template
+│   │   │   - Grid layout dengan pagination
+│   │   │   - Filter sidebar (optional)
+│   │   │   - Sort options (title, date, price)
+│   │   │   - No products found message
+│   │   │
+│   └── taxonomy-sps_product_category.php # Category Archive Template
+│       │   - Category-specific product grid
+│       │   - Category description display
+│       │   - Category filter breadcrumb
+│       │
+├── SHORTCODE-DOCUMENTATION.md           # 📘 Complete Shortcode Documentation
+│   │   - Comprehensive guide untuk [sps_products]
+│   │   - Parameter reference dengan contoh
+│   │   - [sps_detail_products] usage guide
+│   │   - URL parameter documentation
+│   │   - AJAX gallery implementation guide
+│   │
+├── uninstall.php                        # 🗑️ Cleanup Script (Hard Delete)
+│   │   - Triggered only saat plugin di-uninstall (bukan deactivate)
+│   │   - Delete all products: wp_posts WHERE post_type='sps_product'
+│   │   - Delete all metadata: wp_postmeta
+│   │   - Delete all taxonomy terms: wp_terms, wp_term_taxonomy
+│   │   - Delete all options: wp_options WHERE option_name LIKE 'sps_%'
+│   │   - Flush rewrite rules untuk cleanup
+│   │
+├── index.php                            # Directory Index Protection
+└── README.md                            # 📖 This comprehensive documentation
 ```
+
+### 🔄 Request Flow Diagram
+
+#### Frontend Product Grid Display
+```
+User Request → WordPress → Shortcode Parser
+                               ↓
+                    [sps_products columns="3"]
+                               ↓
+              SPS_Shortcodes::products_shortcode()
+                               ↓
+              WP_Query (post_type='sps_product')
+                               ↓
+              Loop products → Render HTML Grid
+                               ↓
+              Enqueue style.css → Browser
+```
+
+#### AJAX Gallery Image Switch
+```
+User Click Gallery Thumbnail → script.js (click event)
+                                      ↓
+                              AJAX Request (POST)
+                              wp-admin/admin-ajax.php
+                              action=get_gallery_image
+                              image_id=123
+                                      ↓
+              Simple_Product_Showcase::ajax_get_gallery_image()
+                                      ↓
+              wp_get_attachment_image_src(image_id, 'large')
+                                      ↓
+              JSON Response {success:true, image_url:'...'}
+                                      ↓
+              script.js updates #sps-main-image-container
+              + Update URL hash #thumbnail=X
+              + Add active class border
+```
+
+#### Configuration Save Flow
+```
+User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
+                              ↓
+      SPS_Configuration::save_configuration()
+                              ↓
+      WordPress nonce verification (security)
+                              ↓
+      Sanitize all inputs (sanitize_text_field, esc_url_raw, etc)
+                              ↓
+      update_option('sps_main_text', $value)
+      update_option('sps_main_bg_color', $value)
+      ... untuk semua 24+ settings
+                              ↓
+      Redirect dengan success message
+```
+
+### 🎯 Key Technical Decisions
+
+1. **Configuration menggantikan Settings (v1.5.0)**:
+   - Old: `class-sps-settings.php` → tidak di-load (line 121 commented)
+   - New: `class-sps-configuration.php` → loaded dan aktif
+   - Reason: Better UI/UX, mode selector, cleaner code structure
+
+2. **Fallback Methods di Main File**:
+   - `add_fallback_admin_menu()`: Jika class tidak load
+   - `register_fallback_cpt()`: Jika CPT class gagal
+   - `direct_products_shortcode()`: Direct registration tanpa class
+   - Reason: Maximum reliability, plugin tetap berfungsi minimal
+
+3. **AJAX Gallery tanpa Plugin Dependencies**:
+   - Pure JavaScript (no jQuery dependency untuk gallery)
+   - WordPress AJAX API (`admin-ajax.php`)
+   - Hash URL untuk shareable links
+   - Reason: Performance, compatibility, SEO-friendly
+
+4. **Data Persistence Strategy**:
+   - Deactivate: Keep ALL data (products, meta, taxonomy)
+   - Uninstall: DELETE ALL (`uninstall.php`)
+   - Reason: User safety, data recovery possibility
+
+5. **Static Method untuk URL Generation**:
+   - `SPS_Configuration::get_product_detail_url($id)`
+   - Accessible dari anywhere tanpa instance
+   - Reason: Flexibility, backward compatibility
+
+---
 
 ## 🐛 Troubleshooting
 
@@ -383,6 +813,52 @@ simple-product-showcase/
 5. **Gallery Links**: Pastikan gallery memiliki `data-thumbnail` dan `data-image-id`
 
 ## 🔄 Changelog
+
+### Version 1.5.0 (Latest - October 2025)
+**Major Update: Button Configuration System**
+- **🎯 NEW: Configuration Page**: Replaced old Settings with new Configuration page (`class-sps-configuration.php`)
+  - Location: `Products → Configuration` (new admin menu)
+  - Better UI/UX dengan organized sections
+  - Real-time form validation
+
+- **🎨 3-Button System**:
+  - **Main Button** dengan mode selector:
+    - WhatsApp Mode: Simplified fields (text, number, message, colors)
+    - Custom Mode: Full control (text, icon, URL, target, colors)
+  - **Custom Button 1**: Full customization (hidden by default)
+  - **Custom Button 2**: Full customization (hidden by default)
+  
+- **🎛️ Configuration Features**:
+  - Show/Hide toggle untuk setiap button
+  - WordPress Color Picker integration
+  - Media Library untuk icon upload
+  - Target window selection (_self/_blank)
+  - Detail Page Mode selector (default/custom)
+  - Custom page dropdown untuk detail redirect
+
+- **💾 Data Management**:
+  - 24+ new options di `wp_options` table (prefix: `sps_*`)
+  - Default values: Main Button visible dengan "Tanya Produk" text
+  - Custom 1 & 2 hidden by default untuk clean layout
+
+- **🔧 Code Architecture Changes**:
+  - `class-sps-settings.php`: Commented out (backup only, line 121)
+  - `class-sps-configuration.php`: New active class
+  - `class-sps-init.php`: Updated to load Configuration instead of Settings
+  - Static method: `SPS_Configuration::get_product_detail_url($product_id)`
+  - All references updated: `SPS_Settings` → `SPS_Configuration`
+
+- **🗑️ Removed**:
+  - Preview button dari configuration forms (cleaner UI)
+  - Debug Settings menu (no longer needed)
+  - Documentation menu (refer to SHORTCODE-DOCUMENTATION.md)
+  - Success alert dari Configuration page save
+
+- **📝 Documentation**:
+  - README.md completely rewritten dengan technical details
+  - Comprehensive architecture documentation
+  - Request flow diagrams untuk better understanding
+  - Code structure explanation untuk AI comprehension
 
 ### Version 1.4.0
 - **Enhanced Gallery Logic**: Updated gallery display logic to hide gallery when ≤2 images (thumbnail + 1 gallery) and show when ≥3 images

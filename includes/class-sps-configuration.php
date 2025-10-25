@@ -1,17 +1,66 @@
 <?php
 /**
- * SPS Configuration Page (NEW)
- * Handle button configuration for 3 buttons: Main, Custom1, Custom2
+ * SPS Configuration Page Class
+ * 
+ * Purpose: Mengelola halaman konfigurasi button untuk Simple Product Showcase plugin
+ * Location: Products → Configuration (admin submenu)
+ * Version: 1.5.0 (NEW - replaces class-sps-settings.php)
+ * 
+ * Fitur Utama:
+ * - Konfigurasi 3 tombol custom: Main Button, Custom Button 1, Custom Button 2
+ * - Main Button dengan 2 mode: WhatsApp Mode (simplified) atau Custom Mode (full control)
+ * - Detail Page Settings: Default template atau Custom page dengan shortcodes
+ * - Integration dengan WordPress Color Picker dan Media Library
+ * - Save semua settings ke wp_options table dengan prefix 'sps_'
+ * 
+ * Database Structure (wp_options):
+ * - sps_main_button_mode: 'whatsapp' atau 'custom'
+ * - sps_main_visible: '1' atau '0' (boolean untuk show/hide)
+ * - sps_main_text: String untuk button text
+ * - sps_main_bg_color: Hex color untuk background
+ * - sps_main_text_color: Hex color untuk text
+ * - sps_main_icon: URL icon (hanya untuk custom mode)
+ * - sps_main_url: URL tujuan (hanya untuk custom mode)
+ * - sps_main_target: '_blank' atau '_self'
+ * - (Similar structure untuk custom1 dan custom2)
+ * - sps_detail_page_mode: 'default' atau 'custom'
+ * - sps_custom_detail_page: WordPress page ID
+ * 
+ * Architecture Pattern:
+ * - Singleton pattern untuk single instance
+ * - WordPress Settings API untuk form handling
+ * - Hook-based integration (admin_menu, admin_init)
+ * - Static method untuk URL generation (backward compatibility)
+ * 
+ * Technical Notes:
+ * - Class ini menggantikan class-sps-settings.php di version 1.5.0
+ * - Old Settings class tetap ada tapi tidak di-load (backup emergency)
+ * - Priority 11 pada admin_menu untuk load setelah CPT menu
+ * - Enqueue scripts hanya di configuration page (performance optimization)
+ * 
+ * @package Simple_Product_Showcase
+ * @subpackage Configuration
+ * @since 1.5.0
+ * @author Teguh Rijanandi
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+    exit; // Direct access protection
 }
 
 class SPS_Configuration {
     
+    /**
+     * Single instance of this class (Singleton pattern)
+     * @var SPS_Configuration|null
+     */
     private static $instance = null;
     
+    /**
+     * Get singleton instance
+     * 
+     * @return SPS_Configuration Single instance of class
+     */
     public static function get_instance() {
         if (null === self::$instance) {
             self::$instance = new self();
@@ -19,13 +68,28 @@ class SPS_Configuration {
         return self::$instance;
     }
     
+    /**
+     * Constructor - Private untuk enforce Singleton
+     * 
+     * Registers WordPress hooks:
+     * - admin_menu: Add Configuration submenu page
+     * - admin_init: Register all button settings dengan Settings API
+     */
     private function __construct() {
         add_action('admin_menu', array($this, 'add_configuration_menu'), 11);
         add_action('admin_init', array($this, 'register_button_settings'));
     }
     
     /**
-     * Add Configuration submenu
+     * Add Configuration submenu to Products menu
+     * 
+     * Menu Structure:
+     * - Parent: edit.php?post_type=sps_product (Products menu)
+     * - Slug: sps-configuration
+     * - Capability: manage_options (admin only)
+     * - Priority: 11 (after default CPT menus)
+     * 
+     * Also registers load-{$hook} action untuk enqueue scripts
      */
     public function add_configuration_menu() {
         $hook = add_submenu_page(
@@ -37,11 +101,19 @@ class SPS_Configuration {
             array($this, 'configuration_page')
         );
         
+        // Enqueue scripts only on configuration page (performance)
         add_action('load-' . $hook, array($this, 'enqueue_scripts'));
     }
     
     /**
-     * Enqueue scripts for configuration page
+     * Enqueue scripts and styles for configuration page
+     * 
+     * Dependencies:
+     * - wp-color-picker: WordPress color picker untuk background & text color
+     * - wp-media: WordPress Media Library untuk icon upload
+     * - sps-gallery-admin.css: Custom styles untuk admin form
+     * 
+     * Called via load-{$hook} untuk load hanya di configuration page
      */
     public function enqueue_scripts() {
         wp_enqueue_style('wp-color-picker');
