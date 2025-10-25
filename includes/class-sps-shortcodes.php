@@ -945,12 +945,16 @@ class SPS_Shortcodes {
         $button_bg_color = get_option('sps_' . $button_id . '_background_color', '#007cba');
         $button_text_color = get_option('sps_' . $button_id . '_text_color', '#ffffff');
         
+        // DEBUG: Output icon size to HTML comment
+        error_log("SPS Debug - Button ID: {$button_id}, Icon Size: {$button_icon_size}");
+        
         // Generate unique ID and class for custom styling
         $button_class = 'sps-custom-button-' . $button_id;
         $button_html_id = 'sps-button-' . $button_id;
         
         ob_start();
         ?>
+        <!-- SPS Debug: Button ID=<?php echo esc_attr($button_id); ?>, Icon Size=<?php echo esc_attr($button_icon_size); ?>px -->
         <style>
         .<?php echo esc_attr($button_class); ?> {
             display: inline-flex;
