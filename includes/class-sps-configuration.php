@@ -154,6 +154,12 @@ class SPS_Configuration {
                 'sanitize_callback' => 'esc_url_raw'
             ));
             
+            register_setting('sps_configuration_group', 'sps_' . $button_id . '_icon_size', array(
+                'type' => 'integer',
+                'default' => 20,
+                'sanitize_callback' => 'absint'
+            ));
+            
             register_setting('sps_configuration_group', 'sps_' . $button_id . '_url', array(
                 'type' => 'string',
                 'default' => '',
@@ -356,6 +362,7 @@ class SPS_Configuration {
         $visible = get_option('sps_' . $button_id . '_visible', $default_visible);
         $text = get_option('sps_' . $button_id . '_text', $is_main_button ? 'Tanya Produk' : '');
         $icon = get_option('sps_' . $button_id . '_icon', '');
+        $icon_size = get_option('sps_' . $button_id . '_icon_size', 20);
         $url = get_option('sps_' . $button_id . '_url', '');
         $target = get_option('sps_' . $button_id . '_target', '_blank');
         $bg_color = get_option('sps_' . $button_id . '_bg_color', '#25D366');
@@ -444,6 +451,12 @@ class SPS_Configuration {
                     </div>
                     
                     <div class="sps-form-row">
+                        <label><?php _e('Icon Size:', 'simple-product-showcase'); ?></label>
+                        <input type="number" name="sps_main_icon_size" value="<?php echo esc_attr($icon_size); ?>" class="small-text" min="10" max="100" step="1"> px
+                        <p class="description"><?php _e('Icon width in pixels (10-100px, default: 20px)', 'simple-product-showcase'); ?></p>
+                    </div>
+                    
+                    <div class="sps-form-row">
                         <label><?php _e('Button URL:', 'simple-product-showcase'); ?></label>
                         <input type="text" name="sps_main_url" value="<?php echo esc_attr($url); ?>" class="regular-text" placeholder="<?php _e('https://example.com', 'simple-product-showcase'); ?>">
                     </div>
@@ -483,6 +496,12 @@ class SPS_Configuration {
                             <img src="<?php echo esc_url($icon); ?>" alt="Icon">
                         <?php endif; ?>
                     </div>
+                </div>
+                
+                <div class="sps-form-row">
+                    <label><?php _e('Icon Size:', 'simple-product-showcase'); ?></label>
+                    <input type="number" name="sps_<?php echo esc_attr($button_id); ?>_icon_size" value="<?php echo esc_attr($icon_size); ?>" class="small-text" min="10" max="100" step="1"> px
+                    <p class="description"><?php _e('Icon width in pixels (10-100px, default: 20px)', 'simple-product-showcase'); ?></p>
                 </div>
                 
                 <div class="sps-form-row">
@@ -612,6 +631,7 @@ class SPS_Configuration {
                 update_option('sps_main_visible', isset($_POST['sps_main_visible']));
                 update_option('sps_main_text', sanitize_text_field($_POST['sps_main_text'] ?? ''));
                 update_option('sps_main_icon', esc_url_raw($_POST['sps_main_icon'] ?? ''));
+                update_option('sps_main_icon_size', absint($_POST['sps_main_icon_size'] ?? 20));
                 update_option('sps_main_url', sanitize_text_field($_POST['sps_main_url'] ?? ''));
                 update_option('sps_main_target', sanitize_text_field($_POST['sps_main_target'] ?? '_blank'));
                 update_option('sps_main_bg_color', sanitize_hex_color($_POST['sps_main_bg_color'] ?? '#25D366'));
@@ -624,6 +644,7 @@ class SPS_Configuration {
             update_option('sps_' . $button_id . '_visible', isset($_POST['sps_' . $button_id . '_visible']));
             update_option('sps_' . $button_id . '_text', sanitize_text_field($_POST['sps_' . $button_id . '_text'] ?? ''));
             update_option('sps_' . $button_id . '_icon', esc_url_raw($_POST['sps_' . $button_id . '_icon'] ?? ''));
+            update_option('sps_' . $button_id . '_icon_size', absint($_POST['sps_' . $button_id . '_icon_size'] ?? 20));
             update_option('sps_' . $button_id . '_url', sanitize_text_field($_POST['sps_' . $button_id . '_url'] ?? ''));
             update_option('sps_' . $button_id . '_target', sanitize_text_field($_POST['sps_' . $button_id . '_target'] ?? '_blank'));
             update_option('sps_' . $button_id . '_bg_color', sanitize_hex_color($_POST['sps_' . $button_id . '_bg_color'] ?? '#25D366'));

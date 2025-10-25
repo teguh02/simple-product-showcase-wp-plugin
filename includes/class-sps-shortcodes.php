@@ -938,6 +938,7 @@ class SPS_Shortcodes {
     private function render_custom_button($product, $button_id) {
         $button_text = get_option('sps_' . $button_id . '_text', 'Custom Button');
         $button_icon = get_option('sps_' . $button_id . '_icon', '');
+        $button_icon_size = get_option('sps_' . $button_id . '_icon_size', 20);
         $button_url = get_option('sps_' . $button_id . '_url', '#');
         $button_target = get_option('sps_' . $button_id . '_target', '_self');
         $button_bg_color = get_option('sps_' . $button_id . '_background_color', '#007cba');
@@ -976,8 +977,8 @@ class SPS_Shortcodes {
         }
         
         .<?php echo esc_attr($button_class); ?> .sps-button-icon {
-            width: 20px;
-            height: 20px;
+            width: <?php echo esc_attr($button_icon_size); ?>px;
+            height: <?php echo esc_attr($button_icon_size); ?>px;
             display: inline-block;
             vertical-align: middle;
         }
