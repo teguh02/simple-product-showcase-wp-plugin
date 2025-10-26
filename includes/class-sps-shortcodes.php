@@ -349,7 +349,7 @@ class SPS_Shortcodes {
             justify-content: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: #f9f9f9;
+            background: transparent;
             border-radius: 8px;
         }
         
