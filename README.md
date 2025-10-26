@@ -19,7 +19,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
   - **Main Button** dengan 2 mode (WhatsApp Mode atau Custom Mode)
   - **Custom Button 1** dengan full customization
   - **Custom Button 2** dengan full customization
-- Menggunakan shortcode `[sps_products]` dan `[sps_detail_products]` untuk menampilkan produk
+- Menggunakan shortcode `[sps_products]`, `[sps_products_with_filters]`, dan `[sps_detail_products]` untuk menampilkan produk
 - Mengorganisir produk dengan kategori taksonomi (`sps_product_category`)
 - Menambahkan hingga **5 gambar gallery** untuk setiap produk (+ 1 thumbnail = total 6 gambar)
 - **AJAX Gallery Interaktif**: Perubahan gambar utama tanpa reload halaman dengan hash URL support
@@ -97,6 +97,13 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Display grid produk dengan 10+ parameters
 - Support category filtering dari URL `?category=slug`
 - Auto-responsive dengan CSS Grid
+
+**Filter Shortcode**: `[sps_products_with_filters]`
+- Display grid produk dengan filter kategori interaktif di bagian atas
+- Tab-based category filtering dengan visual feedback
+- Produk hanya muncul setelah kategori dipilih
+- Support semua parameter `[sps_products]` (columns, limit, orderby, dll)
+- URL parameter `?category=slug` untuk deep linking
 
 **Detail Shortcode**: `[sps_detail_products section="..." style="..."]`
 - Modular display untuk custom page layouts
@@ -310,9 +317,22 @@ wp_set_post_terms() // Assign categories
 [sps_products]
 ```
 
+### Shortcode Grid Produk dengan Filter Kategori
+```
+[sps_products_with_filters]
+```
+**Fitur**:
+- Tampilan filter kategori di bagian atas (horizontal tabs)
+- Produk hanya muncul setelah kategori dipilih
+- URL parameter `?category=slug` ditambahkan saat filter diklik
+- Visual feedback untuk filter aktif (warna kuning #FDB913)
+- Responsive di mobile dan desktop
+- Message "TERDAPAT FILTER DISINI" saat belum pilih kategori
+
 ### Dengan Atribut
 ```
 [sps_products columns="3" category="shoes" limit="6"]
+[sps_products_with_filters columns="4" limit="12"]
 ```
 
 ### Shortcode Detail Produk

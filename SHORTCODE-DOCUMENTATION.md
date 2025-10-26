@@ -30,7 +30,22 @@ The main shortcode to display products:
 [sps_products]
 ```
 
-### 2. Product Detail Display
+### 2. Product Grid with Category Filters
+Display products with interactive category filter tabs:
+
+```
+[sps_products_with_filters]
+```
+
+**Features:**
+- Horizontal category filter tabs at the top
+- Products only appear after selecting a category
+- Active filter highlighted with yellow color (#FDB913)
+- URL parameter `?category=slug` added when filter is clicked
+- Fully responsive design
+- Displays "TERDAPAT FILTER DISINI" message when no category selected
+
+### 3. Product Detail Display
 New shortcode for displaying individual product details:
 
 ```
@@ -40,6 +55,8 @@ New shortcode for displaying individual product details:
 This will display all products in a responsive 3-column grid layout.
 
 ## 📋 Product Grid Shortcode Parameters
+
+**Applies to:** `[sps_products]` and `[sps_products_with_filters]`
 
 | Parameter | Description | Default | Example |
 |-----------|-------------|---------|---------|
@@ -53,6 +70,8 @@ This will display all products in a responsive 3-column grid layout.
 | `show_whatsapp` | Show WhatsApp contact button: true or false | true | `show_whatsapp="false"` |
 | `show_gallery` | Show product gallery images: true or false | true | `show_gallery="false"` |
 | `gallery_style` | Gallery display style: grid, slider, or carousel | grid | `gallery_style="slider"` |
+
+**Note:** For `[sps_products_with_filters]`, the `category` parameter is automatically set based on the selected filter tab.
 
 ## 📋 Product Detail Shortcode Parameters
 
@@ -96,6 +115,18 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 ```
 [sps_products]
 ```
+
+### Product Grid with Category Filters
+```
+[sps_products_with_filters]
+```
+Shows horizontal filter tabs with all categories. Products appear only after selecting a category.
+
+### Product Grid with Filters - Custom Layout
+```
+[sps_products_with_filters columns="4" limit="12"]
+```
+4-column grid, maximum 12 products per category, with category filter tabs.
 
 ### 4-Column Grid with 8 Products
 ```
@@ -192,9 +223,18 @@ Available placeholders:
 ### How to Use the Shortcode
 
 1. **Go to any page or post editor**
-2. **Add the shortcode:** `[sps_products]`
+2. **Add the shortcode:** `[sps_products]` or `[sps_products_with_filters]`
 3. **Customize with parameters as needed**
 4. **Preview or publish to see the product grid**
+
+### Category Filter Behavior
+
+When using `[sps_products_with_filters]`:
+- **Initial Load:** Shows filter tabs with "TERDAPAT FILTER DISINI" message (no products)
+- **Click Filter:** URL changes to `?category=category-slug` and products for that category appear
+- **Active Filter:** Highlighted with yellow background (#FDB913) and bold text
+- **Deep Linking:** Users can bookmark/share URL with `?category=slug` to directly show filtered products
+- **Responsive:** Filter tabs stack vertically on mobile, horizontal on desktop
 
 ### Product Pages
 
@@ -214,8 +254,23 @@ Each product has its own dedicated page with:
 ### 1. **Variety is Key**
 Use different shortcodes on different pages for variety:
 - Homepage: `[sps_products limit="6" columns="3"]`
+- Products page with filters: `[sps_products_with_filters columns="4"]`
 - Category page: `[sps_products category="electronics" columns="2"]`
 - Featured section: `[sps_products limit="4" orderby="menu_order"]`
+
+### 2. **Category Filtering Options**
+Choose the right approach for your needs:
+- **Static Filter:** `[sps_products category="shoes"]` - Always shows shoes category
+- **URL Filter:** `[sps_products]` - Filters based on `?category=slug` in URL
+- **Interactive Filter:** `[sps_products_with_filters]` - User clicks tabs to filter
+
+### 3. **Custom CSS Classes**
+The filter shortcode provides these CSS classes for styling:
+- `.sps-filter-container` - Main wrapper
+- `.sps-filter-tabs` - Filter tabs container
+- `.sps-filter-tab` - Individual filter button
+- `.sps-filter-tab.active` - Active/selected filter
+- `.sps-no-category-message` - Message when no category selected
 
 ### 2. **Category Filtering**
 Combine with categories to create filtered product sections:

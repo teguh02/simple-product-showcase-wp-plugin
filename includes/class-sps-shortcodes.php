@@ -45,6 +45,7 @@ class SPS_Shortcodes {
      */
     public function register_shortcodes() {
         add_shortcode('sps_products', array($this, 'products_shortcode'));
+        add_shortcode('sps_products_with_filters', array($this, 'products_with_filters_shortcode'));
         add_shortcode('sps_detail_products', array($this, 'detail_products_shortcode'));
     }
     
@@ -297,6 +298,179 @@ class SPS_Shortcodes {
         <?php
         // Reset post data
         wp_reset_postdata();
+        
+        return ob_get_clean();
+    }
+    
+    /**
+     * Shortcode untuk menampilkan produk dengan filter kategori
+     * 
+     * @param array $atts Attributes dari shortcode
+     * @return string HTML output
+     */
+    public function products_with_filters_shortcode($atts) {
+        // Default attributes
+        $atts = shortcode_atts(array(
+            'columns' => '3',
+            'limit' => '-1',
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'show_price' => 'true',
+            'show_description' => 'false',
+            'show_whatsapp' => 'true'
+        ), $atts, 'sps_products_with_filters');
+        
+        // Get all categories
+        $categories = get_terms(array(
+            'taxonomy' => 'sps_product_category',
+            'hide_empty' => true,
+            'orderby' => 'name',
+            'order' => 'ASC'
+        ));
+        
+        // Get current category from URL
+        $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        
+        // Get current page URL
+        $current_url = remove_query_arg('category');
+        
+        // Start output
+        ob_start();
+        ?>
+        <style>
+        .sps-filter-container {
+            margin: 30px 0;
+        }
+        
+        .sps-filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .sps-filter-tab {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #ffffff;
+            color: #333333;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .sps-filter-tab:hover {
+            background: #f5f5f5;
+            color: #000000;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .sps-filter-tab.active {
+            background: #FDB913;
+            color: #000000;
+            border-color: #FDB913;
+            font-weight: 600;
+        }
+        
+        .sps-filter-tab.active:hover {
+            background: #E5A711;
+            border-color: #E5A711;
+        }
+        
+        .sps-products-grid {
+            display: grid;
+            grid-template-columns: repeat(<?php echo intval($atts['columns']); ?>, 1fr);
+            gap: 30px;
+            margin: 20px 0;
+            justify-items: center;
+        }
+        
+        .sps-no-category-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .sps-no-category-message p {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-filter-tabs {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .sps-filter-tab {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+            
+            .sps-products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sps-products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        </style>
+        
+        <div class="sps-filter-container">
+            <!-- Category Filter Tabs -->
+            <div class="sps-filter-tabs">
+                <?php
+                if (!empty($categories) && !is_wp_error($categories)) {
+                    foreach ($categories as $category) {
+                        $category_url = add_query_arg('category', $category->slug, $current_url);
+                        $active_class = ($current_category === $category->slug) ? 'active' : '';
+                        ?>
+                        <a href="<?php echo esc_url($category_url); ?>" 
+                           class="sps-filter-tab <?php echo esc_attr($active_class); ?>">
+                            <?php echo esc_html($category->name); ?>
+                        </a>
+                        <?php
+                    }
+                } else {
+                    echo '<p class="sps-no-filters">' . __('No categories available.', 'simple-product-showcase') . '</p>';
+                }
+                ?>
+            </div>
+            
+            <!-- Products Display -->
+            <?php
+            if (!empty($current_category)) {
+                // Show products when category is selected
+                $products_atts = array_merge($atts, array('category' => $current_category));
+                echo $this->products_shortcode($products_atts);
+            } else {
+                // Show message when no category selected
+                ?>
+                <div class="sps-no-category-message">
+                    <p><?php _e('TERDAPAT FILTER DISINI', 'simple-product-showcase'); ?></p>
+                </div>
+                <?php
+            }
+            ?>
+        </div>
+        <?php
         
         return ob_get_clean();
     }
