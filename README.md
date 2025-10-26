@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.2  
+**Version:** 1.5.3  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,14 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.2 (Latest - October 2025)
+### Version 1.5.3 (Latest - October 2025)
+**UI Improvement: Sub Category Message**
+- **🎨 UI Cleanup**: Removed yellow background and border from "Silakan pilih sub kategori untuk melihat produk" message
+  - Changed from yellow box with dashed border to plain text
+  - Better visual consistency with overall design
+  - Less distraction for users when selecting sub categories
+
+### Version 1.5.2 (October 2025)
 **New Feature: Sub Category Filtering**
 - **🎯 NEW: `[sps_products_sub_category]` Shortcode**: 2-level category filtering system
   - Progressive filtering: No params → Category → Sub Category → Products

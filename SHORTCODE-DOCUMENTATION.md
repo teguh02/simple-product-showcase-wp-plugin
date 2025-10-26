@@ -1,6 +1,6 @@
-# 📚 Simple Product Showcase - Shortcode Documentation
+# Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.5.2  
+**Plugin Version:** 1.5.3
 **Last Updated:** 2025-10-27
 
 ---

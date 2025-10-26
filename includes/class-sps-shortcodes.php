@@ -576,11 +576,8 @@ class SPS_Shortcodes {
         .sps-no-sub-category-message {
             text-align: center;
             padding: 60px 20px;
-            background: #fff9e6;
-            border-radius: 8px;
             color: #666;
             font-size: 18px;
-            border: 2px dashed #FDB913;
         }
         
         .sps-no-sub-category-message p {
