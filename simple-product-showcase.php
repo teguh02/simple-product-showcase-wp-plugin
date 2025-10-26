@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.5.1');
+define('SPS_PLUGIN_VERSION', '1.5.2');
 
 /**
  * Class Simple_Product_Showcase
@@ -82,6 +82,7 @@ class Simple_Product_Showcase {
         // Force register shortcode immediately (direct registration)
         add_shortcode('sps_products', array($this, 'direct_products_shortcode'));
         add_shortcode('sps_products_with_filters', array($this, 'direct_products_with_filters_shortcode'));
+        add_shortcode('sps_products_sub_category', array($this, 'direct_products_sub_category_shortcode'));
         add_shortcode('sps_detail_products', array($this, 'direct_detail_products_shortcode'));
         
         // Inisialisasi duplicate functionality
@@ -2061,6 +2062,212 @@ class Simple_Product_Showcase {
     }
     
     /**
+     * Direct products with sub category shortcode handler (NEW)
+     */
+    public function direct_products_sub_category_shortcode($atts) {
+        // Default attributes
+        $atts = shortcode_atts(array(
+            'columns' => '3',
+            'limit' => '-1',
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'show_price' => 'true',
+            'show_description' => 'false',
+            'show_whatsapp' => 'true'
+        ), $atts, 'sps_products_sub_category');
+        
+        // Get category and sub_category from URL
+        $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        $current_sub_category = isset($_GET['sub_category']) ? sanitize_text_field($_GET['sub_category']) : '';
+        
+        // Get current page URL
+        $current_url = remove_query_arg(array('category', 'sub_category'));
+        
+        // Start output
+        ob_start();
+        ?>
+        <style>
+        .sps-sub-category-container {
+            margin: 30px 0;
+        }
+        
+        .sps-sub-category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: transparent;
+            border-radius: 8px;
+        }
+        
+        .sps-sub-category-tab {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #ffffff;
+            color: #333333;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .sps-sub-category-tab:hover {
+            background: #f5f5f5;
+            color: #000000;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .sps-sub-category-tab.active {
+            background: #FDB913;
+            color: #000000;
+            border-color: #FDB913;
+            font-weight: 600;
+        }
+        
+        .sps-sub-category-tab.active:hover {
+            background: #E5A711;
+            border-color: #E5A711;
+        }
+        
+        .sps-no-category-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .sps-no-category-message p {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .sps-no-sub-category-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff9e6;
+            border-radius: 8px;
+            color: #666;
+            font-size: 18px;
+            border: 2px dashed #FDB913;
+        }
+        
+        .sps-no-sub-category-message p {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-sub-category-tabs {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .sps-sub-category-tab {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+        }
+        </style>
+        
+        <div class="sps-sub-category-container">
+            <?php
+            // STEP 1: Jika tidak ada category parameter, tidak tampilkan apa-apa
+            if (empty($current_category)) {
+                ?>
+                <div class="sps-no-category-message">
+                    <p><?php _e('Silakan pilih kategori utama terlebih dahulu', 'simple-product-showcase'); ?></p>
+                </div>
+                <?php
+            } else {
+                // STEP 2: Category ada, tampilkan filter sub kategori
+                // Get sub categories (child terms) dari parent category
+                $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
+                
+                if ($parent_term && !is_wp_error($parent_term)) {
+                    $sub_categories = get_terms(array(
+                        'taxonomy' => 'sps_product_category',
+                        'hide_empty' => true,
+                        'parent' => $parent_term->term_id,
+                        'orderby' => 'name',
+                        'order' => 'ASC'
+                    ));
+                    
+                    // Display sub category filters
+                    if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
+                        ?>
+                        <div class="sps-sub-category-tabs">
+                            <?php
+                            foreach ($sub_categories as $sub_category) {
+                                $sub_category_url = add_query_arg(array(
+                                    'category' => $current_category,
+                                    'sub_category' => $sub_category->slug
+                                ), $current_url);
+                                $active_class = ($current_sub_category === $sub_category->slug) ? 'active' : '';
+                                ?>
+                                <a href="<?php echo esc_url($sub_category_url); ?>" 
+                                   class="sps-sub-category-tab <?php echo esc_attr($active_class); ?>">
+                                    <?php echo esc_html($sub_category->name); ?>
+                                </a>
+                                <?php
+                            }
+                            ?>
+                        </div>
+                        <?php
+                    }
+                    
+                    // STEP 3: Tampilkan produk hanya jika sub_category sudah dipilih
+                    if (!empty($current_sub_category)) {
+                        // Verify sub_category exists and is child of parent category
+                        $sub_term = get_term_by('slug', $current_sub_category, 'sps_product_category');
+                        
+                        if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
+                            // Display products filtered by sub category using direct_products_shortcode
+                            echo do_shortcode('[sps_products category="' . esc_attr($current_sub_category) . '" columns="' . esc_attr($atts['columns']) . '" limit="' . esc_attr($atts['limit']) . '" orderby="' . esc_attr($atts['orderby']) . '" order="' . esc_attr($atts['order']) . '"]');
+                        } else {
+                            ?>
+                            <div class="sps-no-sub-category-message">
+                                <p><?php _e('Sub kategori tidak valid', 'simple-product-showcase'); ?></p>
+                            </div>
+                            <?php
+                        }
+                    } else {
+                        // Sub category belum dipilih
+                        if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
+                            ?>
+                            <div class="sps-no-sub-category-message">
+                                <p><?php _e('Silakan pilih sub kategori untuk melihat produk', 'simple-product-showcase'); ?></p>
+                            </div>
+                            <?php
+                        } else {
+                            // Tidak ada sub kategori, tampilkan produk langsung dari parent category
+                            echo do_shortcode('[sps_products category="' . esc_attr($current_category) . '" columns="' . esc_attr($atts['columns']) . '" limit="' . esc_attr($atts['limit']) . '" orderby="' . esc_attr($atts['orderby']) . '" order="' . esc_attr($atts['order']) . '"]');
+                        }
+                    }
+                } else {
+                    ?>
+                    <div class="sps-no-category-message">
+                        <p><?php _e('Kategori tidak ditemukan', 'simple-product-showcase'); ?></p>
+                    </div>
+                    <?php
+                }
+            }
+            ?>
+        </div>
+        <?php
+        
+        return ob_get_clean();
+    }
+    
+    /**
      * Render all buttons fallback (WhatsApp + Custom 1 + Custom 2)
      */
     private function render_all_buttons_fallback($product) {
@@ -2387,6 +2594,7 @@ class Simple_Product_Showcase {
      */
     public function register_fallback_shortcode() {
         add_shortcode('sps_products', array($this, 'fallback_products_shortcode'));
+        add_shortcode('sps_products_sub_category', array($this, 'fallback_products_sub_category_shortcode'));
     }
     
     /**
@@ -2489,6 +2697,220 @@ class Simple_Product_Showcase {
         <?php
         // Reset post data
         wp_reset_postdata();
+        
+        return ob_get_clean();
+    }
+    
+    /**
+     * Fallback shortcode handler untuk sub category
+     */
+    public function fallback_products_sub_category_shortcode($atts) {
+        // Default attributes
+        $atts = shortcode_atts(array(
+            'columns' => '3',
+            'limit' => '-1',
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'show_price' => 'true',
+            'show_description' => 'false',
+            'show_whatsapp' => 'true'
+        ), $atts, 'sps_products_sub_category');
+        
+        // Get category and sub_category from URL
+        $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        $current_sub_category = isset($_GET['sub_category']) ? sanitize_text_field($_GET['sub_category']) : '';
+        
+        // Get current page URL
+        $current_url = remove_query_arg(array('category', 'sub_category'));
+        
+        // Validate columns
+        $columns = intval($atts['columns']);
+        if ($columns < 1 || $columns > 6) {
+            $columns = 3;
+        }
+        
+        // Start output
+        ob_start();
+        ?>
+        <style>
+        .sps-sub-category-container {
+            margin: 30px 0;
+        }
+        
+        .sps-sub-category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: transparent;
+            border-radius: 8px;
+        }
+        
+        .sps-sub-category-tab {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #ffffff;
+            color: #333333;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .sps-sub-category-tab:hover {
+            background: #f5f5f5;
+            color: #000000;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .sps-sub-category-tab.active {
+            background: #FDB913;
+            color: #000000;
+            border-color: #FDB913;
+            font-weight: 600;
+        }
+        
+        .sps-sub-category-tab.active:hover {
+            background: #E5A711;
+            border-color: #E5A711;
+        }
+        
+        .sps-no-category-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .sps-no-category-message p {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .sps-no-sub-category-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff9e6;
+            border-radius: 8px;
+            color: #666;
+            font-size: 18px;
+            border: 2px dashed #FDB913;
+        }
+        
+        .sps-no-sub-category-message p {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-sub-category-tabs {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .sps-sub-category-tab {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+        }
+        </style>
+        
+        <div class="sps-sub-category-container">
+            <?php
+            // STEP 1: Jika tidak ada category parameter, tidak tampilkan apa-apa
+            if (empty($current_category)) {
+                ?>
+                <div class="sps-no-category-message">
+                    <p><?php _e('Silakan pilih kategori utama terlebih dahulu', 'simple-product-showcase'); ?></p>
+                </div>
+                <?php
+            } else {
+                // STEP 2: Category ada, tampilkan filter sub kategori
+                // Get sub categories (child terms) dari parent category
+                $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
+                
+                if ($parent_term && !is_wp_error($parent_term)) {
+                    $sub_categories = get_terms(array(
+                        'taxonomy' => 'sps_product_category',
+                        'hide_empty' => true,
+                        'parent' => $parent_term->term_id,
+                        'orderby' => 'name',
+                        'order' => 'ASC'
+                    ));
+                    
+                    // Display sub category filters
+                    if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
+                        ?>
+                        <div class="sps-sub-category-tabs">
+                            <?php
+                            foreach ($sub_categories as $sub_category) {
+                                $sub_category_url = add_query_arg(array(
+                                    'category' => $current_category,
+                                    'sub_category' => $sub_category->slug
+                                ), $current_url);
+                                $active_class = ($current_sub_category === $sub_category->slug) ? 'active' : '';
+                                ?>
+                                <a href="<?php echo esc_url($sub_category_url); ?>" 
+                                   class="sps-sub-category-tab <?php echo esc_attr($active_class); ?>">
+                                    <?php echo esc_html($sub_category->name); ?>
+                                </a>
+                                <?php
+                            }
+                            ?>
+                        </div>
+                        <?php
+                    }
+                    
+                    // STEP 3: Tampilkan produk hanya jika sub_category sudah dipilih
+                    if (!empty($current_sub_category)) {
+                        // Verify sub_category exists and is child of parent category
+                        $sub_term = get_term_by('slug', $current_sub_category, 'sps_product_category');
+                        
+                        if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
+                            // Display products filtered by sub category
+                            $products_atts = array_merge($atts, array('category' => $current_sub_category));
+                            echo $this->fallback_products_shortcode($products_atts);
+                        } else {
+                            ?>
+                            <div class="sps-no-sub-category-message">
+                                <p><?php _e('Sub kategori tidak valid', 'simple-product-showcase'); ?></p>
+                            </div>
+                            <?php
+                        }
+                    } else {
+                        // Sub category belum dipilih
+                        if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
+                            ?>
+                            <div class="sps-no-sub-category-message">
+                                <p><?php _e('Silakan pilih sub kategori untuk melihat produk', 'simple-product-showcase'); ?></p>
+                            </div>
+                            <?php
+                        } else {
+                            // Tidak ada sub kategori, tampilkan produk langsung dari parent category
+                            $products_atts = array_merge($atts, array('category' => $current_category));
+                            echo $this->fallback_products_shortcode($products_atts);
+                        }
+                    }
+                } else {
+                    ?>
+                    <div class="sps-no-category-message">
+                        <p><?php _e('Kategori tidak ditemukan', 'simple-product-showcase'); ?></p>
+                    </div>
+                    <?php
+                }
+            }
+            ?>
+        </div>
+        <?php
         
         return ob_get_clean();
     }

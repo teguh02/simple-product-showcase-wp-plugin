@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.0  
+**Version:** 1.5.2  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -19,10 +19,11 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
   - **Main Button** dengan 2 mode (WhatsApp Mode atau Custom Mode)
   - **Custom Button 1** dengan full customization
   - **Custom Button 2** dengan full customization
-- Menggunakan shortcode `[sps_products]`, `[sps_products_with_filters]`, dan `[sps_detail_products]` untuk menampilkan produk
-- Mengorganisir produk dengan kategori taksonomi (`sps_product_category`)
+- Menggunakan shortcode `[sps_products]`, `[sps_products_with_filters]`, `[sps_products_sub_category]` (NEW), dan `[sps_detail_products]` untuk menampilkan produk
+- Mengorganisir produk dengan kategori taksonomi **hierarchical** (`sps_product_category`) dengan support parent-child relationship
 - Menambahkan hingga **5 gambar gallery** untuk setiap produk (+ 1 thumbnail = total 6 gambar)
 - **AJAX Gallery Interaktif**: Perubahan gambar utama tanpa reload halaman dengan hash URL support
+- **2-Level Category Filtering** (NEW): Filter produk dengan kategori utama → sub kategori secara bertahap
 - Duplikasi produk dengan satu klik untuk mempercepat workflow
 - **Data persistence**: Data produk tetap tersimpan meskipun plugin dinonaktifkan
 
@@ -38,6 +39,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - **Kolom Custom** di admin list: harga, kategori, featured image untuk quick overview
 - **Duplicate Functionality**: Tombol "Duplicate" di quick actions untuk clone produk
 - **Persistent Data**: Data tetap di database meskipun plugin dinonaktifkan (soft uninstall)
+- **Hierarchical Categories**: Support parent-child category relationship untuk filtering berlevel
 
 ### 🎯 Sistem 3 Tombol Custom (Button Configuration)
 **Lokasi**: `Products → Configuration` (menu admin baru di version 1.5.0)
@@ -109,6 +111,16 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Modular display untuk custom page layouts
 - Sections: `title`, `image`, `description`, `gallery`, `button`
 - Styles: Title (h1-h5), Gallery (grid/slider/carousel)
+
+**Sub Category Filter Shortcode**: `[sps_products_sub_category]` (NEW v1.5.1)
+- Display grid produk dengan **2-level filtering** (parent category → sub category)
+- **Step 1**: Tanpa parameter → Tidak tampil apa-apa, menunggu user memilih kategori utama
+- **Step 2**: Dengan `?category=slug` → Tampil filter sub kategori, produk belum muncul
+- **Step 3**: Dengan `?category=slug&sub_category=sub-slug` → Tampil produk dari sub kategori
+- **Hierarchical Support**: Memanfaatkan parent-child relationship WordPress taxonomy
+- **Use Case**: Ideal untuk toko dengan banyak kategori dan sub kategori (e.g., Gun Nailer → Paslode, Makita, dll)
+- Support semua parameter `[sps_products]` (columns, limit, orderby, dll)
+- URL parameter `?category=slug&sub_category=sub-slug` untuk deep linking
 
 ### 🔌 Architecture & Code Structure
 **Main Plugin File**: `simple-product-showcase.php`
@@ -834,7 +846,34 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.0 (Latest - October 2025)
+### Version 1.5.2 (Latest - October 2025)
+**New Feature: Sub Category Filtering**
+- **🎯 NEW: `[sps_products_sub_category]` Shortcode**: 2-level category filtering system
+  - Progressive filtering: No params → Category → Sub Category → Products
+  - Step 1: Shows "Select main category" message
+  - Step 2: Shows sub category filter tabs (no products yet)
+  - Step 3: Shows products when sub category selected
+  - Supports hierarchical WordPress taxonomy (parent-child categories)
+  
+- **✨ Features**:
+  - URL parameter support: `?category=slug&sub_category=sub-slug`
+  - Visual feedback: Yellow active state (#FDB913) for selected filters
+  - Fully responsive: Horizontal tabs on desktop, scrollable on mobile
+  - Deep linking support: Shareable URLs with category & sub category
+  - All standard parameters: columns, limit, orderby, order, etc.
+  
+- **📚 Documentation**:
+  - Updated `SHORTCODE-DOCUMENTATION.md` with new shortcode
+  - Added comprehensive usage examples
+  - Setup guide for hierarchical categories
+  
+- **🔧 Technical Implementation**:
+  - Added method `products_sub_category_shortcode()` in `SPS_Shortcodes`
+  - Added fallback methods in main plugin file
+  - Triple registration for maximum reliability
+  - Full backward compatibility with existing shortcodes
+
+### Version 1.5.0 (October 2025)
 **Major Update: Button Configuration System**
 - **🎯 NEW: Configuration Page**: Replaced old Settings with new Configuration page (`class-sps-configuration.php`)
   - Location: `Products → Configuration` (new admin menu)

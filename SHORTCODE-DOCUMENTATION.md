@@ -1,7 +1,7 @@
 # 📚 Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.4.0  
-**Last Updated:** 2025-10-24
+**Plugin Version:** 1.5.2  
+**Last Updated:** 2025-10-27
 
 ---
 
@@ -45,7 +45,31 @@ Display products with interactive category filter tabs:
 - Fully responsive design
 - Displays "TERDAPAT FILTER DISINI" message when no category selected
 
-### 3. Product Detail Display
+### 3. Product Grid with Sub Category Filters (NEW v1.5.1)
+Display products with 2-level category filtering (parent → sub category):
+
+```
+[sps_products_sub_category]
+```
+
+**Features:**
+- **Step 1**: No parameters → Shows message "Silakan pilih kategori utama terlebih dahulu"
+- **Step 2**: With `?category=slug` → Shows sub category filter tabs, no products yet
+- **Step 3**: With `?category=slug&sub_category=sub-slug` → Shows products from selected sub category
+- Horizontal sub category filter tabs with yellow active state (#FDB913)
+- URL parameter `?category=slug&sub_category=sub-slug` added when filter is clicked
+- Fully responsive design
+- Supports hierarchical WordPress taxonomy (parent-child categories)
+
+**How it works:**
+1. User visits product page → No category/sub category selected → Shows "please select main category" message
+2. User clicks main category (from custom image links) → URL gets `?category=Gun%20Nailer` → Shows sub category filters (e.g., Paslode, Makita, etc.) but NO products yet
+3. User clicks sub category → URL gets `?category=Gun%20Nailer&sub_category=Paslode` → Shows products from that sub category
+4. Final URL example: `https://yoursite.com/produk/?category=Gun%20Nailer&sub_category=Paslode`
+
+**Important:** This shortcode requires WordPress hierarchical taxonomy. Sub categories must be created as child terms of parent categories in Products → Categories.
+
+### 4. Product Detail Display
 New shortcode for displaying individual product details:
 
 ```
@@ -127,6 +151,24 @@ Shows horizontal filter tabs with all categories. Products appear only after sel
 [sps_products_with_filters columns="4" limit="12"]
 ```
 4-column grid, maximum 12 products per category, with category filter tabs.
+
+### Product Grid with Sub Category - Basic Usage (NEW)
+```
+[sps_products_sub_category]
+```
+Default 3-column grid with 2-level category filtering (parent → sub category).
+
+### Product Grid with Sub Category - 4 Columns (NEW)
+```
+[sps_products_sub_category columns="4"]
+```
+4-column grid with hierarchical category filtering.
+
+### Product Grid with Sub Category - Custom Settings (NEW)
+```
+[sps_products_sub_category columns="3" limit="12" orderby="title" order="ASC"]
+```
+3-column grid, maximum 12 products, alphabetically sorted, with 2-level filtering.
 
 ### 4-Column Grid with 8 Products
 ```
@@ -223,9 +265,27 @@ Available placeholders:
 ### How to Use the Shortcode
 
 1. **Go to any page or post editor**
-2. **Add the shortcode:** `[sps_products]` or `[sps_products_with_filters]`
+2. **Add the shortcode:** `[sps_products]`, `[sps_products_with_filters]`, or `[sps_products_sub_category]`
 3. **Customize with parameters as needed**
 4. **Preview or publish to see the product grid**
+
+### Sub Category Filter Behavior (NEW)
+
+When using `[sps_products_sub_category]`:
+- **Initial Load (No URL Parameters):** Shows message "Silakan pilih kategori utama terlebih dahulu" (no filters, no products)
+- **With ?category=slug:** Shows sub category filter tabs, displays "Silakan pilih sub kategori untuk melihat produk" message (no products yet)
+- **With ?category=slug&sub_category=sub-slug:** Shows products filtered by selected sub category
+- **Active Filter:** Highlighted with yellow background (#FDB913) and bold text
+- **Deep Linking:** Users can bookmark/share URL with `?category=slug&sub_category=sub-slug` to directly show filtered products
+- **Responsive:** Filter tabs stack vertically on mobile, horizontal on desktop
+- **Hierarchical Support:** Automatically detects parent-child relationship in WordPress taxonomy
+
+**Setup Required:**
+1. Create parent categories (e.g., "Gun Nailer", "Spare Part", "Paku Tembak")
+2. Create sub categories as child terms (e.g., "Paslode", "Makita" as children of "Gun Nailer")
+3. Create custom images/links on your main product page that link to: `/produk/?category=Gun%20Nailer`
+4. Add shortcode `[sps_products_sub_category]` to your product page
+5. Users click main category image → See sub category filters → Click sub category → See products
 
 ### Category Filter Behavior
 
