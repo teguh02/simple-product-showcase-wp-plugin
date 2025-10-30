@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.4  
+**Version:** 1.5.5  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,11 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.4 (Latest - October 2025)
+### Version 1.5.5 (Latest - October 2025)
+**Routine Update**
+- Version bump and stability improvements
+
+### Version 1.5.4 (October 2025)
 **Enhancement: sps_products_with_filters Shortcode**
 - **✨ Improved Logic**: Enhanced `[sps_products_with_filters]` shortcode with 2-level hierarchical filtering
   - Step 1: Show main category filters only
