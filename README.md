@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.5  
+**Version:** 1.5.6  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,27 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.5 (Latest - October 2025)
+### Version 1.5.6 (Latest - October 2025)
+**Enhancement: sps_products_sub_category Shortcode (Reverted & Fixed)**
+- **🎯 NEW Logic for `[sps_products_sub_category]`**: Changed to match user requirements
+  - Step 1: No category parameter → Show "Silakan pilih kategori utama" message
+  - Step 2: `?category=slug` → Show all products from category + sub category filters
+  - Step 3: `?category=slug&sub_category=sub-slug` → Show only sub category products + filters
+  - Before: Step 2 showed only message without products
+  - Now: Step 2 displays all products immediately when category is selected
+  
+- **🔄 Reverted `[sps_products_with_filters]`**: Restored to original single-level filtering
+  - Focus on main categories only
+  - No sub category filters in this shortcode
+  - Cleaner interface for simple category filtering
+
+- **✨ Improvements**:
+  - Better UX: Products visible immediately after category selection
+  - Proper parent-child taxonomy validation
+  - Responsive design maintained
+  - Removed unnecessary CSS classes
+
+### Version 1.5.5 (October 2025)
 **Routine Update**
 - Version bump and stability improvements
 
