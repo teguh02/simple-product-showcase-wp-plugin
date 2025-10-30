@@ -108,13 +108,39 @@ class SPS_Shortcodes {
         
         // Apply category filter
         if (!empty($category_filter)) {
-            $args['tax_query'] = array(
-                array(
-                    'taxonomy' => 'sps_product_category',
-                    'field' => 'slug',
-                    'terms' => $category_filter
-                )
-            );
+            // Try to find the term by slug first, then by name
+            $term = get_term_by('slug', $category_filter, 'sps_product_category');
+            
+            // If not found by slug, try by name (untuk handle Paku%20Tembak -> Paku Tembak)
+            if (!$term || is_wp_error($term)) {
+                $term = get_term_by('name', $category_filter, 'sps_product_category');
+            }
+            
+            // If term found, use it for filtering
+            if ($term && !is_wp_error($term)) {
+                $args['tax_query'] = array(
+                    array(
+                        'taxonomy' => 'sps_product_category',
+                        'field' => 'term_id',
+                        'terms' => $term->term_id
+                    )
+                );
+            } else {
+                // Fallback: try searching by both slug and name
+                $args['tax_query'] = array(
+                    'relation' => 'OR',
+                    array(
+                        'taxonomy' => 'sps_product_category',
+                        'field' => 'slug',
+                        'terms' => $category_filter
+                    ),
+                    array(
+                        'taxonomy' => 'sps_product_category',
+                        'field' => 'name',
+                        'terms' => $category_filter
+                    )
+                );
+            }
         }
         
         // Execute query
@@ -598,7 +624,13 @@ class SPS_Shortcodes {
             } else {
                 // STEP 2: Category ada, tampilkan filter sub kategori
                 // Get sub categories (child terms) dari parent category
+                // Try to get term by slug first, then by name (untuk handle URL dengan spasi)
                 $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
+                
+                // Jika tidak ketemu by slug, coba by name (untuk handle Paku%20Tembak -> Paku Tembak)
+                if (!$parent_term || is_wp_error($parent_term)) {
+                    $parent_term = get_term_by('name', $current_category, 'sps_product_category');
+                }
                 
                 if ($parent_term && !is_wp_error($parent_term)) {
                     $sub_categories = get_terms(array(

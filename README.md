@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.6  
+**Version:** 1.5.7  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,25 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.6 (Latest - October 2025)
+### Version 1.5.7 (Latest - October 2025)
+**Fix: Category Search by Name & Slug**
+- **🐛 Fixed Issue**: Products not showing when URL contains category with spaces
+  - Problem: URL like `?category=Paku%20Tembak` (spaces) couldn't match slug `paku-tembak` (dashes)
+  - Solution: Added smart term lookup - search by slug first, then by name
+  - Fallback: If term not found, search with OR condition on both slug and name
+  
+- **✨ Improvements**:
+  - `products_shortcode()`: Enhanced category filtering logic
+  - `products_sub_category_shortcode()`: Added term lookup by name fallback
+  - Better handling of URL-encoded category parameters
+  - Products now display correctly regardless of URL format
+
+- **🔍 Technical Details**:
+  - Changed from simple slug-based search to intelligent lookup
+  - Uses `get_term_by()` with fallback mechanism
+  - Query optimization with proper term_id filtering
+
+### Version 1.5.6 (October 2025)
 **Enhancement: sps_products_sub_category Shortcode (Reverted & Fixed)**
 - **🎯 NEW Logic for `[sps_products_sub_category]`**: Changed to match user requirements
   - Step 1: No category parameter → Show "Silakan pilih kategori utama" message
