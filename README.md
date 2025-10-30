@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.3  
+**Version:** 1.5.4  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,28 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.3 (Latest - October 2025)
+### Version 1.5.4 (Latest - October 2025)
+**Enhancement: sps_products_with_filters Shortcode**
+- **✨ Improved Logic**: Enhanced `[sps_products_with_filters]` shortcode with 2-level hierarchical filtering
+  - Step 1: Show main category filters only
+  - Step 2: When category selected → Show all products from that category + sub category filters
+  - Step 3: When sub category selected → Show only products from that sub category + sub category filters
+  - Before: Only showed filter tabs without products when category was selected
+  - Now: Shows products immediately when category is selected
+  
+- **🎯 New Features**:
+  - Sub category filters now display with "Filter Produk" label
+  - Better visual hierarchy between main and sub category filters
+  - Seamless transition between main category and sub category views
+  - Maintains product grid visibility throughout filtering process
+  
+- **📝 Behavior**:
+  - URL: `?category=Paku%20Tembak` → Shows all products from "Paku Tembak" + sub filters
+  - URL: `?category=Paku%20Tembak&sub_category=paku-polos` → Shows only "Paku Polos" products
+  - Respects parent-child taxonomy relationships
+  - Validates sub category belongs to selected parent category
+
+### Version 1.5.3 (October 2025)
 **UI Improvement: Sub Category Message**
 - **🎨 UI Cleanup**: Removed yellow background and border from "Silakan pilih sub kategori untuk melihat produk" message
   - Changed from yellow box with dashed border to plain text

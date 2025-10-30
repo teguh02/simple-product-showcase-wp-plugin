@@ -306,6 +306,11 @@ class SPS_Shortcodes {
     /**
      * Shortcode untuk menampilkan produk dengan filter kategori
      * 
+     * Logika kerja:
+     * 1. Tanpa parameter category: Tampilkan filter kategori saja
+     * 2. Dengan parameter category saja: Tampilkan semua produk kategori + filter sub kategori
+     * 3. Dengan parameter category & sub_category: Tampilkan produk sub kategori + filter sub kategori
+     * 
      * @param array $atts Attributes dari shortcode
      * @return string HTML output
      */
@@ -321,19 +326,21 @@ class SPS_Shortcodes {
             'show_whatsapp' => 'true'
         ), $atts, 'sps_products_with_filters');
         
-        // Get all categories
+        // Get all categories (parent categories only)
         $categories = get_terms(array(
             'taxonomy' => 'sps_product_category',
             'hide_empty' => true,
+            'parent' => 0,
             'orderby' => 'name',
             'order' => 'ASC'
         ));
         
-        // Get current category from URL
+        // Get current category and sub_category from URL
         $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        $current_sub_category = isset($_GET['sub_category']) ? sanitize_text_field($_GET['sub_category']) : '';
         
         // Get current page URL
-        $current_url = remove_query_arg('category');
+        $current_url = remove_query_arg(array('category', 'sub_category'));
         
         // Start output
         ob_start();
@@ -388,6 +395,70 @@ class SPS_Shortcodes {
             border-color: #E5A711;
         }
         
+        .sps-sub-filter-section {
+            display: none;
+            margin-bottom: 30px;
+        }
+        
+        .sps-sub-filter-section.active {
+            display: block;
+        }
+        
+        .sps-sub-filter-label {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .sps-sub-filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .sps-sub-filter-tab {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #ffffff;
+            color: #333333;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .sps-sub-filter-tab:hover {
+            background: #f5f5f5;
+            color: #000000;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .sps-sub-filter-tab.active {
+            background: #FDB913;
+            color: #000000;
+            border-color: #FDB913;
+            font-weight: 600;
+        }
+        
+        .sps-sub-filter-tab.active:hover {
+            background: #E5A711;
+            border-color: #E5A711;
+        }
+        
         .sps-products-grid {
             display: grid;
             grid-template-columns: repeat(<?php echo intval($atts['columns']); ?>, 1fr);
@@ -421,6 +492,16 @@ class SPS_Shortcodes {
                 font-size: 13px;
             }
             
+            .sps-sub-filter-tabs {
+                gap: 8px;
+                padding: 10px;
+            }
+            
+            .sps-sub-filter-tab {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+            
             .sps-products-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
@@ -435,7 +516,7 @@ class SPS_Shortcodes {
         </style>
         
         <div class="sps-filter-container">
-            <!-- Category Filter Tabs -->
+            <!-- Main Category Filter Tabs -->
             <div class="sps-filter-tabs">
                 <?php
                 if (!empty($categories) && !is_wp_error($categories)) {
@@ -455,11 +536,69 @@ class SPS_Shortcodes {
                 ?>
             </div>
             
+            <!-- Sub Category Filter Section -->
+            <?php
+            if (!empty($current_category)) {
+                // Get parent category term
+                $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
+                
+                if ($parent_term && !is_wp_error($parent_term)) {
+                    // Get sub categories (child terms)
+                    $sub_categories = get_terms(array(
+                        'taxonomy' => 'sps_product_category',
+                        'hide_empty' => true,
+                        'parent' => $parent_term->term_id,
+                        'orderby' => 'name',
+                        'order' => 'ASC'
+                    ));
+                    
+                    // Display sub category filters if available
+                    if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
+                        ?>
+                        <div class="sps-sub-filter-section active">
+                            <div class="sps-sub-filter-label"><?php _e('Filter Produk', 'simple-product-showcase'); ?></div>
+                            <div class="sps-sub-filter-tabs">
+                                <?php
+                                foreach ($sub_categories as $sub_category) {
+                                    $sub_category_url = add_query_arg(array(
+                                        'category' => $current_category,
+                                        'sub_category' => $sub_category->slug
+                                    ), $current_url);
+                                    $active_class = ($current_sub_category === $sub_category->slug) ? 'active' : '';
+                                    ?>
+                                    <a href="<?php echo esc_url($sub_category_url); ?>" 
+                                       class="sps-sub-filter-tab <?php echo esc_attr($active_class); ?>">
+                                        <?php echo esc_html($sub_category->name); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                }
+            }
+            ?>
+            
             <!-- Products Display -->
             <?php
             if (!empty($current_category)) {
-                // Show products when category is selected
-                $products_atts = array_merge($atts, array('category' => $current_category));
+                // Determine which category to filter by
+                $filter_category = $current_category;
+                
+                // If sub_category is selected, verify it's valid and use it
+                if (!empty($current_sub_category)) {
+                    $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
+                    $sub_term = get_term_by('slug', $current_sub_category, 'sps_product_category');
+                    
+                    if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
+                        $filter_category = $current_sub_category;
+                    }
+                }
+                
+                // Show products filtered by category or sub_category
+                $products_atts = array_merge($atts, array('category' => $filter_category));
                 echo $this->products_shortcode($products_atts);
             } else {
                 // Show message when no category selected
