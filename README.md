@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.8  
+**Version:** 1.5.9  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,31 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.8 (Latest - October 2025)
+### Version 1.5.9 (Latest - October 2025)
+**Feature: Include Child Categories in Product Query**
+- **🎯 NEW: `include_children` Parameter**: Automatically include child category products
+  - Added `include_children` parameter to `products_shortcode()`
+  - When `include_children=true`: Query includes parent term + all child terms
+  - When `include_children=false`: Query only specific term (default)
+  
+- **✨ For `sps_products_sub_category` Shortcode**:
+  - When main category selected (no sub category): Auto-include all child terms
+  - Shows all products from parent + child categories
+  - When sub category selected: Show only that sub category products
+  - Better UX: Users see products immediately after category selection
+  
+- **🔧 Implementation**:
+  - `products_shortcode()`: Enhanced with child term inclusion logic
+  - `products_sub_category_shortcode()`: Pass `include_children` flag
+  - Get all child term IDs and merge with parent for query
+  - Maintains proper taxonomy hierarchy
+
+- **💡 Use Case**:
+  - Categories with all products in sub categories work correctly
+  - Parent category selection now shows all related products
+  - Sub category selection still works as expected
+
+### Version 1.5.8 (October 2025)
 **Fix: Improved Category Search & Normalization**
 - **🔍 Enhanced Search Logic**: Better handling of category names with spaces
   - Issue: Some categories like "Paku Tembak" didn't work while "Gun Nailer" did

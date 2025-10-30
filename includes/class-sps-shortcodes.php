@@ -66,7 +66,8 @@ class SPS_Shortcodes {
             'order' => 'ASC',
             'show_price' => 'true',
             'show_description' => 'false',
-            'show_whatsapp' => 'true'
+            'show_whatsapp' => 'true',
+            'include_children' => false
         ), $atts, 'sps_products');
         
         // Validate columns
@@ -134,13 +135,37 @@ class SPS_Shortcodes {
             
             // If term found, use it for filtering
             if ($term && !is_wp_error($term)) {
-                $args['tax_query'] = array(
-                    array(
+                // Check if we need to include children
+                if ($atts['include_children']) {
+                    // Get all child terms
+                    $child_terms = get_terms(array(
                         'taxonomy' => 'sps_product_category',
-                        'field' => 'term_id',
-                        'terms' => $term->term_id
-                    )
-                );
+                        'parent' => $term->term_id,
+                        'hide_empty' => false,
+                        'fields' => 'ids'
+                    ));
+                    
+                    // Include parent and all children
+                    $term_ids = array_merge(array($term->term_id), is_array($child_terms) ? $child_terms : array());
+                    
+                    $args['tax_query'] = array(
+                        array(
+                            'taxonomy' => 'sps_product_category',
+                            'field' => 'term_id',
+                            'terms' => $term_ids,
+                            'include_children' => false
+                        )
+                    );
+                } else {
+                    // Only filter by the specific term
+                    $args['tax_query'] = array(
+                        array(
+                            'taxonomy' => 'sps_product_category',
+                            'field' => 'term_id',
+                            'terms' => $term->term_id
+                        )
+                    );
+                }
             } else {
                 // Fallback: try searching by both slug and name with OR
                 $args['tax_query'] = array(
@@ -696,6 +721,7 @@ class SPS_Shortcodes {
                     
                     // STEP 3: Tentukan kategori mana yang akan digunakan untuk filter produk
                     $filter_category = $current_category;
+                    $include_children = false; // Flag untuk include child terms
                     
                     // Jika sub_category dipilih, verifikasi dan gunakan
                     if (!empty($current_sub_category)) {
@@ -704,10 +730,16 @@ class SPS_Shortcodes {
                         if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
                             $filter_category = $current_sub_category;
                         }
+                    } else {
+                        // Jika sub_category tidak dipilih, include child terms (untuk tampil produk dari parent + semua child)
+                        $include_children = true;
                     }
                     
                     // Tampilkan produk berdasarkan filter_category
-                    $products_atts = array_merge($atts, array('category' => $filter_category));
+                    $products_atts = array_merge($atts, array(
+                        'category' => $filter_category,
+                        'include_children' => $include_children
+                    ));
                     echo $this->products_shortcode($products_atts);
                 } else {
                     ?>
