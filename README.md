@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.0  
+**Version:** 1.6.2  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,31 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.0 (Latest - October 2025)
+### Version 1.6.2 (Latest - October 2025)
+**Fix: Implement Manual SQL Query for Reliable Hierarchical Product Filtering**
+- **🐛 CRITICAL FIX**: WordPress tax_query unreliable for hierarchical taxonomy filtering
+  - Problem: Even with `include_children=true`, products from child categories still not appearing
+  - Root Cause: Products tagged ONLY to child terms weren't returned by WordPress tax_query
+  - Solution: Implement direct MySQL queries with proper parent-child term JOINs
+  - Now: `get_products_by_category()` helper function bypasses WP_Query limitations
+  
+- **✨ How It Works**:
+  - New helper function performs direct SQL with:
+    - DISTINCT select to avoid duplicates
+    - JOINs with wp_terms and wp_term_taxonomy tables
+    - OR logic for parent term ID OR child term parent matching
+    - Full support for ordering and limiting results
+  - `sps_products_sub_category` now uses manual SQL instead of WordPress functions
+  - Guarantees correct product display regardless of term assignment
+  
+- **🔧 Technical**:
+  - Added `get_products_by_category($term_id, $include_children, $limit, $orderby, $order)` private method
+  - Uses `$wpdb->get_results()` with proper SQL parameterization
+  - Handles both single term and parent+child queries
+  - Provides reliable fallback for edge cases WordPress can't handle
+  - `sps_products_sub_category_shortcode()` updated to use new helper method
+
+### Version 1.6.0 (October 2025)
 **Fix: Include Child Terms in Hierarchical Category Queries**
 - **🐛 CRITICAL FIX**: Products only tagged to child categories now appear when parent is selected
   - Problem: Product tagged ONLY to "Tes Sub Kategori" but NOT "Tes Kategori" didn't show
@@ -881,7 +905,7 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
   
 - **🔧 Implementation**:
   - `products_shortcode()`: Enhanced with child term inclusion logic
-  - `products_sub_category_shortcode()`: Pass `include_children` flag
+  - `products_products_sub_category_shortcode()`: Pass `include_children` flag
   - Get all child term IDs and merge with parent for query
   - Maintains proper taxonomy hierarchy
 

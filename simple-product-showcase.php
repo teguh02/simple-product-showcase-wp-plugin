@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.0
+ * Version: 1.6.2
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.0');
+define('SPS_PLUGIN_VERSION', '1.6.2');
 
 /**
  * Class Simple_Product_Showcase
@@ -2240,17 +2240,8 @@ class Simple_Product_Showcase {
                             <?php
                         }
                     } else {
-                        // Sub category belum dipilih
-                        if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
-                            ?>
-                            <div class="sps-no-sub-category-message">
-                                <p><?php _e('Silakan pilih sub kategori untuk melihat produk', 'simple-product-showcase'); ?></p>
-                            </div>
-                            <?php
-                        } else {
-                            // Tidak ada sub kategori, tampilkan produk langsung dari parent category
-                            echo do_shortcode('[sps_products category="' . esc_attr($current_category) . '" columns="' . esc_attr($atts['columns']) . '" limit="' . esc_attr($atts['limit']) . '" orderby="' . esc_attr($atts['orderby']) . '" order="' . esc_attr($atts['order']) . '"]');
-                        }
+                        // Sub category belum dipilih - tampilkan semua produk dari parent category + child categories
+                        echo do_shortcode('[sps_products category="' . esc_attr($current_category) . '" columns="' . esc_attr($atts['columns']) . '" limit="' . esc_attr($atts['limit']) . '" orderby="' . esc_attr($atts['orderby']) . '" order="' . esc_attr($atts['order']) . '"]');
                     }
                 } else {
                     ?>
@@ -2870,9 +2861,9 @@ class Simple_Product_Showcase {
                         <?php
                     }
                     
-                    // STEP 3: Tampilkan produk hanya jika sub_category sudah dipilih
+                    // STEP 3: Tampilkan produk berdasarkan kategori yang dipilih
                     if (!empty($current_sub_category)) {
-                        // Verify sub_category exists and is child of parent category
+                        // Sub category dipilih - tampilkan hanya produk dari sub category itu
                         $sub_term = get_term_by('slug', $current_sub_category, 'sps_product_category');
                         
                         if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
@@ -2887,18 +2878,9 @@ class Simple_Product_Showcase {
                             <?php
                         }
                     } else {
-                        // Sub category belum dipilih
-                        if (!empty($sub_categories) && !is_wp_error($sub_categories)) {
-                            ?>
-                            <div class="sps-no-sub-category-message">
-                                <p><?php _e('Silakan pilih sub kategori untuk melihat produk', 'simple-product-showcase'); ?></p>
-                            </div>
-                            <?php
-                        } else {
-                            // Tidak ada sub kategori, tampilkan produk langsung dari parent category
-                            $products_atts = array_merge($atts, array('category' => $current_category));
-                            echo $this->fallback_products_shortcode($products_atts);
-                        }
+                        // Sub category belum dipilih - tampilkan produk dari parent category + semua child categories
+                        $products_atts = array_merge($atts, array('category' => $current_category));
+                        echo $this->fallback_products_shortcode($products_atts);
                     }
                 } else {
                     ?>

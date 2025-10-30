@@ -51,6 +51,81 @@ class SPS_Shortcodes {
     }
     
     /**
+     * Get products by category using manual SQL query
+     * More reliable than WP_Query for hierarchical taxonomy
+     */
+    private function get_products_by_category($category_term_id, $include_children = false, $limit = -1, $orderby = 'title', $order = 'ASC') {
+        global $wpdb;
+        
+        $posts_table = $wpdb->prefix . 'posts';
+        $term_relationships_table = $wpdb->prefix . 'term_relationships';
+        $term_taxonomy_table = $wpdb->prefix . 'term_taxonomy';
+        $terms_table = $wpdb->prefix . 'terms';
+        
+        if ($include_children) {
+            // Get all child term IDs
+            $child_terms = get_terms(array(
+                'taxonomy' => 'sps_product_category',
+                'parent' => $category_term_id,
+                'hide_empty' => false,
+                'fields' => 'ids'
+            ));
+            
+            $term_ids = array($category_term_id);
+            if ($child_terms && !is_wp_error($child_terms)) {
+                $term_ids = array_merge($term_ids, $child_terms);
+            }
+            
+            // Create IN clause for multiple term IDs
+            $term_ids_placeholder = implode(',', array_fill(0, count($term_ids), '%d'));
+            
+            $sql = "SELECT DISTINCT p.ID, p.post_title, p.post_status, p.post_date
+            FROM {$posts_table} p
+            JOIN {$term_relationships_table} tr ON p.ID = tr.object_id
+            JOIN {$term_taxonomy_table} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+            WHERE p.post_type = 'sps_product'
+            AND p.post_status = 'publish'
+            AND tt.taxonomy = 'sps_product_category'
+            AND tt.term_id IN ({$term_ids_placeholder})";
+            
+            $sql = $wpdb->prepare($sql, ...$term_ids);
+        } else {
+            // Get products from specific term only
+            $sql = "SELECT DISTINCT p.ID, p.post_title, p.post_status, p.post_date
+            FROM {$posts_table} p
+            JOIN {$term_relationships_table} tr ON p.ID = tr.object_id
+            JOIN {$term_taxonomy_table} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+            WHERE p.post_type = 'sps_product'
+            AND p.post_status = 'publish'
+            AND tt.taxonomy = 'sps_product_category'
+            AND tt.term_id = %d";
+            
+            $sql = $wpdb->prepare($sql, $category_term_id);
+        }
+        
+        // Orderby
+        $valid_orderbys = array('title', 'date', 'id', 'rand');
+        $orderby = in_array(strtolower($orderby), $valid_orderbys) ? strtolower($orderby) : 'title';
+        
+        if ($orderby === 'date') {
+            $sql .= " ORDER BY p.post_date " . ($order === 'DESC' ? 'DESC' : 'ASC');
+        } elseif ($orderby === 'id') {
+            $sql .= " ORDER BY p.ID " . ($order === 'DESC' ? 'DESC' : 'ASC');
+        } elseif ($orderby === 'rand') {
+            $sql .= " ORDER BY RAND()";
+        } else {
+            $sql .= " ORDER BY p.post_title " . ($order === 'DESC' ? 'DESC' : 'ASC');
+        }
+        
+        // Limit
+        if ($limit > 0) {
+            $sql .= " LIMIT " . intval($limit);
+        }
+        
+        return $wpdb->get_results($sql);
+    }
+    
+    /**
      * Shortcode untuk menampilkan produk
      * 
      * @param array $atts Attributes dari shortcode
@@ -739,12 +814,65 @@ class SPS_Shortcodes {
                         $include_children = true;
                     }
                     
-                    // Tampilkan produk berdasarkan filter_category
-                    $products_atts = array_merge($atts, array(
-                        'category' => $filter_category,
-                        'include_children' => $include_children
-                    ));
-                    echo $this->products_shortcode($products_atts);
+                    // Tampilkan produk berdasarkan filter_category menggunakan manual SQL
+                    // Get category term
+                    $normalized_category = strtolower(str_replace(' ', '-', $filter_category));
+                    $category_term = get_term_by('slug', $normalized_category, 'sps_product_category');
+                    
+                    if (!$category_term || is_wp_error($category_term)) {
+                        $category_term = get_term_by('slug', $filter_category, 'sps_product_category');
+                    }
+                    
+                    if (!$category_term || is_wp_error($category_term)) {
+                        $category_term = get_term_by('name', $filter_category, 'sps_product_category');
+                    }
+                    
+                    if (!$category_term || is_wp_error($category_term)) {
+                        $category_term = get_term_by('name', trim($filter_category), 'sps_product_category');
+                    }
+                    
+                    if ($category_term && !is_wp_error($category_term)) {
+                        // Get products using manual SQL
+                        $products = $this->get_products_by_category($category_term->term_id, $include_children, -1, 'title', 'ASC');
+                        
+                        if (!empty($products)) {
+                            ?>
+                            <div class="sps-products-grid">
+                                <?php
+                                foreach ($products as $product) {
+                                    $product_obj = get_post($product->ID);
+                                    if (!$product_obj) continue;
+                                    
+                                    setup_postdata($product_obj);
+                                    $image = get_the_post_thumbnail_url($product->ID, 'medium');
+                                    $link = get_permalink($product->ID);
+                                    ?>
+                                    <div class="sps-product-item">
+                                        <div class="sps-product-image">
+                                            <?php if ($image) { ?>
+                                                <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($product->post_title); ?>">
+                                            <?php } else { ?>
+                                                <div class="sps-no-image"><?php _e('No Image', 'simple-product-showcase'); ?></div>
+                                            <?php } ?>
+                                        </div>
+                                        <div class="sps-product-info">
+                                            <h3 class="sps-product-title">
+                                                <a href="<?php echo esc_url($link); ?>">
+                                                    <?php echo esc_html($product->post_title); ?>
+                                                </a>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                                wp_reset_postdata();
+                                ?>
+                            </div>
+                            <?php
+                        } else {
+                            echo '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
+                        }
+                    }
                 } else {
                     ?>
                     <div class="sps-no-category-message">
