@@ -108,12 +108,28 @@ class SPS_Shortcodes {
         
         // Apply category filter
         if (!empty($category_filter)) {
-            // Try to find the term by slug first, then by name
-            $term = get_term_by('slug', $category_filter, 'sps_product_category');
+            // Normalize the category filter (convert spaces to dashes, lowercase)
+            $normalized_category = strtolower(str_replace(' ', '-', $category_filter));
             
-            // If not found by slug, try by name (untuk handle Paku%20Tembak -> Paku Tembak)
+            // Try multiple search methods
+            $term = null;
+            
+            // Method 1: Try slug search with normalized value
+            $term = get_term_by('slug', $normalized_category, 'sps_product_category');
+            
+            // Method 2: Try slug search with original value
+            if (!$term || is_wp_error($term)) {
+                $term = get_term_by('slug', $category_filter, 'sps_product_category');
+            }
+            
+            // Method 3: Try name search with original value
             if (!$term || is_wp_error($term)) {
                 $term = get_term_by('name', $category_filter, 'sps_product_category');
+            }
+            
+            // Method 4: Try name search with trimmed value
+            if (!$term || is_wp_error($term)) {
+                $term = get_term_by('name', trim($category_filter), 'sps_product_category');
             }
             
             // If term found, use it for filtering
@@ -126,18 +142,18 @@ class SPS_Shortcodes {
                     )
                 );
             } else {
-                // Fallback: try searching by both slug and name
+                // Fallback: try searching by both slug and name with OR
                 $args['tax_query'] = array(
                     'relation' => 'OR',
                     array(
                         'taxonomy' => 'sps_product_category',
                         'field' => 'slug',
-                        'terms' => $category_filter
+                        'terms' => array($normalized_category, $category_filter)
                     ),
                     array(
                         'taxonomy' => 'sps_product_category',
                         'field' => 'name',
-                        'terms' => $category_filter
+                        'terms' => array($category_filter, trim($category_filter))
                     )
                 );
             }
@@ -625,11 +641,25 @@ class SPS_Shortcodes {
                 // STEP 2: Category ada, tampilkan filter sub kategori
                 // Get sub categories (child terms) dari parent category
                 // Try to get term by slug first, then by name (untuk handle URL dengan spasi)
-                $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
                 
-                // Jika tidak ketemu by slug, coba by name (untuk handle Paku%20Tembak -> Paku Tembak)
+                // Normalize the category (convert spaces to dashes, lowercase)
+                $normalized_category = strtolower(str_replace(' ', '-', $current_category));
+                
+                $parent_term = get_term_by('slug', $normalized_category, 'sps_product_category');
+                
+                // Jika tidak ketemu by normalized slug, coba original slug
+                if (!$parent_term || is_wp_error($parent_term)) {
+                    $parent_term = get_term_by('slug', $current_category, 'sps_product_category');
+                }
+                
+                // Jika masih tidak ketemu, coba by name
                 if (!$parent_term || is_wp_error($parent_term)) {
                     $parent_term = get_term_by('name', $current_category, 'sps_product_category');
+                }
+                
+                // Jika masih tidak ketemu, coba by name dengan trim
+                if (!$parent_term || is_wp_error($parent_term)) {
+                    $parent_term = get_term_by('name', trim($current_category), 'sps_product_category');
                 }
                 
                 if ($parent_term && !is_wp_error($parent_term)) {

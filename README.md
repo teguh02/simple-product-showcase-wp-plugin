@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.7  
+**Version:** 1.5.8  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,29 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.7 (Latest - October 2025)
+### Version 1.5.8 (Latest - October 2025)
+**Fix: Improved Category Search & Normalization**
+- **🔍 Enhanced Search Logic**: Better handling of category names with spaces
+  - Issue: Some categories like "Paku Tembak" didn't work while "Gun Nailer" did
+  - Solution: Added multi-method search approach with normalization
+  - Method 1: Search by normalized slug (spaces → dashes, lowercase)
+  - Method 2: Search by original slug
+  - Method 3: Search by original name
+  - Method 4: Search by trimmed name
+  - Fallback: OR query on multiple fields
+  
+- **✨ Improvements**:
+  - Better space/dash handling in category names
+  - Case-insensitive search
+  - Trimmed whitespace handling
+  - More robust fallback mechanisms
+  - Works for all category naming patterns
+
+- **🛠️ Updated**:
+  - `products_shortcode()`: Enhanced with 4-method search + fallback
+  - `products_sub_category_shortcode()`: Improved term lookup with normalization
+
+### Version 1.5.7 (October 2025)
 **Fix: Category Search by Name & Slug**
 - **🐛 Fixed Issue**: Products not showing when URL contains category with spaces
   - Problem: URL like `?category=Paku%20Tembak` (spaces) couldn't match slug `paku-tembak` (dashes)
