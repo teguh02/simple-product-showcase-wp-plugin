@@ -146,14 +146,16 @@ class SPS_Shortcodes {
                     ));
                     
                     // Include parent and all children
+                    // This will get products tagged directly to parent OR to any child
                     $term_ids = array_merge(array($term->term_id), is_array($child_terms) ? $child_terms : array());
                     
                     $args['tax_query'] = array(
+                        'relation' => 'OR',
                         array(
                             'taxonomy' => 'sps_product_category',
                             'field' => 'term_id',
-                            'terms' => $term_ids,
-                            'include_children' => false
+                            'terms' => $term->term_id,
+                            'include_children' => true  // WordPress will include children in this query
                         )
                     );
                 } else {

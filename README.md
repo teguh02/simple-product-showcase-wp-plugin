@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.5.9  
+**Version:** 1.6.0  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -846,7 +846,27 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.5.9 (Latest - October 2025)
+### Version 1.6.0 (Latest - October 2025)
+**Fix: Include Child Terms in Hierarchical Category Queries**
+- **🐛 CRITICAL FIX**: Products only tagged to child categories now appear when parent is selected
+  - Problem: Product tagged ONLY to "Tes Sub Kategori" but NOT "Tes Kategori" didn't show
+  - Solution: Use WordPress native `include_children=true` in tax_query
+  - Now: `include_children` parameter properly includes products from all child terms
+  
+- **✨ How It Works**:
+  - When parent category selected with `include_children=true`:
+    - Products tagged directly to parent ✅
+    - Products tagged to ANY child category ✅
+  - Example: "Tes Kategori" now shows products from:
+    - "Tes Kategori" directly
+    - "Tes Sub Kategori" and all other children
+  
+- **🔧 Technical**:
+  - Changed from manual child term collection to WordPress native `include_children=true`
+  - Properly leverage WordPress taxonomy hierarchy
+  - More efficient and reliable
+
+### Version 1.5.9 (October 2025)
 **Feature: Include Child Categories in Product Query**
 - **🎯 NEW: `include_children` Parameter**: Automatically include child category products
   - Added `include_children` parameter to `products_shortcode()`
