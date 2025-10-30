@@ -137,7 +137,7 @@ class SPS_Shortcodes {
             if ($term && !is_wp_error($term)) {
                 // Check if we need to include children
                 if ($atts['include_children']) {
-                    // Get all child terms
+                    // Get all child term IDs
                     $child_terms = get_terms(array(
                         'taxonomy' => 'sps_product_category',
                         'parent' => $term->term_id,
@@ -145,17 +145,19 @@ class SPS_Shortcodes {
                         'fields' => 'ids'
                     ));
                     
-                    // Include parent and all children
-                    // This will get products tagged directly to parent OR to any child
-                    $term_ids = array_merge(array($term->term_id), is_array($child_terms) ? $child_terms : array());
+                    // Merge parent term ID with all child term IDs
+                    $all_term_ids = array_merge(
+                        array($term->term_id), 
+                        is_array($child_terms) ? $child_terms : array()
+                    );
                     
+                    // Use IN query with multiple term IDs (no include_children parameter)
                     $args['tax_query'] = array(
-                        'relation' => 'OR',
                         array(
                             'taxonomy' => 'sps_product_category',
                             'field' => 'term_id',
-                            'terms' => $term->term_id,
-                            'include_children' => true  // WordPress will include children in this query
+                            'terms' => $all_term_ids,
+                            'operator' => 'IN'
                         )
                     );
                 } else {
