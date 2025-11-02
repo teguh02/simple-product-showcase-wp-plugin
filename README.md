@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.2  
+**Version:** 1.6.3  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -19,7 +19,7 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
   - **Main Button** dengan 2 mode (WhatsApp Mode atau Custom Mode)
   - **Custom Button 1** dengan full customization
   - **Custom Button 2** dengan full customization
-- Menggunakan shortcode `[sps_products]`, `[sps_products_with_filters]`, `[sps_products_sub_category]` (NEW), dan `[sps_detail_products]` untuk menampilkan produk
+- Menggunakan shortcode `[sps_products]`, `[sps_random_products]` (NEW), `[sps_products_with_filters]`, `[sps_products_sub_category]` (NEW), dan `[sps_detail_products]` untuk menampilkan produk
 - Mengorganisir produk dengan kategori taksonomi **hierarchical** (`sps_product_category`) dengan support parent-child relationship
 - Menambahkan hingga **5 gambar gallery** untuk setiap produk (+ 1 thumbnail = total 6 gambar)
 - **AJAX Gallery Interaktif**: Perubahan gambar utama tanpa reload halaman dengan hash URL support
@@ -99,6 +99,12 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 - Display grid produk dengan 10+ parameters
 - Support category filtering dari URL `?category=slug`
 - Auto-responsive dengan CSS Grid
+
+**Random Products Shortcode**: `[sps_random_products]`
+- Display grid produk dalam urutan **random** setiap kali halaman dimuat
+- Hanya support `columns` dan `limit` parameters
+- Perfect untuk "Featured Products" atau "Recommended Products" sections
+- Setiap page refresh akan menampilkan produk berbeda
 
 **Filter Shortcode**: `[sps_products_with_filters]`
 - Display grid produk dengan filter kategori interaktif di bagian atas
@@ -329,6 +335,16 @@ wp_set_post_terms() // Assign categories
 [sps_products]
 ```
 
+### Shortcode Grid Produk Random (NEW)
+```
+[sps_random_products columns="4" limit="4"]
+```
+**Fitur**:
+- Menampilkan produk dalam urutan **random** setiap kali halaman dimuat
+- Setiap page refresh akan menampilkan produk berbeda
+- Hanya support `columns` dan `limit` parameters
+- Perfect untuk "Featured Products" atau "Recommended Products" sections
+
 ### Shortcode Grid Produk dengan Filter Kategori
 ```
 [sps_products_with_filters]
@@ -344,6 +360,7 @@ wp_set_post_terms() // Assign categories
 ### Dengan Atribut
 ```
 [sps_products columns="3" category="shoes" limit="6"]
+[sps_random_products columns="4" limit="4"]
 [sps_products_with_filters columns="4" limit="12"]
 ```
 

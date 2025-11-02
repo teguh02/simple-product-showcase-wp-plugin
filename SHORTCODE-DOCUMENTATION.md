@@ -1,7 +1,7 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.0
-**Last Updated:** 2025-10-27
+**Plugin Version:** 1.6.3
+**Last Updated:** 2025-01-27
 
 ---
 
@@ -30,7 +30,20 @@ The main shortcode to display products:
 [sps_products]
 ```
 
-### 2. Product Grid with Category Filters
+### 2. Random Products Grid
+Display products in random order:
+
+```
+[sps_random_products]
+```
+
+**Features:**
+- Always displays products in random order
+- Supports `columns` and `limit` parameters
+- Every page load shows different products
+- Perfect for "Featured Products" or "Recommended Products" sections
+
+### 3. Product Grid with Category Filters
 Display products with interactive category filter tabs:
 
 ```
@@ -45,7 +58,7 @@ Display products with interactive category filter tabs:
 - Fully responsive design
 - Displays "TERDAPAT FILTER DISINI" message when no category selected
 
-### 3. Product Grid with Sub Category Filters (NEW v1.5.1)
+### 4. Product Grid with Sub Category Filters (NEW v1.5.1)
 Display products with 2-level category filtering (parent → sub category):
 
 ```
@@ -69,7 +82,7 @@ Display products with 2-level category filtering (parent → sub category):
 
 **Important:** This shortcode requires WordPress hierarchical taxonomy. Sub categories must be created as child terms of parent categories in Products → Categories.
 
-### 4. Product Detail Display
+### 5. Product Detail Display
 New shortcode for displaying individual product details:
 
 ```
@@ -80,7 +93,7 @@ This will display all products in a responsive 3-column grid layout.
 
 ## 📋 Product Grid Shortcode Parameters
 
-**Applies to:** `[sps_products]` and `[sps_products_with_filters]`
+**Applies to:** `[sps_products]`, `[sps_random_products]`, and `[sps_products_with_filters]`
 
 | Parameter | Description | Default | Example |
 |-----------|-------------|---------|---------|
@@ -96,6 +109,8 @@ This will display all products in a responsive 3-column grid layout.
 | `gallery_style` | Gallery display style: grid, slider, or carousel | grid | `gallery_style="slider"` |
 
 **Note:** For `[sps_products_with_filters]`, the `category` parameter is automatically set based on the selected filter tab.
+
+**Note:** For `[sps_random_products]`, products are always displayed in random order. Only `columns` and `limit` parameters are available.
 
 ## 📋 Product Detail Shortcode Parameters
 
@@ -139,6 +154,12 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 ```
 [sps_products]
 ```
+
+### Random Products (4 columns, 4 products)
+```
+[sps_random_products columns="4" limit="4"]
+```
+Always shows random products, different every page load. Perfect for "Featured Products" sections.
 
 ### Product Grid with Category Filters
 ```
@@ -194,6 +215,12 @@ Default 3-column grid with 2-level category filtering (parent → sub category).
 ```
 [sps_products show_price="false" show_description="false" show_whatsapp="false" show_gallery="false"]
 ```
+
+### Random Products (Alternative)
+```
+[sps_random_products columns="3" limit="6"]
+```
+Shows 6 random products in 3 columns, different every page load.
 
 ### Featured Products Section
 ```
@@ -313,10 +340,10 @@ Each product has its own dedicated page with:
 
 ### 1. **Variety is Key**
 Use different shortcodes on different pages for variety:
-- Homepage: `[sps_products limit="6" columns="3"]`
+- Homepage: `[sps_random_products limit="6" columns="3"]`
 - Products page with filters: `[sps_products_with_filters columns="4"]`
 - Category page: `[sps_products category="electronics" columns="2"]`
-- Featured section: `[sps_products limit="4" orderby="menu_order"]`
+- Featured section: `[sps_random_products limit="4"]`
 
 ### 2. **Category Filtering Options**
 Choose the right approach for your needs:
@@ -579,6 +606,13 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
+### Version 1.6.3 (NEW)
+- **Random Products Shortcode**: New shortcode `[sps_random_products]` untuk menampilkan produk dalam urutan random
+- **Dynamic Display**: Setiap page refresh menampilkan produk berbeda
+- **Perfect for Featured Section**: Ideal untuk "Featured Products" atau "Recommended Products" sections
+- **Parameters Support**: Mendukung `columns` dan `limit` parameters
+- **Documentation Update**: Updated documentation dengan informasi shortcode baru
+
 ### Version 1.3.2
 - **Enhanced Gallery**: Thumbnail automatically added as first image in product gallery
 - **Total 6 Images**: Gallery now displays 1 thumbnail + 5 additional images = 6 images total
@@ -623,5 +657,5 @@ If you need help with the shortcode:
 ---
 
 **Plugin:** Simple Product Showcase  
-**Version:** 1.3.0  
-**Last Updated:** 2025-09-29
+**Version:** 1.6.3  
+**Last Updated:** 2025-01-27
