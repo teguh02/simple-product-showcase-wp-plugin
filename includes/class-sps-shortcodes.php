@@ -475,19 +475,53 @@ class SPS_Shortcodes {
             $limit = -1;
         }
         
-        // Query arguments untuk random products
-        $args = array(
-            'post_type' => 'sps_product',
-            'post_status' => 'publish',
-            'posts_per_page' => $limit,
-            'orderby' => 'rand', // Selalu random
+        // Get all categories yang punya produk
+        $all_categories = get_terms(array(
+            'taxonomy' => 'sps_product_category',
+            'hide_empty' => true, // Hanya kategori yang punya produk
+            'orderby' => 'name',
             'order' => 'ASC'
-        );
+        ));
         
-        // Execute query
-        $products_query = new WP_Query($args);
+        if (is_wp_error($all_categories) || empty($all_categories)) {
+            return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
+        }
         
-        if (!$products_query->have_posts()) {
+        // Collect random products - 1 per category
+        $random_products = array();
+        foreach ($all_categories as $category) {
+            // Query 1 random product per category
+            $category_args = array(
+                'post_type' => 'sps_product',
+                'post_status' => 'publish',
+                'posts_per_page' => 1, // Ambil 1 saja per kategori
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => 'sps_product_category',
+                        'field' => 'term_id',
+                        'terms' => $category->term_id
+                    )
+                ),
+                'orderby' => 'rand', // Random dari kategori ini
+                'order' => 'ASC'
+            );
+            
+            $category_query = new WP_Query($category_args);
+            
+            if ($category_query->have_posts()) {
+                $category_query->the_post();
+                $random_products[] = get_post(); // Simpan post object
+                wp_reset_postdata();
+            }
+        }
+        
+        // Apply limit jika ada batasan
+        if ($limit > 0 && $limit < count($random_products)) {
+            shuffle($random_products); // Random urutan kategori
+            $random_products = array_slice($random_products, 0, $limit);
+        }
+        
+        if (empty($random_products)) {
             return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
         }
         
@@ -642,25 +676,25 @@ class SPS_Shortcodes {
         }
         </style>
         <div class="sps-products-grid">
-            <?php while ($products_query->have_posts()) : $products_query->the_post(); ?>
+            <?php foreach ($random_products as $post) : setup_postdata($post); ?>
                 <div class="sps-product-item">
-                    <?php if (has_post_thumbnail()) : ?>
+                    <?php if (has_post_thumbnail($post->ID)) : ?>
                         <div class="sps-product-image">
-                            <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
+                            <?php echo get_the_post_thumbnail($post->ID, 'medium', array('alt' => get_the_title($post->ID))); ?>
                         </div>
                     <?php endif; ?>
                     
                     <div class="sps-product-info">
                         <div class="sps-product-title">
-                            <p class="sps-product-title-text"><?php the_title(); ?></p>
+                            <p class="sps-product-title-text"><?php echo get_the_title($post->ID); ?></p>
                         </div>
                                 <?php 
-                                $detail_url = SPS_Settings::get_product_detail_url(get_the_ID());
+                                $detail_url = SPS_Settings::get_product_detail_url($post->ID);
                                 ?>
                                 <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                     </div>
                 </div>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </div>
         
         <?php

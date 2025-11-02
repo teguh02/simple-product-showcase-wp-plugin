@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.3  
+**Version:** 1.6.4  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -102,9 +102,11 @@ Simple Product Showcase adalah plugin WordPress yang memungkinkan Anda untuk:
 
 **Random Products Shortcode**: `[sps_random_products]`
 - Display grid produk dalam urutan **random** setiap kali halaman dimuat
+- Menampilkan **1 produk per kategori** dari kategori yang berbeda
 - Hanya support `columns` dan `limit` parameters
 - Perfect untuk "Featured Products" atau "Recommended Products" sections
 - Setiap page refresh akan menampilkan produk berbeda
+- **Example**: Jika limit="4" dan ada 8 kategori, akan menampilkan 4 produk (masing-masing 1 dari 4 kategori berbeda)
 
 **Filter Shortcode**: `[sps_products_with_filters]`
 - Display grid produk dengan filter kategori interaktif di bagian atas
@@ -341,9 +343,11 @@ wp_set_post_terms() // Assign categories
 ```
 **Fitur**:
 - Menampilkan produk dalam urutan **random** setiap kali halaman dimuat
+- Menampilkan **1 produk per kategori** dari kategori yang berbeda
 - Setiap page refresh akan menampilkan produk berbeda
 - Hanya support `columns` dan `limit` parameters
 - Perfect untuk "Featured Products" atau "Recommended Products" sections
+- **Example**: Jika limit="4" dan ada 8 kategori, akan menampilkan 4 produk (masing-masing 1 dari 4 kategori berbeda)
 
 ### Shortcode Grid Produk dengan Filter Kategori
 ```
@@ -863,7 +867,38 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.2 (Latest - October 2025)
+### Version 1.6.4 (Latest - October 2025)
+**Feature: Smart Random Products with Category Distribution**
+- **🎯 Enhanced `[sps_random_products]`**: Now displays **1 product per category** from different categories
+  - Problem: Random products might show multiple products from same category
+  - Solution: Collect 1 random product from each category, then apply limit
+  - Now: Ensures diversity - each displayed product is from a different category
+- **✨ How It Works**:
+  - Get all categories that have products
+  - Query 1 random product from each category
+  - Shuffle the collected products
+  - Apply limit to final collection
+  - Perfect for showcasing product diversity
+- **💡 Use Case**: 
+  - If limit="4" and you have 8 categories, shows 4 products (1 from each of 4 different categories)
+  - Ideal for "Featured Products" section showing diverse product range
+  - Great for homepage showcase with products from multiple categories
+- **🔧 Technical**:
+  - `random_products_shortcode()` enhanced with category-wise random selection
+  - Uses `tax_query` to filter by category for each random query
+  - `orderby => 'rand'` for randomness within each category
+  - Maintains backward compatibility with existing parameters
+  - Applied to both main class and fallback methods
+
+### Version 1.6.3
+**Feature: Random Products Shortcode**
+- **Random Products Shortcode**: New shortcode `[sps_random_products]` untuk menampilkan produk dalam urutan random
+- **Dynamic Display**: Setiap page refresh menampilkan produk berbeda
+- **Perfect for Featured Section**: Ideal untuk "Featured Products" atau "Recommended Products" sections
+- **Parameters Support**: Mendukung `columns` dan `limit` parameters
+- **Documentation Update**: Updated documentation dengan informasi shortcode baru
+
+### Version 1.6.2
 **Fix: Implement Manual SQL Query for Reliable Hierarchical Product Filtering**
 - **🐛 CRITICAL FIX**: WordPress tax_query unreliable for hierarchical taxonomy filtering
   - Problem: Even with `include_children=true`, products from child categories still not appearing

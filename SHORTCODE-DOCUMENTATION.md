@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.3
+**Plugin Version:** 1.6.4
 **Last Updated:** 2025-01-27
 
 ---
@@ -39,9 +39,11 @@ Display products in random order:
 
 **Features:**
 - Always displays products in random order
+- Displays **1 product per category** from different categories
 - Supports `columns` and `limit` parameters
 - Every page load shows different products
 - Perfect for "Featured Products" or "Recommended Products" sections
+- **Example**: If limit="4" and you have 8 categories, it will show 4 products (1 from each of 4 different categories)
 
 ### 3. Product Grid with Category Filters
 Display products with interactive category filter tabs:
@@ -220,7 +222,7 @@ Default 3-column grid with 2-level category filtering (parent → sub category).
 ```
 [sps_random_products columns="3" limit="6"]
 ```
-Shows 6 random products in 3 columns, different every page load.
+Shows 6 random products in 3 columns, different every page load. Displays **1 product per category** from different categories.
 
 ### Featured Products Section
 ```
@@ -606,7 +608,13 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.3 (NEW)
+### Version 1.6.4 (NEW)
+- **Smart Random Products**: `[sps_random_products]` sekarang menampilkan **1 produk per kategori** dari kategori yang berbeda
+- **Category Distribution**: Ketika limit="4" dan ada 8 kategori, akan menampilkan 4 produk (masing-masing 1 dari 4 kategori berbeda)
+- **Perfect for Showcase**: Ideal untuk menampilkan diversity produk dari berbagai kategori
+- **Backward Compatible**: Tetap support `columns` dan `limit` parameters seperti sebelumnya
+
+### Version 1.6.3
 - **Random Products Shortcode**: New shortcode `[sps_random_products]` untuk menampilkan produk dalam urutan random
 - **Dynamic Display**: Setiap page refresh menampilkan produk berbeda
 - **Perfect for Featured Section**: Ideal untuk "Featured Products" atau "Recommended Products" sections
