@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.4  
+**Version:** 1.6.5  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,31 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.4 (Latest - October 2025)
+### Version 1.6.5 (Latest - October 2025)
+**Fix: Array-Based Random Products with Column Index Assignment**
+- **🎯 Enhanced Logic**: `[sps_random_products]` sekarang menggunakan array dengan index sesuai `columns` parameter
+  - Problem: Previous logic tidak memastikan setiap index array terisi dengan produk dari kategori berbeda
+  - Solution: Buat array dengan jumlah index sesuai `columns`, lalu isi setiap index dengan 1 produk random dari kategori berbeda
+  - Now: Array index[0] = random dari kategori 1, index[1] = random dari kategori 2, dst.
+- **✨ How It Works**:
+  - Buat array kosong dengan `array_fill(0, $columns, null)`
+  - Loop melalui setiap index array (0 sampai columns-1)
+  - Untuk setiap index, ambil 1 produk random dari kategori yang berbeda
+  - Shuffle kategori untuk variasi urutan
+  - Filter null values dan re-index array
+  - Apply limit jika lebih kecil dari jumlah produk
+- **💡 Use Case**: 
+  - `columns="4"` → Array dengan 4 index, masing-masing dari kategori berbeda
+  - `columns="5"` → Array dengan 5 index, masing-masing dari kategori berbeda
+  - Perfect untuk showcase produk dengan distribusi kategori yang merata
+- **🔧 Technical**:
+  - `random_products_shortcode()` enhanced dengan array index assignment
+  - Uses `array_fill()` untuk inisialisasi array
+  - Loop dengan counter untuk index dan kategori
+  - Proper null handling dan re-indexing
+  - Applied to both main class and fallback methods
+
+### Version 1.6.4
 **Feature: Smart Random Products with Category Distribution**
 - **🎯 Enhanced `[sps_random_products]`**: Now displays **1 product per category** from different categories
   - Problem: Random products might show multiple products from same category

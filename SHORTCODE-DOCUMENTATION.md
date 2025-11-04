@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.4
+**Plugin Version:** 1.6.5
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,15 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.4 (NEW)
+### Version 1.6.5 (NEW)
+- **Array-Based Random Products**: `[sps_random_products]` sekarang menggunakan array dengan index sesuai `columns` parameter
+- **Index Assignment**: Setiap index array diisi dengan 1 produk random dari kategori berbeda
+  - `columns="4"` → Array index[0] = kategori 1, index[1] = kategori 2, index[2] = kategori 3, index[3] = kategori 4
+  - `columns="5"` → Array dengan 5 index, masing-masing dari kategori berbeda
+- **Perfect Distribution**: Memastikan distribusi kategori yang merata sesuai jumlah columns
+- **Backward Compatible**: Tetap support `limit` parameter untuk membatasi total produk yang ditampilkan
+
+### Version 1.6.4
 - **Smart Random Products**: `[sps_random_products]` sekarang menampilkan **1 produk per kategori** dari kategori yang berbeda
 - **Category Distribution**: Ketika limit="4" dan ada 8 kategori, akan menampilkan 4 produk (masing-masing 1 dari 4 kategori berbeda)
 - **Perfect for Showcase**: Ideal untuk menampilkan diversity produk dari berbagai kategori

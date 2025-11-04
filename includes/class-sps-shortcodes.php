@@ -487,10 +487,23 @@ class SPS_Shortcodes {
             return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
         }
         
-        // Collect random products - 1 per category
-        $random_products = array();
-        foreach ($all_categories as $category) {
-            // Query 1 random product per category
+        // Shuffle categories untuk random urutan
+        shuffle($all_categories);
+        
+        // Buat array dengan jumlah index sesuai columns
+        $random_products = array_fill(0, $columns, null);
+        
+        // Isi setiap index array dengan 1 produk random dari kategori berbeda
+        $category_index = 0;
+        for ($i = 0; $i < $columns; $i++) {
+            // Jika kategori sudah habis, break
+            if ($category_index >= count($all_categories)) {
+                break;
+            }
+            
+            $category = $all_categories[$category_index];
+            
+            // Query 1 random product dari kategori ini
             $category_args = array(
                 'post_type' => 'sps_product',
                 'post_status' => 'publish',
@@ -510,14 +523,27 @@ class SPS_Shortcodes {
             
             if ($category_query->have_posts()) {
                 $category_query->the_post();
-                $random_products[] = get_post(); // Simpan post object
+                $random_products[$i] = get_post(); // Simpan di index array
                 wp_reset_postdata();
+                $category_index++; // Pindah ke kategori berikutnya
+            } else {
+                // Jika kategori ini tidak punya produk, skip ke kategori berikutnya
+                $category_index++;
+                $i--; // Kembalikan index untuk mengisi slot ini lagi
+                continue;
             }
         }
         
-        // Apply limit jika ada batasan
+        // Hapus null values (jika ada kategori yang tidak punya produk)
+        $random_products = array_filter($random_products, function($product) {
+            return $product !== null;
+        });
+        
+        // Re-index array untuk menghilangkan gap
+        $random_products = array_values($random_products);
+        
+        // Apply limit jika ada batasan dan limit lebih kecil dari jumlah produk
         if ($limit > 0 && $limit < count($random_products)) {
-            shuffle($random_products); // Random urutan kategori
             $random_products = array_slice($random_products, 0, $limit);
         }
         
