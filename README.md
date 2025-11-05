@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.6  
+**Version:** 1.6.7  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,30 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.6 (Latest - October 2025)
+### Version 1.6.7 (Latest - January 2025)
+**Fix: Prevent Duplicate Products in Random Products Shortcode**
+- **🐛 Bug Fix**: `[sps_random_products]` sekarang mencegah produk duplikat yang muncul
+  - Problem: Produk yang sama muncul beberapa kali karena satu produk bisa masuk ke beberapa kategori sekaligus
+  - Solution: Track Product IDs yang sudah dipilih dan exclude dari query berikutnya
+  - Now: Setiap produk yang ditampilkan adalah unik, tidak ada duplikat
+- **✨ How It Works**:
+  - Menyimpan array `$selected_product_ids` untuk melacak produk yang sudah dipilih
+  - Menggunakan `post__not_in` parameter di WP_Query untuk exclude produk yang sudah dipilih
+  - Verifikasi ganda: Cek `in_array()` sebelum menambahkan produk ke array hasil
+  - Loop dengan `max_attempts` untuk mencegah infinite loop jika produk habis
+  - Reset kategori index jika sudah sampai akhir untuk terus mencari produk unik
+- **💡 Examples**:
+  - `columns="4" limit="8"` → 8 produk unik, masing-masing dari kategori berbeda (jika memungkinkan)
+  - Jika ada overlap kategori, produk tetap unik tanpa duplikat
+  - Grid layout tetap mengikuti `columns` parameter untuk CSS
+- **🔧 Technical**:
+  - Added `$selected_product_ids` array tracking
+  - Enhanced query dengan `post__not_in => $selected_product_ids`
+  - Double-check dengan `!in_array($current_post->ID, $selected_product_ids)`
+  - Loop protection dengan `$max_attempts` untuk safety
+  - Applied to both `SPS_Shortcodes::random_products_shortcode()` and fallback method
+
+### Version 1.6.6 (October 2025)
 **Fix: Limit Parameter Now Controls Total Products (Not Columns)**
 - **🐛 Bug Fix**: `[sps_random_products]` sekarang menggunakan `limit` untuk menentukan jumlah total produk, bukan `columns`
   - Problem: `columns="4" limit="8"` hanya menampilkan 4 produk (bukan 8 produk dalam 2 baris)

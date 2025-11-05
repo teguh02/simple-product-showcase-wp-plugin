@@ -495,19 +495,27 @@ class SPS_Shortcodes {
         
         // Koleksi produk random (1 produk per kategori berbeda)
         $random_products = array();
+        $selected_product_ids = array(); // Track produk yang sudah dipilih untuk mencegah duplikat
         
         // Isi array dengan 1 produk random dari setiap kategori berbeda
         $category_index = 0;
         $product_count = 0;
+        $max_attempts = count($all_categories) * 2; // Batas maksimal percobaan untuk mencegah infinite loop
+        $attempts = 0;
         
-        while ($product_count < $target_count && $category_index < count($all_categories)) {
+        while ($product_count < $target_count && $attempts < $max_attempts) {
+            // Reset ke awal kategori jika sudah sampai akhir
+            if ($category_index >= count($all_categories)) {
+                $category_index = 0;
+            }
+            
             $category = $all_categories[$category_index];
             
-            // Query 1 random product dari kategori ini
+            // Query produk dari kategori ini (ambil beberapa untuk memastikan ada yang unik)
             $category_args = array(
                 'post_type' => 'sps_product',
                 'post_status' => 'publish',
-                'posts_per_page' => 1, // Ambil 1 saja per kategori
+                'posts_per_page' => 10, // Ambil lebih banyak untuk mencari yang unik
                 'tax_query' => array(
                     array(
                         'taxonomy' => 'sps_product_category',
@@ -516,19 +524,28 @@ class SPS_Shortcodes {
                     )
                 ),
                 'orderby' => 'rand', // Random dari kategori ini
-                'order' => 'ASC'
+                'order' => 'ASC',
+                'post__not_in' => $selected_product_ids // Exclude produk yang sudah dipilih
             );
             
             $category_query = new WP_Query($category_args);
             
             if ($category_query->have_posts()) {
+                // Ambil produk pertama yang belum pernah dipilih
                 $category_query->the_post();
-                $random_products[] = get_post(); // Tambahkan ke array
+                $current_post = get_post();
+                
+                // Pastikan produk ini belum pernah dipilih
+                if (!in_array($current_post->ID, $selected_product_ids)) {
+                    $random_products[] = $current_post; // Tambahkan ke array
+                    $selected_product_ids[] = $current_post->ID; // Tandai sebagai sudah dipilih
+                    $product_count++; // Increment counter produk
+                }
                 wp_reset_postdata();
-                $product_count++; // Increment counter produk
             }
             
             $category_index++; // Pindah ke kategori berikutnya
+            $attempts++; // Increment counter percobaan
         }
         
         if (empty($random_products)) {

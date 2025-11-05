@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.6
+**Plugin Version:** 1.6.7
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,15 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.6 (NEW)
+### Version 1.6.7 (NEW)
+- **Bug Fix**: `[sps_random_products]` sekarang mencegah produk duplikat yang muncul
+  - Problem: Produk yang sama muncul beberapa kali karena satu produk bisa masuk ke beberapa kategori sekaligus
+  - Solution: Track Product IDs yang sudah dipilih dan exclude dari query berikutnya menggunakan `post__not_in`
+  - Now: Setiap produk yang ditampilkan adalah unik, tidak ada duplikat
+  - Technical: Added `$selected_product_ids` array tracking, double-check dengan `in_array()`, loop protection dengan `max_attempts`
+  - Examples: `columns="4" limit="8"` → 8 produk unik tanpa duplikat
+
+### Version 1.6.6
 - **Bug Fix**: `[sps_random_products]` sekarang menggunakan `limit` untuk menentukan jumlah total produk
   - Problem: `columns="4" limit="8"` hanya menampilkan 4 produk
   - Solution: `limit` mengontrol jumlah produk, `columns` hanya untuk CSS grid layout
