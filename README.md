@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.5  
+**Version:** 1.6.6  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,28 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.5 (Latest - October 2025)
+### Version 1.6.6 (Latest - October 2025)
+**Fix: Limit Parameter Now Controls Total Products (Not Columns)**
+- **🐛 Bug Fix**: `[sps_random_products]` sekarang menggunakan `limit` untuk menentukan jumlah total produk, bukan `columns`
+  - Problem: `columns="4" limit="8"` hanya menampilkan 4 produk (bukan 8 produk dalam 2 baris)
+  - Solution: `limit` sekarang mengontrol jumlah produk yang diambil, `columns` hanya untuk CSS grid layout
+  - Now: `columns="4" limit="8"` = 8 produk dalam grid 4 kolom (2 baris x 4 kolom)
+- **✨ How It Works**:
+  - `limit` = jumlah total produk yang ingin ditampilkan
+  - `columns` = jumlah kolom per baris (untuk CSS grid)
+  - Ambil produk hingga mencapai `limit` atau semua kategori habis (1 produk per kategori berbeda)
+  - Grid CSS otomatis membuat baris baru sesuai jumlah produk
+- **💡 Examples**:
+  - `columns="4" limit="8"` → 8 produk dalam 4 kolom = 2 baris
+  - `columns="3" limit="9"` → 9 produk dalam 3 kolom = 3 baris
+  - `columns="2" limit="6"` → 6 produk dalam 2 kolom = 3 baris
+- **🔧 Technical**:
+  - Changed from `array_fill(0, $columns, null)` to dynamic array collection
+  - Uses `$target_count = min($limit, count($all_categories))` for proper limit handling
+  - While loop collects products until `$target_count` is reached
+  - Maintains "1 product per category" distribution logic
+
+### Version 1.6.5
 **Fix: Array-Based Random Products with Column Index Assignment**
 - **🎯 Enhanced Logic**: `[sps_random_products]` sekarang menggunakan array dengan index sesuai `columns` parameter
   - Problem: Previous logic tidak memastikan setiap index array terisi dengan produk dari kategori berbeda

@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.5
+**Plugin Version:** 1.6.6
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,21 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.5 (NEW)
+### Version 1.6.6 (NEW)
+- **Bug Fix**: `[sps_random_products]` sekarang menggunakan `limit` untuk menentukan jumlah total produk
+  - Problem: `columns="4" limit="8"` hanya menampilkan 4 produk
+  - Solution: `limit` mengontrol jumlah produk, `columns` hanya untuk CSS grid layout
+  - Now: `columns="4" limit="8"` = 8 produk dalam grid 4 kolom (2 baris x 4 kolom)
+- **Correct Behavior**: 
+  - `limit` = jumlah total produk yang ingin ditampilkan
+  - `columns` = jumlah kolom per baris (untuk layout grid)
+  - Grid CSS otomatis membuat baris baru sesuai jumlah produk
+- **Examples**:
+  - `columns="4" limit="8"` → 8 produk dalam 4 kolom = 2 baris
+  - `columns="3" limit="9"` → 9 produk dalam 3 kolom = 3 baris
+  - `columns="2" limit="6"` → 6 produk dalam 2 kolom = 3 baris
+
+### Version 1.6.5
 - **Array-Based Random Products**: `[sps_random_products]` sekarang menggunakan array dengan index sesuai `columns` parameter
 - **Index Assignment**: Setiap index array diisi dengan 1 produk random dari kategori berbeda
   - `columns="4"` → Array index[0] = kategori 1, index[1] = kategori 2, index[2] = kategori 3, index[3] = kategori 4

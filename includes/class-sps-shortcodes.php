@@ -490,17 +490,17 @@ class SPS_Shortcodes {
         // Shuffle categories untuk random urutan
         shuffle($all_categories);
         
-        // Buat array dengan jumlah index sesuai columns
-        $random_products = array_fill(0, $columns, null);
+        // Tentukan target jumlah produk berdasarkan limit
+        $target_count = ($limit > 0) ? min($limit, count($all_categories)) : count($all_categories);
         
-        // Isi setiap index array dengan 1 produk random dari kategori berbeda
+        // Koleksi produk random (1 produk per kategori berbeda)
+        $random_products = array();
+        
+        // Isi array dengan 1 produk random dari setiap kategori berbeda
         $category_index = 0;
-        for ($i = 0; $i < $columns; $i++) {
-            // Jika kategori sudah habis, break
-            if ($category_index >= count($all_categories)) {
-                break;
-            }
-            
+        $product_count = 0;
+        
+        while ($product_count < $target_count && $category_index < count($all_categories)) {
             $category = $all_categories[$category_index];
             
             // Query 1 random product dari kategori ini
@@ -523,28 +523,12 @@ class SPS_Shortcodes {
             
             if ($category_query->have_posts()) {
                 $category_query->the_post();
-                $random_products[$i] = get_post(); // Simpan di index array
+                $random_products[] = get_post(); // Tambahkan ke array
                 wp_reset_postdata();
-                $category_index++; // Pindah ke kategori berikutnya
-            } else {
-                // Jika kategori ini tidak punya produk, skip ke kategori berikutnya
-                $category_index++;
-                $i--; // Kembalikan index untuk mengisi slot ini lagi
-                continue;
+                $product_count++; // Increment counter produk
             }
-        }
-        
-        // Hapus null values (jika ada kategori yang tidak punya produk)
-        $random_products = array_filter($random_products, function($product) {
-            return $product !== null;
-        });
-        
-        // Re-index array untuk menghilangkan gap
-        $random_products = array_values($random_products);
-        
-        // Apply limit jika ada batasan dan limit lebih kecil dari jumlah produk
-        if ($limit > 0 && $limit < count($random_products)) {
-            $random_products = array_slice($random_products, 0, $limit);
+            
+            $category_index++; // Pindah ke kategori berikutnya
         }
         
         if (empty($random_products)) {
