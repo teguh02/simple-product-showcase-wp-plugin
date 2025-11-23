@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.7
+ * Version: 1.6.8
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.7');
+define('SPS_PLUGIN_VERSION', '1.6.8');
 
 /**
  * Class Simple_Product_Showcase
@@ -113,6 +113,8 @@ class Simple_Product_Showcase {
         // Register AJAX actions
         add_action('wp_ajax_get_gallery_image', array($this, 'ajax_get_gallery_image'));
         add_action('wp_ajax_nopriv_get_gallery_image', array($this, 'ajax_get_gallery_image'));
+        add_action('wp_ajax_sps_search_products', array($this, 'ajax_search_products'));
+        add_action('wp_ajax_nopriv_sps_search_products', array($this, 'ajax_search_products'));
     }
     
     /**
@@ -2355,12 +2357,13 @@ class Simple_Product_Showcase {
             'show_whatsapp' => 'true'
         ), $atts, 'sps_products_sub_category');
         
-        // Get category and sub_category from URL
+        // Get category, sub_category, and query from URL
         $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
         $current_sub_category = isset($_GET['sub_category']) ? sanitize_text_field($_GET['sub_category']) : '';
+        $current_query = isset($_GET['query']) ? sanitize_text_field($_GET['query']) : '';
         
         // Get current page URL
-        $current_url = remove_query_arg(array('category', 'sub_category'));
+        $current_url = remove_query_arg(array('category', 'sub_category', 'query'));
         
         // Start output
         ob_start();
@@ -2455,6 +2458,135 @@ class Simple_Product_Showcase {
                 font-size: 13px;
             }
         }
+        
+        .sps-search-container {
+            margin: 20px 0 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+        
+        .sps-search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 8px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .sps-search-wrapper:focus-within {
+            border-color: #FDB913;
+            box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
+        }
+        
+        .sps-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            background: transparent;
+            color: #333333;
+        }
+        
+        .sps-search-input::placeholder {
+            color: #999999;
+        }
+        
+        .sps-search-icon {
+            color: #666666;
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .sps-autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .sps-autocomplete-results.show {
+            display: block;
+        }
+        
+        .sps-autocomplete-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sps-autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sps-autocomplete-item:hover {
+            background: #f8f8f8;
+        }
+        
+        .sps-autocomplete-item-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .sps-autocomplete-item-info {
+            flex: 1;
+        }
+        
+        .sps-autocomplete-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333333;
+            margin: 0;
+        }
+        
+        .sps-autocomplete-item-category {
+            font-size: 12px;
+            color: #999999;
+            margin: 2px 0 0;
+        }
+        
+        .sps-autocomplete-loading {
+            padding: 12px 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        
+        .sps-autocomplete-no-results {
+            padding: 12px 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-search-container {
+                max-width: 100%;
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+        }
         </style>
         
         <div class="sps-sub-category-container">
@@ -2502,6 +2634,23 @@ class Simple_Product_Showcase {
                         </div>
                         <?php
                     }
+                    
+                    // Display search bar (hanya muncul jika category ada)
+                    ?>
+                    <div class="sps-search-container">
+                        <div class="sps-search-wrapper">
+                            <span class="sps-search-icon">🔍</span>
+                            <input type="text" 
+                                   class="sps-search-input" 
+                                   id="sps-product-search" 
+                                   placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
+                                   value="<?php echo esc_attr($current_query); ?>"
+                                   data-category="<?php echo esc_attr($current_category); ?>"
+                                   data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
+                            <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
+                        </div>
+                    </div>
+                    <?php
                     
                     // STEP 3: Tampilkan produk hanya jika sub_category sudah dipilih
                     if (!empty($current_sub_category)) {
@@ -3239,6 +3388,100 @@ class Simple_Product_Showcase {
             'image_url' => $image_url,
             'image_alt' => $image_alt
         ));
+    }
+    
+    /**
+     * AJAX handler untuk autocomplete search produk
+     */
+    public function ajax_search_products() {
+        // Verify nonce for security
+        check_ajax_referer('sps_nonce', 'nonce');
+        
+        $search_term = isset($_POST['search_term']) ? sanitize_text_field($_POST['search_term']) : '';
+        $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
+        $sub_category = isset($_POST['sub_category']) ? sanitize_text_field($_POST['sub_category']) : '';
+        
+        if (empty($search_term) || strlen($search_term) < 2) {
+            wp_send_json_success(array('products' => array()));
+        }
+        
+        if (empty($category)) {
+            wp_send_json_error('Category parameter is required');
+        }
+        
+        // Get category term
+        $normalized_category = strtolower(str_replace(' ', '-', $category));
+        $parent_term = get_term_by('slug', $normalized_category, 'sps_product_category');
+        
+        if (!$parent_term || is_wp_error($parent_term)) {
+            $parent_term = get_term_by('slug', $category, 'sps_product_category');
+        }
+        
+        if (!$parent_term || is_wp_error($parent_term)) {
+            $parent_term = get_term_by('name', $category, 'sps_product_category');
+        }
+        
+        if (!$parent_term || is_wp_error($parent_term)) {
+            wp_send_json_error('Category not found');
+        }
+        
+        // Determine filter category
+        $filter_category = $parent_term;
+        $include_children = false;
+        
+        if (!empty($sub_category)) {
+            $sub_term = get_term_by('slug', $sub_category, 'sps_product_category');
+            if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
+                $filter_category = $sub_term;
+            }
+        } else {
+            $include_children = true;
+        }
+        
+        // Query products
+        $args = array(
+            'post_type' => 'sps_product',
+            'post_status' => 'publish',
+            'posts_per_page' => 10, // Limit autocomplete results
+            's' => $search_term, // Search term
+            'tax_query' => array(
+                array(
+                    'taxonomy' => 'sps_product_category',
+                    'field' => 'term_id',
+                    'terms' => $filter_category->term_id,
+                    'include_children' => $include_children
+                )
+            )
+        );
+        
+        $query = new WP_Query($args);
+        $products = array();
+        
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $product_id = get_the_ID();
+                $image = get_the_post_thumbnail_url($product_id, 'thumbnail');
+                
+                // Get product category
+                $terms = get_the_terms($product_id, 'sps_product_category');
+                $category_name = '';
+                if ($terms && !is_wp_error($terms)) {
+                    $category_name = $terms[0]->name;
+                }
+                
+                $products[] = array(
+                    'id' => $product_id,
+                    'title' => get_the_title(),
+                    'image' => $image ? $image : '',
+                    'category' => $category_name,
+                    'url' => get_permalink()
+                );
+            }
+            wp_reset_postdata();
+        }
+        
+        wp_send_json_success(array('products' => $products));
     }
     
 }

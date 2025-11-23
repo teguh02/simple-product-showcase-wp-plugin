@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.7  
+**Version:** 1.6.8  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,34 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.7 (Latest - January 2025)
+### Version 1.6.8 (Latest - January 2025)
+**Feature: Search Bar with Autocomplete for Category Filtering**
+- **🔍 Search Bar**: Bar pencarian muncul minimal ketika parameter `?category=` sudah ada di URL
+  - Problem: Tidak ada cara untuk mencari produk dalam kategori yang aktif
+  - Solution: Tambahkan search bar dengan autocomplete yang muncul setelah kategori dipilih
+  - Now: Pengguna dapat mencari produk dalam kategori aktif dengan autocomplete seperti marketplace
+- **✨ How It Works**:
+  - Search bar muncul hanya jika `?category=` parameter ada di URL
+  - Autocomplete menampilkan produk dari kategori aktif saja (menggunakan AJAX)
+  - Menampilkan gambar thumbnail, judul, dan kategori produk
+  - Menampilkan maksimal 10 hasil autocomplete
+  - Filter berdasarkan title dan content produk
+- **💡 Features**:
+  - Autocomplete dengan delay 300ms untuk optimasi
+  - Keyboard navigation (Arrow Up/Down, Enter, Escape)
+  - Click produk di autocomplete langsung ke detail produk
+  - Enter key menambahkan parameter `?query=` ke URL
+  - Filter produk berdasarkan query parameter di URL
+  - Hanya mencari produk dalam kategori aktif (parent atau sub category)
+- **🔧 Technical**:
+  - Added AJAX handler `sps_search_products` untuk autocomplete
+  - Enhanced `products_sub_category_shortcode()` dengan search bar HTML/CSS
+  - Added JavaScript untuk autocomplete dan keyboard navigation
+  - Modified query untuk filter berdasarkan `?query=` parameter
+  - Applied to both main class and fallback methods
+  - URL format: `?category=Spare%20Part&sub_category=cn-55&query=Seal`
+
+### Version 1.6.7 (January 2025)
 **Fix: Prevent Duplicate Products in Random Products Shortcode**
 - **🐛 Bug Fix**: `[sps_random_products]` sekarang mencegah produk duplikat yang muncul
   - Problem: Produk yang sama muncul beberapa kali karena satu produk bisa masuk ke beberapa kategori sekaligus

@@ -158,6 +158,9 @@ class SPS_Shortcodes {
             $limit = -1;
         }
         
+        // Get query parameter from URL for search filter
+        $search_query = isset($_GET['query']) ? sanitize_text_field($_GET['query']) : '';
+        
         // Query arguments
         $args = array(
             'post_type' => 'sps_product',
@@ -169,6 +172,11 @@ class SPS_Shortcodes {
                 'relation' => 'AND'
             )
         );
+        
+        // Add search query if exists
+        if (!empty($search_query)) {
+            $args['s'] = $search_query;
+        }
         
         // Add category filter if specified in shortcode attributes or URL parameter
         $category_filter = '';
@@ -266,6 +274,37 @@ class SPS_Shortcodes {
         
         // Execute query
         $products_query = new WP_Query($args);
+        
+        // Additional filter by query term if exists (filter results in PHP for better accuracy)
+        if (!empty($search_query) && $products_query->have_posts()) {
+            $filtered_posts = array();
+            $search_term_lower = strtolower($search_query);
+            
+            while ($products_query->have_posts()) {
+                $products_query->the_post();
+                $post_id = get_the_ID();
+                $title = strtolower(get_the_title());
+                $content = strtolower(get_the_content());
+                
+                // Search in title and content
+                if (strpos($title, $search_term_lower) !== false || strpos($content, $search_term_lower) !== false) {
+                    $filtered_posts[] = get_post($post_id);
+                }
+            }
+            
+            wp_reset_postdata();
+            
+            // If filtered posts exist, use them instead
+            if (!empty($filtered_posts)) {
+                // Re-query with filtered post IDs
+                $args['post__in'] = wp_list_pluck($filtered_posts, 'ID');
+                $args['s'] = ''; // Remove search parameter since we're filtering by post__in
+                $products_query = new WP_Query($args);
+            } else {
+                // No matching posts found
+                $products_query = new WP_Query(array('post__in' => array(0))); // Empty query
+            }
+        }
         
         if (!$products_query->have_posts()) {
             return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
@@ -927,12 +966,13 @@ class SPS_Shortcodes {
             'show_whatsapp' => 'true'
         ), $atts, 'sps_products_sub_category');
         
-        // Get category and sub_category from URL
+        // Get category, sub_category, and query from URL
         $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
         $current_sub_category = isset($_GET['sub_category']) ? sanitize_text_field($_GET['sub_category']) : '';
+        $current_query = isset($_GET['query']) ? sanitize_text_field($_GET['query']) : '';
         
         // Get current page URL
-        $current_url = remove_query_arg(array('category', 'sub_category'));
+        $current_url = remove_query_arg(array('category', 'sub_category', 'query'));
         
         // Start output
         ob_start();
@@ -1012,6 +1052,135 @@ class SPS_Shortcodes {
                 font-size: 13px;
             }
         }
+        
+        .sps-search-container {
+            margin: 20px 0 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+        
+        .sps-search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 8px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .sps-search-wrapper:focus-within {
+            border-color: #FDB913;
+            box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
+        }
+        
+        .sps-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            background: transparent;
+            color: #333333;
+        }
+        
+        .sps-search-input::placeholder {
+            color: #999999;
+        }
+        
+        .sps-search-icon {
+            color: #666666;
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .sps-autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .sps-autocomplete-results.show {
+            display: block;
+        }
+        
+        .sps-autocomplete-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sps-autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sps-autocomplete-item:hover {
+            background: #f8f8f8;
+        }
+        
+        .sps-autocomplete-item-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .sps-autocomplete-item-info {
+            flex: 1;
+        }
+        
+        .sps-autocomplete-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333333;
+            margin: 0;
+        }
+        
+        .sps-autocomplete-item-category {
+            font-size: 12px;
+            color: #999999;
+            margin: 2px 0 0;
+        }
+        
+        .sps-autocomplete-loading {
+            padding: 12px 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        
+        .sps-autocomplete-no-results {
+            padding: 12px 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .sps-search-container {
+                max-width: 100%;
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+        }
         </style>
         
         <div class="sps-sub-category-container">
@@ -1080,6 +1249,23 @@ class SPS_Shortcodes {
                         <?php
                     }
                     
+                    // Display search bar (hanya muncul jika category ada)
+                    ?>
+                    <div class="sps-search-container">
+                        <div class="sps-search-wrapper">
+                            <span class="sps-search-icon">🔍</span>
+                            <input type="text" 
+                                   class="sps-search-input" 
+                                   id="sps-product-search" 
+                                   placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
+                                   value="<?php echo esc_attr($current_query); ?>"
+                                   data-category="<?php echo esc_attr($current_category); ?>"
+                                   data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
+                            <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
+                        </div>
+                    </div>
+                    <?php
+                    
                     // STEP 3: Tentukan kategori mana yang akan digunakan untuk filter produk
                     $filter_category = $current_category;
                     $include_children = false; // Flag untuk include child terms
@@ -1116,6 +1302,24 @@ class SPS_Shortcodes {
                     if ($category_term && !is_wp_error($category_term)) {
                         // Get products using manual SQL
                         $products = $this->get_products_by_category($category_term->term_id, $include_children, -1, 'title', 'ASC');
+                        
+                        // Filter produk berdasarkan query search jika ada
+                        if (!empty($current_query)) {
+                            $products = array_filter($products, function($product) use ($current_query) {
+                                $product_obj = get_post($product->ID);
+                                if (!$product_obj) return false;
+                                
+                                // Search in title and content
+                                $search_term = strtolower($current_query);
+                                $title = strtolower($product_obj->post_title);
+                                $content = strtolower($product_obj->post_content);
+                                
+                                return (strpos($title, $search_term) !== false || strpos($content, $search_term) !== false);
+                            });
+                            
+                            // Reset array keys after filter
+                            $products = array_values($products);
+                        }
                         
                         if (!empty($products)) {
                             ?>

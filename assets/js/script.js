@@ -17,6 +17,7 @@
             this.bindEvents();
             this.initFilters();
             this.initLazyLoading();
+            this.initProductSearch();
         },
         
         /**
@@ -37,6 +38,18 @@
             
             // Smooth scroll for anchor links
             $(document).on('click', 'a[href^="#"]', this.smoothScroll);
+            
+            // Product search input
+            $(document).on('input', '#sps-product-search', this.handleProductSearchInput);
+            $(document).on('keydown', '#sps-product-search', this.handleProductSearchKeydown);
+            $(document).on('click', '.sps-autocomplete-item', this.handleAutocompleteClick);
+            
+            // Close autocomplete when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.sps-search-wrapper').length) {
+                    $('#sps-autocomplete-results').removeClass('show');
+                }
+            });
         },
         
         /**
@@ -265,6 +278,167 @@
             message = encodeURIComponent(message);
             
             return 'https://wa.me/' + number + '?text=' + message;
+        },
+        
+        /**
+         * Initialize product search autocomplete
+         */
+        initProductSearch: function() {
+            var searchInput = $('#sps-product-search');
+            if (!searchInput.length) {
+                return;
+            }
+            
+            // Auto-focus on search input if query parameter exists
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('query')) {
+                searchInput.focus();
+            }
+        },
+        
+        /**
+         * Handle product search input with autocomplete
+         */
+        handleProductSearchInput: debounce(function(e) {
+            var $input = $(this);
+            var searchTerm = $input.val().trim();
+            var category = $input.data('category');
+            var subCategory = $input.data('sub-category') || '';
+            var $results = $('#sps-autocomplete-results');
+            
+            // Clear previous timeout
+            clearTimeout($input.data('searchTimeout'));
+            
+            // Hide results if search term is too short
+            if (searchTerm.length < 2) {
+                $results.removeClass('show').empty();
+                return;
+            }
+            
+            // Show loading state
+            $results.addClass('show').html('<div class="sps-autocomplete-loading">Mencari...</div>');
+            
+            // Make AJAX request for autocomplete
+            var searchTimeout = setTimeout(function() {
+                $.ajax({
+                    url: sps_ajax.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'sps_search_products',
+                        search_term: searchTerm,
+                        category: category,
+                        sub_category: subCategory,
+                        nonce: sps_ajax.nonce
+                    },
+                    success: function(response) {
+                        if (response.success && response.data.products.length > 0) {
+                            var html = '';
+                            $.each(response.data.products, function(index, product) {
+                                var image = product.image || '';
+                                var imageHtml = image ? '<img src="' + image + '" alt="' + product.title + '" class="sps-autocomplete-item-image">' : '<div class="sps-autocomplete-item-image" style="background: #f0f0f0;"></div>';
+                                html += '<div class="sps-autocomplete-item" data-url="' + product.url + '">';
+                                html += imageHtml;
+                                html += '<div class="sps-autocomplete-item-info">';
+                                html += '<h4 class="sps-autocomplete-item-title">' + product.title + '</h4>';
+                                if (product.category) {
+                                    html += '<p class="sps-autocomplete-item-category">' + product.category + '</p>';
+                                }
+                                html += '</div>';
+                                html += '</div>';
+                            });
+                            $results.html(html).addClass('show');
+                        } else {
+                            $results.html('<div class="sps-autocomplete-no-results">Produk tidak ditemukan</div>').addClass('show');
+                        }
+                    },
+                    error: function() {
+                        $results.html('<div class="sps-autocomplete-no-results">Error saat mencari</div>').addClass('show');
+                    }
+                });
+            }, 300);
+            
+            $input.data('searchTimeout', searchTimeout);
+        }, 300),
+        
+        /**
+         * Handle product search keydown (Enter key)
+         */
+        handleProductSearchKeydown: function(e) {
+            var $input = $(this);
+            var $results = $('#sps-autocomplete-results');
+            
+            // Handle Enter key
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                var searchTerm = $input.val().trim();
+                
+                if (searchTerm.length < 2) {
+                    return;
+                }
+                
+                // Get current URL and add query parameter
+                var url = new URL(window.location.href);
+                url.searchParams.set('query', searchTerm);
+                
+                // Navigate to new URL
+                window.location.href = url.toString();
+            }
+            
+            // Handle Escape key
+            if (e.keyCode === 27) {
+                $results.removeClass('show');
+                $input.blur();
+            }
+            
+            // Handle Arrow Down
+            if (e.keyCode === 40) {
+                e.preventDefault();
+                var $items = $results.find('.sps-autocomplete-item');
+                var $active = $results.find('.sps-autocomplete-item.active');
+                
+                if ($active.length) {
+                    $active.removeClass('active');
+                    var $next = $active.next('.sps-autocomplete-item');
+                    if ($next.length) {
+                        $next.addClass('active');
+                        $next[0].scrollIntoView({ block: 'nearest' });
+                    } else {
+                        $items.first().addClass('active');
+                    }
+                } else {
+                    $items.first().addClass('active');
+                }
+            }
+            
+            // Handle Arrow Up
+            if (e.keyCode === 38) {
+                e.preventDefault();
+                var $items = $results.find('.sps-autocomplete-item');
+                var $active = $results.find('.sps-autocomplete-item.active');
+                
+                if ($active.length) {
+                    $active.removeClass('active');
+                    var $prev = $active.prev('.sps-autocomplete-item');
+                    if ($prev.length) {
+                        $prev.addClass('active');
+                        $prev[0].scrollIntoView({ block: 'nearest' });
+                    } else {
+                        $items.last().addClass('active');
+                    }
+                } else {
+                    $items.last().addClass('active');
+                }
+            }
+        },
+        
+        /**
+         * Handle autocomplete item click
+         */
+        handleAutocompleteClick: function(e) {
+            var url = $(this).data('url');
+            if (url) {
+                window.location.href = url;
+            }
         }
     };
     

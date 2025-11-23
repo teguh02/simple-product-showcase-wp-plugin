@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.7
+**Plugin Version:** 1.6.8
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,18 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.7 (NEW)
+### Version 1.6.8 (NEW)
+- **Feature**: Search Bar dengan Autocomplete untuk `[sps_products_sub_category]`
+  - Bar pencarian muncul minimal ketika parameter `?category=` sudah ada di URL
+  - Autocomplete menampilkan produk dari kategori aktif saja (AJAX-based)
+  - Menampilkan gambar thumbnail, judul, dan kategori produk
+  - Keyboard navigation (Arrow Up/Down, Enter, Escape)
+  - Enter key menambahkan parameter `?query=` ke URL
+  - Filter produk berdasarkan query parameter di URL
+  - URL format: `?category=Spare%20Part&sub_category=cn-55&query=Seal`
+  - Technical: Added AJAX handler `sps_search_products`, JavaScript autocomplete, modified query filter
+
+### Version 1.6.7
 - **Bug Fix**: `[sps_random_products]` sekarang mencegah produk duplikat yang muncul
   - Problem: Produk yang sama muncul beberapa kali karena satu produk bisa masuk ke beberapa kategori sekaligus
   - Solution: Track Product IDs yang sudah dipilih dan exclude dari query berikutnya menggunakan `post__not_in`
