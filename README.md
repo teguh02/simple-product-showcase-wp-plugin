@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.8  
+**Version:** 1.6.9  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,27 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.8 (Latest - January 2025)
+### Version 1.6.9 (Latest - January 2025)
+**Fix: Search Bar Autocomplete and Enter Key Functionality**
+- **🐛 Bug Fix**: Perbaikan autocomplete search dan Enter key handling
+  - Problem: Autocomplete tidak bekerja, Enter key tidak menambahkan query parameter
+  - Solution: Perbaikan event handlers, error handling, dan AJAX request
+  - Now: Autocomplete bekerja dengan baik, Enter key dan icon click menambahkan query parameter
+- **✨ Improvements**:
+  - Perbaikan debounce function untuk autocomplete input
+  - Tambahan error handling dan console logging untuk debugging
+  - Icon search bisa diklik untuk submit search (sama seperti Enter key)
+  - Perbaikan keyboard navigation (Arrow Up/Down, Enter, Escape)
+  - Validasi input minimal 2 karakter
+  - AJAX error handling yang lebih baik
+- **🔧 Technical**:
+  - Fixed event handler attachment untuk autocomplete
+  - Added `submitSearch()` method untuk reusable search submission
+  - Added `handleSearchIconClick()` untuk icon click handler
+  - Enhanced error messages dan debugging logs
+  - CSS improvements untuk icon search (cursor pointer, hover effect)
+
+### Version 1.6.8 (January 2025)
 **Feature: Search Bar with Autocomplete for Category Filtering**
 - **🔍 Search Bar**: Bar pencarian muncul minimal ketika parameter `?category=` sudah ada di URL
   - Problem: Tidak ada cara untuk mencari produk dalam kategori yang aktif

@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.8
+**Plugin Version:** 1.6.9
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.8 (NEW)
+### Version 1.6.9 (NEW)
+- **Bug Fix**: Perbaikan autocomplete search dan Enter key handling
+  - Autocomplete sekarang bekerja dengan baik
+  - Enter key dan icon search click menambahkan query parameter ke URL
+  - Error handling dan debugging improvements
+  - CSS improvements untuk icon search
+
+### Version 1.6.8
 - **Feature**: Search Bar dengan Autocomplete untuk `[sps_products_sub_category]`
   - Bar pencarian muncul minimal ketika parameter `?category=` sudah ada di URL
   - Autocomplete menampilkan produk dari kategori aktif saja (AJAX-based)

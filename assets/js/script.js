@@ -18,6 +18,9 @@
             this.initFilters();
             this.initLazyLoading();
             this.initProductSearch();
+            
+            // Initialize product search handlers immediately
+            this.initProductSearchHandlers();
         },
         
         /**
@@ -43,6 +46,12 @@
             $(document).on('input', '#sps-product-search', this.handleProductSearchInput);
             $(document).on('keydown', '#sps-product-search', this.handleProductSearchKeydown);
             $(document).on('click', '.sps-autocomplete-item', this.handleAutocompleteClick);
+            
+            // Search icon click handler (same as Enter key)
+            $(document).on('click', '.sps-search-icon', this.handleSearchIconClick);
+            
+            // Search button/submit handler
+            $(document).on('submit', '.sps-search-wrapper', this.handleSearchSubmit);
             
             // Close autocomplete when clicking outside
             $(document).on('click', function(e) {
@@ -297,9 +306,39 @@
         },
         
         /**
+         * Initialize product search handlers (ensure they're attached)
+         */
+        initProductSearchHandlers: function() {
+            // Wait a bit to ensure DOM is ready
+            setTimeout(function() {
+                var $searchInput = $('#sps-product-search');
+                if ($searchInput.length) {
+                    // Check if sps_ajax is available
+                    if (typeof sps_ajax === 'undefined') {
+                        console.error('sps_ajax is not defined. Make sure script is localized correctly.');
+                        // Try to reload the page after a delay
+                        setTimeout(function() {
+                            if (typeof sps_ajax === 'undefined') {
+                                console.warn('sps_ajax still not available. Script may need to be reloaded.');
+                            }
+                        }, 1000);
+                        return;
+                    }
+                    
+                    console.log('Product search input found, sps_ajax available:', {
+                        ajax_url: sps_ajax.ajax_url,
+                        has_nonce: !!sps_ajax.nonce
+                    });
+                } else {
+                    console.log('Product search input not found on page');
+                }
+            }, 100);
+        },
+        
+        /**
          * Handle product search input with autocomplete
          */
-        handleProductSearchInput: debounce(function(e) {
+        handleProductSearchInput: function(e) {
             var $input = $(this);
             var searchTerm = $input.val().trim();
             var category = $input.data('category');
@@ -318,7 +357,14 @@
             // Show loading state
             $results.addClass('show').html('<div class="sps-autocomplete-loading">Mencari...</div>');
             
-            // Make AJAX request for autocomplete
+            // Check if sps_ajax is available
+            if (typeof sps_ajax === 'undefined') {
+                console.error('sps_ajax is not defined. Make sure script is localized correctly.');
+                $results.html('<div class="sps-autocomplete-no-results">Error: AJAX tidak tersedia</div>').addClass('show');
+                return;
+            }
+            
+            // Make AJAX request for autocomplete with debounce
             var searchTimeout = setTimeout(function() {
                 $.ajax({
                     url: sps_ajax.ajax_url,
@@ -331,15 +377,15 @@
                         nonce: sps_ajax.nonce
                     },
                     success: function(response) {
-                        if (response.success && response.data.products.length > 0) {
+                        if (response.success && response.data && response.data.products && response.data.products.length > 0) {
                             var html = '';
                             $.each(response.data.products, function(index, product) {
                                 var image = product.image || '';
-                                var imageHtml = image ? '<img src="' + image + '" alt="' + product.title + '" class="sps-autocomplete-item-image">' : '<div class="sps-autocomplete-item-image" style="background: #f0f0f0;"></div>';
-                                html += '<div class="sps-autocomplete-item" data-url="' + product.url + '">';
+                                var imageHtml = image ? '<img src="' + image + '" alt="' + product.title + '" class="sps-autocomplete-item-image">' : '<div class="sps-autocomplete-item-image" style="background: #f0f0f0; width: 40px; height: 40px;"></div>';
+                                html += '<div class="sps-autocomplete-item" data-url="' + (product.url || '#') + '">';
                                 html += imageHtml;
                                 html += '<div class="sps-autocomplete-item-info">';
-                                html += '<h4 class="sps-autocomplete-item-title">' + product.title + '</h4>';
+                                html += '<h4 class="sps-autocomplete-item-title">' + (product.title || '') + '</h4>';
                                 if (product.category) {
                                     html += '<p class="sps-autocomplete-item-category">' + product.category + '</p>';
                                 }
@@ -351,14 +397,16 @@
                             $results.html('<div class="sps-autocomplete-no-results">Produk tidak ditemukan</div>').addClass('show');
                         }
                     },
-                    error: function() {
-                        $results.html('<div class="sps-autocomplete-no-results">Error saat mencari</div>').addClass('show');
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                        console.error('Response:', xhr.responseText);
+                        $results.html('<div class="sps-autocomplete-no-results">Error saat mencari: ' + error + '</div>').addClass('show');
                     }
                 });
             }, 300);
             
             $input.data('searchTimeout', searchTimeout);
-        }, 300),
+        },
         
         /**
          * Handle product search keydown (Enter key)
@@ -368,20 +416,23 @@
             var $results = $('#sps-autocomplete-results');
             
             // Handle Enter key
-            if (e.keyCode === 13) {
+            if (e.keyCode === 13 || e.which === 13) {
                 e.preventDefault();
-                var searchTerm = $input.val().trim();
+                e.stopPropagation();
                 
-                if (searchTerm.length < 2) {
-                    return;
+                // Check if there's an active autocomplete item
+                var $activeItem = $results.find('.sps-autocomplete-item.active');
+                if ($activeItem.length) {
+                    // Click the active item
+                    var url = $activeItem.data('url');
+                    if (url && url !== '#') {
+                        window.location.href = url;
+                        return;
+                    }
                 }
                 
-                // Get current URL and add query parameter
-                var url = new URL(window.location.href);
-                url.searchParams.set('query', searchTerm);
-                
-                // Navigate to new URL
-                window.location.href = url.toString();
+                // Otherwise, submit search
+                this.submitSearch($input);
             }
             
             // Handle Escape key
@@ -435,10 +486,60 @@
          * Handle autocomplete item click
          */
         handleAutocompleteClick: function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             var url = $(this).data('url');
-            if (url) {
+            if (url && url !== '#') {
                 window.location.href = url;
             }
+        },
+        
+        /**
+         * Handle search icon click
+         */
+        handleSearchIconClick: function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $wrapper = $(this).closest('.sps-search-wrapper');
+            var $input = $wrapper.find('#sps-product-search');
+            if ($input.length) {
+                SPS.submitSearch($input);
+            }
+        },
+        
+        /**
+         * Handle search form submit
+         */
+        handleSearchSubmit: function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $input = $(this).find('#sps-product-search');
+            if ($input.length) {
+                SPS.submitSearch($input);
+            }
+            return false;
+        },
+        
+        /**
+         * Submit search - update URL with query parameter
+         */
+        submitSearch: function($input) {
+            var searchTerm = $input.val().trim();
+            
+            if (searchTerm.length < 2) {
+                alert('Masukkan minimal 2 karakter untuk mencari');
+                return;
+            }
+            
+            // Hide autocomplete
+            $('#sps-autocomplete-results').removeClass('show');
+            
+            // Get current URL and add/update query parameter
+            var url = new URL(window.location.href);
+            url.searchParams.set('query', searchTerm);
+            
+            // Navigate to new URL
+            window.location.href = url.toString();
         }
     };
     

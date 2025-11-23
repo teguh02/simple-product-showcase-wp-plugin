@@ -1095,6 +1095,16 @@ class SPS_Shortcodes {
             color: #666666;
             margin-right: 8px;
             font-size: 18px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .sps-search-icon:hover {
+            color: #FDB913;
         }
         
         .sps-autocomplete-results {
