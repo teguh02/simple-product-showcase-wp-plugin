@@ -533,12 +533,33 @@
             // Hide autocomplete
             $('#sps-autocomplete-results').removeClass('show');
             
-            // Get current URL and add/update query parameter
-            var url = new URL(window.location.href);
-            url.searchParams.set('query', searchTerm);
+            // 1. Dapatkan URL saat ini secara penuh
+            var currentUrl = window.location.href;
             
-            // Navigate to new URL
-            window.location.href = url.toString();
+            // 2. Encode kalimat yang sudah diketik di search bar
+            var encodedQuery = encodeURIComponent(searchTerm);
+            
+            // 3. Cek apakah sudah ada parameter yang diset saat ini
+            var hasParams = currentUrl.indexOf('?') !== -1;
+            var newUrl;
+            
+            if (hasParams) {
+                // Jika sudah ada parameter, tambahkan &query=
+                // Cek apakah query sudah ada, jika ya replace, jika tidak tambahkan
+                if (currentUrl.indexOf('query=') !== -1) {
+                    // Replace existing query parameter
+                    newUrl = currentUrl.replace(/([&?])query=[^&]*/, '$1query=' + encodedQuery);
+                } else {
+                    // Tambahkan &query= di akhir
+                    newUrl = currentUrl + '&query=' + encodedQuery;
+                }
+            } else {
+                // Jika belum ada parameter, tambahkan ?query=
+                newUrl = currentUrl + '?query=' + encodedQuery;
+            }
+            
+            // 4. Navigate to new URL
+            window.location.href = newUrl;
         }
     };
     
