@@ -47,8 +47,8 @@
             $(document).on('keydown', '#sps-product-search', this.handleProductSearchKeydown);
             $(document).on('click', '.sps-autocomplete-item', this.handleAutocompleteClick);
             
-            // Search icon click handler (same as Enter key)
-            $(document).on('click', '.sps-search-icon', this.handleSearchIconClick);
+            // Search button click handler (same as Enter key)
+            $(document).on('click', '#sps-search-button', this.handleSearchButtonClick);
             
             // Search button/submit handler
             $(document).on('submit', '.sps-search-wrapper', this.handleSearchSubmit);
@@ -495,13 +495,12 @@
         },
         
         /**
-         * Handle search icon click
+         * Handle search button click
          */
-        handleSearchIconClick: function(e) {
+        handleSearchButtonClick: function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var $wrapper = $(this).closest('.sps-search-wrapper');
-            var $input = $wrapper.find('#sps-product-search');
+            var $input = $('#sps-product-search');
             if ($input.length) {
                 SPS.submitSearch($input);
             }

@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.10  
+**Version:** 1.6.11  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,24 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.10 (Latest - January 2025)
+### Version 1.6.11 (Latest - January 2025)
+**UI Improvement: Replace Search Icon with Search Button**
+- **🎨 UI Change**: Ganti icon kaca pembesar dengan tombol "Cari" di sebelah kanan search bar
+  - Problem: Icon kaca pembesar kurang jelas sebagai tombol action
+  - Solution: Ganti dengan tombol "Cari" yang lebih jelas dan mudah diklik
+  - Now: Tombol "Cari" dengan background kuning (#FDB913) di sebelah kanan search bar
+- **✨ Improvements**:
+  - Tombol "Cari" dengan styling yang konsisten dengan design system
+  - Hover effect dengan transform dan shadow
+  - Responsive design untuk mobile (padding lebih kecil)
+  - Click handler yang sama seperti Enter key
+- **🔧 Technical**:
+  - Removed `.sps-search-icon` CSS dan HTML element
+  - Added `.sps-search-button` CSS dan HTML button element
+  - Updated JavaScript event handler dari `handleSearchIconClick` ke `handleSearchButtonClick`
+  - Applied to both main class and fallback methods
+
+### Version 1.6.10 (January 2025)
 **Feature: Search Bar Always Visible**
 - **🔍 Search Bar Visibility**: Search bar sekarang muncul selalu, bahkan sebelum kategori dipilih
   - Problem: Search bar hanya muncul setelah kategori dipilih (`?category=` ada di URL)

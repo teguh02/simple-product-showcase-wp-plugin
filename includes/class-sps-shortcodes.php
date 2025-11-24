@@ -1091,20 +1091,28 @@ class SPS_Shortcodes {
             color: #999999;
         }
         
-        .sps-search-icon {
-            color: #666666;
-            margin-right: 8px;
-            font-size: 18px;
+        .sps-search-button {
+            background: #FDB913;
+            color: #000000;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            transition: color 0.2s ease;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            margin-left: 10px;
         }
         
-        .sps-search-icon:hover {
-            color: #FDB913;
+        .sps-search-button:hover {
+            background: #E5A711;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(253, 185, 19, 0.3);
+        }
+        
+        .sps-search-button:active {
+            transform: translateY(0);
         }
         
         .sps-autocomplete-results {
@@ -1199,7 +1207,6 @@ class SPS_Shortcodes {
             ?>
             <div class="sps-search-container">
                 <div class="sps-search-wrapper">
-                    <span class="sps-search-icon">🔍</span>
                     <input type="text" 
                            class="sps-search-input" 
                            id="sps-product-search" 
@@ -1207,6 +1214,9 @@ class SPS_Shortcodes {
                            value="<?php echo esc_attr($current_query); ?>"
                            data-category="<?php echo esc_attr($current_category); ?>"
                            data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
+                    <button type="button" class="sps-search-button" id="sps-search-button">
+                        <?php _e('Cari', 'simple-product-showcase'); ?>
+                    </button>
                     <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
                 </div>
             </div>

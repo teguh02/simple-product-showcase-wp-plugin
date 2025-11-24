@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.10
+ * Version: 1.6.11
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.10');
+define('SPS_PLUGIN_VERSION', '1.6.11');
 
 /**
  * Class Simple_Product_Showcase
@@ -2497,10 +2497,28 @@ class Simple_Product_Showcase {
             color: #999999;
         }
         
-        .sps-search-icon {
-            color: #666666;
-            margin-right: 8px;
-            font-size: 18px;
+        .sps-search-button {
+            background: #FDB913;
+            color: #000000;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+        
+        .sps-search-button:hover {
+            background: #E5A711;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(253, 185, 19, 0.3);
+        }
+        
+        .sps-search-button:active {
+            transform: translateY(0);
         }
         
         .sps-autocomplete-results {
@@ -2586,6 +2604,11 @@ class Simple_Product_Showcase {
                 margin-left: 15px;
                 margin-right: 15px;
             }
+            
+            .sps-search-button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
         }
         </style>
         
@@ -2595,7 +2618,6 @@ class Simple_Product_Showcase {
             ?>
             <div class="sps-search-container">
                 <div class="sps-search-wrapper">
-                    <span class="sps-search-icon">🔍</span>
                     <input type="text" 
                            class="sps-search-input" 
                            id="sps-product-search" 
@@ -2603,6 +2625,9 @@ class Simple_Product_Showcase {
                            value="<?php echo esc_attr($current_query); ?>"
                            data-category="<?php echo esc_attr($current_category); ?>"
                            data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
+                    <button type="button" class="sps-search-button" id="sps-search-button">
+                        <?php _e('Cari', 'simple-product-showcase'); ?>
+                    </button>
                     <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
                 </div>
             </div>

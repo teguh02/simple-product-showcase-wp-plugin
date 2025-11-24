@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.10
+**Plugin Version:** 1.6.11
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.10 (NEW)
+### Version 1.6.11 (NEW)
+- **UI Improvement**: Ganti icon kaca pembesar dengan tombol "Cari" di sebelah kanan search bar
+  - Tombol "Cari" dengan background kuning (#FDB913)
+  - Hover effect dengan transform dan shadow
+  - Responsive design untuk mobile
+  - Click handler yang sama seperti Enter key
+
+### Version 1.6.10
 - **Feature**: Search Bar Always Visible
   - Search bar sekarang muncul selalu, bahkan sebelum kategori dipilih
   - Autocomplete bekerja untuk semua produk jika kategori belum dipilih
