@@ -1428,7 +1428,6 @@ class SPS_Shortcodes {
                         
                         <?php
                         wp_reset_postdata();
-                        <?php
                     } else {
                         ?>
                         <div class="sps-no-category-message">
