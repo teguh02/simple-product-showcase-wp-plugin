@@ -1208,6 +1208,13 @@ class SPS_Shortcodes {
         
         .sps-products-grid {
             display: grid;
+            grid-template-columns: repeat(<?php 
+                $grid_columns = intval($atts['columns']);
+                if ($grid_columns < 1 || $grid_columns > 6) {
+                    $grid_columns = 3;
+                }
+                echo $grid_columns;
+            ?>, 1fr);
             gap: 30px;
             margin: 20px 0;
             justify-items: center;
@@ -1284,16 +1291,40 @@ class SPS_Shortcodes {
             transform: translateY(0);
         }
         
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .sps-products-grid {
+                grid-template-columns: repeat(<?php echo min($grid_columns, 3); ?>, 1fr);
+                gap: 20px;
+            }
+            .sps-product-item {
+                padding: 20px;
+                min-height: 280px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .sps-products-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
+                grid-template-columns: repeat(<?php echo min($grid_columns, 2); ?>, 1fr);
+                gap: 25px;
             }
         }
         
         @media (max-width: 480px) {
             .sps-products-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .sps-product-item {
+                max-width: 100%;
+                padding: 12px;
+            }
+            .sps-product-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .sps-product-title {
+                text-align: center;
             }
         }
         </style>
@@ -1343,7 +1374,7 @@ class SPS_Shortcodes {
                             $columns = 3;
                         }
                         ?>
-                        <div class="sps-products-grid" style="display: grid; grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr); gap: 30px; margin: 20px 0; justify-items: center;">
+                        <div class="sps-products-grid">
                             <?php
                             while ($products_query->have_posts()) {
                                 $products_query->the_post();
@@ -1505,7 +1536,7 @@ class SPS_Shortcodes {
                                 $columns = 3;
                             }
                             ?>
-                            <div class="sps-products-grid" style="display: grid; grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr); gap: 30px; margin: 20px 0; justify-items: center;">
+                            <div class="sps-products-grid">
                                 <?php
                                 foreach ($products as $product) {
                                     $product_obj = get_post($product->ID);
