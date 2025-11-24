@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.13  
+**Version:** 1.6.14  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,24 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.13 (Latest - January 2025)
+### Version 1.6.14 (Latest - January 2025)
+**Fix: Update Search Results to Use Proper Product Card Layout**
+- **🐛 Fix**: Tampilan hasil pencarian sekarang menggunakan card layout yang sama seperti saat kategori dipilih
+  - Problem: Hasil pencarian hanya menampilkan gambar dan title sederhana tanpa tombol Detail
+  - Solution: Update struktur HTML untuk menggunakan card lengkap dengan tombol Detail
+  - Now: Hasil pencarian menggunakan card yang sama dengan styling lengkap dan tombol Detail
+- **✨ Improvements**:
+  - Card layout lengkap dengan styling yang konsisten
+  - Tombol "Detail" dengan gradient kuning seperti card produk lainnya
+  - Menggunakan `SPS_Settings::get_product_detail_url()` untuk URL detail
+  - Responsive grid layout untuk hasil pencarian
+- **🔧 Technical**:
+  - Update struktur HTML untuk menggunakan `sps-product-item`, `sps-product-title-text`, dan `sps-detail-button`
+  - Menggunakan `has_post_thumbnail()` dan `the_post_thumbnail()` untuk gambar
+  - Menggunakan `the_title()` untuk title
+  - Applied to both main class and fallback methods
+
+### Version 1.6.13 (January 2025)
 **Fix: Add Query Search Functionality to sps_products_sub_category Shortcode**
 - **🐛 Fix**: Shortcode `sps_products_sub_category` sekarang menampilkan produk berdasarkan query parameter
   - Problem: Shortcode tidak menampilkan produk ketika hanya ada query tanpa kategori yang dipilih
