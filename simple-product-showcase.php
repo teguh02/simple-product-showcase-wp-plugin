@@ -2669,8 +2669,8 @@ class Simple_Product_Showcase {
                         
                         @media (max-width: 768px) {
                             .sps-products-grid-search {
-                                grid-template-columns: repeat(<?php echo min($columns, 3); ?>, 1fr);
-                                gap: 20px;
+                                grid-template-columns: repeat(<?php echo min($columns, 2); ?>, 1fr);
+                                gap: 25px;
                             }
                         }
                         
@@ -2685,23 +2685,22 @@ class Simple_Product_Showcase {
                             <?php
                             while ($products_query->have_posts()) {
                                 $products_query->the_post();
-                                $image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
-                                $link = get_permalink();
                                 ?>
                                 <div class="sps-product-item">
-                                    <div class="sps-product-image">
-                                        <?php if ($image) { ?>
-                                            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr(get_the_title()); ?>">
-                                        <?php } else { ?>
-                                            <div class="sps-no-image"><?php _e('No Image', 'simple-product-showcase'); ?></div>
-                                        <?php } ?>
-                                    </div>
+                                    <?php if (has_post_thumbnail()) : ?>
+                                        <div class="sps-product-image">
+                                            <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
                                     <div class="sps-product-info">
-                                        <h3 class="sps-product-title">
-                                            <a href="<?php echo esc_url($link); ?>">
-                                                <?php echo esc_html(get_the_title()); ?>
-                                            </a>
-                                        </h3>
+                                        <div class="sps-product-title">
+                                            <p class="sps-product-title-text"><?php the_title(); ?></p>
+                                        </div>
+                                        <?php 
+                                        $detail_url = SPS_Configuration::get_product_detail_url(get_the_ID());
+                                        ?>
+                                        <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                                     </div>
                                 </div>
                                 <?php
