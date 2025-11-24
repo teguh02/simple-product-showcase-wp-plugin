@@ -2658,7 +2658,7 @@ class Simple_Product_Showcase {
                             $columns = 3;
                         }
                         ?>
-                        <div class="sps-products-grid" style="display: grid; grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr); gap: 30px; margin: 20px 0; justify-items: center;">
+                        <div class="sps-products-grid">
                             <?php
                             while ($products_query->have_posts()) {
                                 $products_query->the_post();
