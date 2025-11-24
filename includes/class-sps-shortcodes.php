@@ -1405,10 +1405,7 @@ class SPS_Shortcodes {
                         }
                         ?>
                         <div class="sps-products-grid">
-                            <?php
-                            while ($products_query->have_posts()) {
-                                $products_query->the_post();
-                                ?>
+                            <?php while ($products_query->have_posts()) : $products_query->the_post(); ?>
                                 <div class="sps-product-item">
                                     <?php if (has_post_thumbnail()) : ?>
                                         <div class="sps-product-image">
@@ -1420,17 +1417,17 @@ class SPS_Shortcodes {
                                         <div class="sps-product-title">
                                             <p class="sps-product-title-text"><?php the_title(); ?></p>
                                         </div>
-                                        <?php 
-                                        $detail_url = SPS_Settings::get_product_detail_url(get_the_ID());
-                                        ?>
-                                        <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
+                                                <?php 
+                                                $detail_url = SPS_Settings::get_product_detail_url(get_the_ID());
+                                                ?>
+                                                <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                                     </div>
                                 </div>
-                                <?php
-                            }
-                            wp_reset_postdata();
-                            ?>
+                            <?php endwhile; ?>
                         </div>
+                        
+                        <?php
+                        wp_reset_postdata();
                         <?php
                     } else {
                         ?>
