@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.15  
+**Version:** 1.6.16  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,24 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.15 (Latest - January 2025)
+### Version 1.6.16 (Latest - January 2025)
+**Critical Fix: Match Exact CSS and HTML Structure from sps_products**
+- **🐛 Critical Fix**: Copy CSS dan HTML structure PERSIS dari `sps_products` ke `sps_products_sub_category`
+  - Problem: Desain card produk di `sps_products_sub_category` tidak sama dengan `sps_products`, CSS tidak ter-load dengan benar
+  - Solution: Copy semua CSS dan HTML structure persis dari `sps_products` shortcode
+  - Now: Desain card produk sekarang SAMA PERSIS dengan `sps_products`
+- **✨ Improvements**:
+  - Copy semua CSS class dan media queries dari `sps_products`
+  - Validate columns di awal fungsi seperti `sps_products`
+  - Match HTML structure dengan `while...endwhile` dan indentasi yang sama
+  - Hapus duplicate columns validation
+- **🔧 Technical**:
+  - Copy CSS: `.sps-products-grid`, `.sps-product-item`, `.sps-product-image`, `.sps-product-info`, `.sps-product-title`, `.sps-product-title-text`, `.sps-detail-button`
+  - Copy semua media queries: 1024px, 992px, 768px, 480px
+  - Match HTML structure dan indentasi persis dengan `sps_products`
+  - Applied to both query search and category display
+
+### Version 1.6.15 (January 2025)
 **Refactor: Use Same Product Card Template for Category and Query Search**
 - **🔄 Refactor**: Menggunakan template card produk yang sama untuk kategori dan query search
   - Problem: Template card produk berbeda antara hasil kategori dan hasil query search

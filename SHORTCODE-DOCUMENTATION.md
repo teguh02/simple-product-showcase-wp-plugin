@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.15
+**Plugin Version:** 1.6.16
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.15 (NEW)
+### Version 1.6.16 (NEW)
+- **Critical Fix**: Match exact CSS and HTML structure from `sps_products` to `sps_products_sub_category`
+  - Copy semua CSS class dan media queries dari `sps_products`
+  - Validate columns di awal fungsi seperti `sps_products`
+  - Match HTML structure dengan `while...endwhile` dan indentasi yang sama
+  - Desain card produk sekarang SAMA PERSIS dengan `sps_products`
+
+### Version 1.6.15
 - **Refactor**: Use same product card template for category and query search
   - Menggunakan template card produk yang sama untuk kategori dan query search
   - Template konsisten dengan sps-products-grid, sps-product-item, sps-detail-button
