@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.9
+ * Version: 1.6.10
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.9');
+define('SPS_PLUGIN_VERSION', '1.6.10');
 
 /**
  * Class Simple_Product_Showcase
@@ -2591,6 +2591,23 @@ class Simple_Product_Showcase {
         
         <div class="sps-sub-category-container">
             <?php
+            // Display search bar (muncul selalu, bahkan sebelum kategori dipilih)
+            ?>
+            <div class="sps-search-container">
+                <div class="sps-search-wrapper">
+                    <span class="sps-search-icon">🔍</span>
+                    <input type="text" 
+                           class="sps-search-input" 
+                           id="sps-product-search" 
+                           placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
+                           value="<?php echo esc_attr($current_query); ?>"
+                           data-category="<?php echo esc_attr($current_category); ?>"
+                           data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
+                    <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
+                </div>
+            </div>
+            <?php
+            
             // STEP 1: Jika tidak ada category parameter, tidak tampilkan apa-apa
             if (empty($current_category)) {
                 ?>
@@ -2634,23 +2651,6 @@ class Simple_Product_Showcase {
                         </div>
                         <?php
                     }
-                    
-                    // Display search bar (hanya muncul jika category ada)
-                    ?>
-                    <div class="sps-search-container">
-                        <div class="sps-search-wrapper">
-                            <span class="sps-search-icon">🔍</span>
-                            <input type="text" 
-                                   class="sps-search-input" 
-                                   id="sps-product-search" 
-                                   placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
-                                   value="<?php echo esc_attr($current_query); ?>"
-                                   data-category="<?php echo esc_attr($current_category); ?>"
-                                   data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
-                            <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
-                        </div>
-                    </div>
-                    <?php
                     
                     // STEP 3: Tampilkan produk hanya jika sub_category sudah dipilih
                     if (!empty($current_sub_category)) {
@@ -3405,54 +3405,53 @@ class Simple_Product_Showcase {
             wp_send_json_success(array('products' => array()));
         }
         
-        if (empty($category)) {
-            wp_send_json_error('Category parameter is required');
-        }
-        
-        // Get category term
-        $normalized_category = strtolower(str_replace(' ', '-', $category));
-        $parent_term = get_term_by('slug', $normalized_category, 'sps_product_category');
-        
-        if (!$parent_term || is_wp_error($parent_term)) {
-            $parent_term = get_term_by('slug', $category, 'sps_product_category');
-        }
-        
-        if (!$parent_term || is_wp_error($parent_term)) {
-            $parent_term = get_term_by('name', $category, 'sps_product_category');
-        }
-        
-        if (!$parent_term || is_wp_error($parent_term)) {
-            wp_send_json_error('Category not found');
-        }
-        
-        // Determine filter category
-        $filter_category = $parent_term;
-        $include_children = false;
-        
-        if (!empty($sub_category)) {
-            $sub_term = get_term_by('slug', $sub_category, 'sps_product_category');
-            if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
-                $filter_category = $sub_term;
-            }
-        } else {
-            $include_children = true;
-        }
-        
         // Query products
         $args = array(
             'post_type' => 'sps_product',
             'post_status' => 'publish',
             'posts_per_page' => 10, // Limit autocomplete results
-            's' => $search_term, // Search term
-            'tax_query' => array(
-                array(
-                    'taxonomy' => 'sps_product_category',
-                    'field' => 'term_id',
-                    'terms' => $filter_category->term_id,
-                    'include_children' => $include_children
-                )
-            )
+            's' => $search_term // Search term
         );
+        
+        // Add category filter only if category is provided
+        if (!empty($category)) {
+            // Get category term
+            $normalized_category = strtolower(str_replace(' ', '-', $category));
+            $parent_term = get_term_by('slug', $normalized_category, 'sps_product_category');
+            
+            if (!$parent_term || is_wp_error($parent_term)) {
+                $parent_term = get_term_by('slug', $category, 'sps_product_category');
+            }
+            
+            if (!$parent_term || is_wp_error($parent_term)) {
+                $parent_term = get_term_by('name', $category, 'sps_product_category');
+            }
+            
+            if ($parent_term && !is_wp_error($parent_term)) {
+                // Determine filter category
+                $filter_category = $parent_term;
+                $include_children = false;
+                
+                if (!empty($sub_category)) {
+                    $sub_term = get_term_by('slug', $sub_category, 'sps_product_category');
+                    if ($sub_term && !is_wp_error($sub_term) && $sub_term->parent == $parent_term->term_id) {
+                        $filter_category = $sub_term;
+                    }
+                } else {
+                    $include_children = true;
+                }
+                
+                // Add tax query for category filter
+                $args['tax_query'] = array(
+                    array(
+                        'taxonomy' => 'sps_product_category',
+                        'field' => 'term_id',
+                        'terms' => $filter_category->term_id,
+                        'include_children' => $include_children
+                    )
+                );
+            }
+        }
         
         $query = new WP_Query($args);
         $products = array();

@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.9
+**Plugin Version:** 1.6.10
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.9 (NEW)
+### Version 1.6.10 (NEW)
+- **Feature**: Search Bar Always Visible
+  - Search bar sekarang muncul selalu, bahkan sebelum kategori dipilih
+  - Autocomplete bekerja untuk semua produk jika kategori belum dipilih
+  - Autocomplete bekerja untuk kategori tertentu jika kategori sudah dipilih
+  - URL: `https://pakutembak.id/produk` (tanpa parameter category) tetap menampilkan search bar
+
+### Version 1.6.9
 - **Bug Fix**: Perbaikan autocomplete search dan Enter key handling
   - Autocomplete sekarang bekerja dengan baik
   - Enter key dan icon search click menambahkan query parameter ke URL

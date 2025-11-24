@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.9  
+**Version:** 1.6.10  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,24 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.9 (Latest - January 2025)
+### Version 1.6.10 (Latest - January 2025)
+**Feature: Search Bar Always Visible**
+- **🔍 Search Bar Visibility**: Search bar sekarang muncul selalu, bahkan sebelum kategori dipilih
+  - Problem: Search bar hanya muncul setelah kategori dipilih (`?category=` ada di URL)
+  - Solution: Pindahkan search bar keluar dari kondisi category check
+  - Now: Search bar muncul di URL `https://pakutembak.id/produk` (tanpa parameter category)
+- **✨ Improvements**:
+  - Search bar muncul di semua kondisi (dengan atau tanpa kategori)
+  - Autocomplete bekerja untuk semua produk jika kategori belum dipilih
+  - Autocomplete bekerja untuk kategori tertentu jika kategori sudah dipilih
+  - AJAX handler mendukung search tanpa category (search di semua produk)
+- **🔧 Technical**:
+  - Moved search bar HTML outside category condition check
+  - Modified `ajax_search_products()` to support search without category
+  - Applied to both main class and fallback methods
+  - Search behavior: All products if no category, filtered by category if category exists
+
+### Version 1.6.9 (January 2025)
 **Fix: Search Bar Autocomplete and Enter Key Functionality**
 - **🐛 Bug Fix**: Perbaikan autocomplete search dan Enter key handling
   - Problem: Autocomplete tidak bekerja, Enter key tidak menambahkan query parameter

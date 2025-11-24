@@ -1195,6 +1195,23 @@ class SPS_Shortcodes {
         
         <div class="sps-sub-category-container">
             <?php
+            // Display search bar (muncul selalu, bahkan sebelum kategori dipilih)
+            ?>
+            <div class="sps-search-container">
+                <div class="sps-search-wrapper">
+                    <span class="sps-search-icon">🔍</span>
+                    <input type="text" 
+                           class="sps-search-input" 
+                           id="sps-product-search" 
+                           placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
+                           value="<?php echo esc_attr($current_query); ?>"
+                           data-category="<?php echo esc_attr($current_category); ?>"
+                           data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
+                    <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
+                </div>
+            </div>
+            <?php
+            
             // STEP 1: Jika tidak ada category parameter, tidak tampilkan apa-apa
             if (empty($current_category)) {
                 ?>
@@ -1258,23 +1275,6 @@ class SPS_Shortcodes {
                         </div>
                         <?php
                     }
-                    
-                    // Display search bar (hanya muncul jika category ada)
-                    ?>
-                    <div class="sps-search-container">
-                        <div class="sps-search-wrapper">
-                            <span class="sps-search-icon">🔍</span>
-                            <input type="text" 
-                                   class="sps-search-input" 
-                                   id="sps-product-search" 
-                                   placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
-                                   value="<?php echo esc_attr($current_query); ?>"
-                                   data-category="<?php echo esc_attr($current_category); ?>"
-                                   data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
-                            <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
-                        </div>
-                    </div>
-                    <?php
                     
                     // STEP 3: Tentukan kategori mana yang akan digunakan untuk filter produk
                     $filter_category = $current_category;
