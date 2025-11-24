@@ -2658,30 +2658,7 @@ class Simple_Product_Showcase {
                             $columns = 3;
                         }
                         ?>
-                        <style>
-                        .sps-products-grid-search {
-                            display: grid;
-                            grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr);
-                            gap: 30px;
-                            margin: 20px 0;
-                            justify-items: center;
-                        }
-                        
-                        @media (max-width: 768px) {
-                            .sps-products-grid-search {
-                                grid-template-columns: repeat(<?php echo min($columns, 2); ?>, 1fr);
-                                gap: 25px;
-                            }
-                        }
-                        
-                        @media (max-width: 480px) {
-                            .sps-products-grid-search {
-                                grid-template-columns: 1fr;
-                                gap: 20px;
-                            }
-                        }
-                        </style>
-                        <div class="sps-products-grid-search">
+                        <div class="sps-products-grid" style="display: grid; grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr); gap: 30px; margin: 20px 0; justify-items: center;">
                             <?php
                             while ($products_query->have_posts()) {
                                 $products_query->the_post();
