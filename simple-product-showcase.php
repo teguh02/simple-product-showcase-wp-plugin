@@ -2635,13 +2635,96 @@ class Simple_Product_Showcase {
             </div>
             <?php
             
-            // STEP 1: Jika tidak ada category parameter, tidak tampilkan apa-apa
+            // STEP 1: Jika tidak ada category parameter
             if (empty($current_category)) {
-                ?>
-                <div class="sps-no-category-message">
-                    <p><?php _e('Silakan pilih kategori utama terlebih dahulu', 'simple-product-showcase'); ?></p>
-                </div>
-                <?php
+                // Jika ada query search, tampilkan produk yang sesuai dengan query
+                if (!empty($current_query)) {
+                    // Query semua produk yang sesuai dengan search term
+                    $args = array(
+                        'post_type' => 'sps_product',
+                        'post_status' => 'publish',
+                        'posts_per_page' => intval($atts['limit']) > 0 ? intval($atts['limit']) : -1,
+                        'orderby' => $atts['orderby'],
+                        'order' => $atts['order'],
+                        's' => $current_query // WordPress native search
+                    );
+                    
+                    $products_query = new WP_Query($args);
+                    
+                    if ($products_query->have_posts()) {
+                        // Get columns for grid
+                        $columns = intval($atts['columns']);
+                        if ($columns < 1 || $columns > 6) {
+                            $columns = 3;
+                        }
+                        ?>
+                        <style>
+                        .sps-products-grid-search {
+                            display: grid;
+                            grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr);
+                            gap: 30px;
+                            margin: 20px 0;
+                            justify-items: center;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .sps-products-grid-search {
+                                grid-template-columns: repeat(<?php echo min($columns, 3); ?>, 1fr);
+                                gap: 20px;
+                            }
+                        }
+                        
+                        @media (max-width: 480px) {
+                            .sps-products-grid-search {
+                                grid-template-columns: 1fr;
+                                gap: 20px;
+                            }
+                        }
+                        </style>
+                        <div class="sps-products-grid-search">
+                            <?php
+                            while ($products_query->have_posts()) {
+                                $products_query->the_post();
+                                $image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+                                $link = get_permalink();
+                                ?>
+                                <div class="sps-product-item">
+                                    <div class="sps-product-image">
+                                        <?php if ($image) { ?>
+                                            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr(get_the_title()); ?>">
+                                        <?php } else { ?>
+                                            <div class="sps-no-image"><?php _e('No Image', 'simple-product-showcase'); ?></div>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="sps-product-info">
+                                        <h3 class="sps-product-title">
+                                            <a href="<?php echo esc_url($link); ?>">
+                                                <?php echo esc_html(get_the_title()); ?>
+                                            </a>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                            wp_reset_postdata();
+                            ?>
+                        </div>
+                        <?php
+                    } else {
+                        ?>
+                        <div class="sps-no-category-message">
+                            <p><?php _e('Tidak ada produk yang ditemukan untuk kata kunci: ', 'simple-product-showcase'); ?><strong><?php echo esc_html($current_query); ?></strong></p>
+                        </div>
+                        <?php
+                    }
+                } else {
+                    // Jika tidak ada query dan tidak ada kategori, tampilkan pesan default
+                    ?>
+                    <div class="sps-no-category-message">
+                        <p><?php _e('Silakan pilih kategori utama terlebih dahulu', 'simple-product-showcase'); ?></p>
+                    </div>
+                    <?php
+                }
             } else {
                 // STEP 2: Category ada, tampilkan filter sub kategori
                 // Get sub categories (child terms) dari parent category
