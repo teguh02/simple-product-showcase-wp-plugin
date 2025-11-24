@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.16  
+**Version:** 1.6.17  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,14 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.16 (Latest - January 2025)
+### Version 1.6.17 (Latest - January 2025)
+**Fix: Remove Duplicate PHP Tag Causing Parse Error**
+- **🐛 Fix**: Menghapus tag PHP duplikat yang menyebabkan parse error
+  - Problem: Parse error di line 1431 karena ada tag `<?php` duplikat setelah `wp_reset_postdata();`
+  - Solution: Hapus tag PHP duplikat
+  - Now: Syntax error sudah diperbaiki, plugin bisa berjalan normal
+
+### Version 1.6.16 (January 2025)
 **Critical Fix: Match Exact CSS and HTML Structure from sps_products**
 - **🐛 Critical Fix**: Copy CSS dan HTML structure PERSIS dari `sps_products` ke `sps_products_sub_category`
   - Problem: Desain card produk di `sps_products_sub_category` tidak sama dengan `sps_products`, CSS tidak ter-load dengan benar

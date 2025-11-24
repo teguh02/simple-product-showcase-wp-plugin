@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.16
+**Plugin Version:** 1.6.17
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,12 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.16 (NEW)
+### Version 1.6.17 (NEW)
+- **Fix**: Remove duplicate PHP tag causing parse error
+  - Menghapus tag PHP duplikat di line 1431 yang menyebabkan parse error
+  - Syntax error sudah diperbaiki
+
+### Version 1.6.16
 - **Critical Fix**: Match exact CSS and HTML structure from `sps_products` to `sps_products_sub_category`
   - Copy semua CSS class dan media queries dari `sps_products`
   - Validate columns di awal fungsi seperti `sps_products`
