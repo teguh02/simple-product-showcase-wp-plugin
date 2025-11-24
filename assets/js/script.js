@@ -558,7 +558,7 @@
                 newUrl = currentUrl + '?query=' + encodedQuery;
             }
             
-            // 4. Navigate to new URL
+            // 4. Redirect langsung ke URL baru yang sudah mengandung param query
             window.location.href = newUrl;
         }
     };
