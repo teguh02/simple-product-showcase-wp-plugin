@@ -1557,11 +1557,6 @@ class SPS_Shortcodes {
                         }
                         
                         if (!empty($products)) {
-                            // Get columns for grid
-                            $columns = intval($atts['columns']);
-                            if ($columns < 1 || $columns > 6) {
-                                $columns = 3;
-                            }
                             ?>
                             <div class="sps-products-grid">
                                 <?php
