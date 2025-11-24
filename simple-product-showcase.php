@@ -2476,6 +2476,7 @@ class Simple_Product_Showcase {
             border-radius: 30px;
             padding: 8px 15px;
             transition: all 0.3s ease;
+            margin: 0;
         }
         
         .sps-search-wrapper:focus-within {
@@ -2617,19 +2618,20 @@ class Simple_Product_Showcase {
             // Display search bar (muncul selalu, bahkan sebelum kategori dipilih)
             ?>
             <div class="sps-search-container">
-                <div class="sps-search-wrapper">
+                <form method="get" class="sps-search-wrapper" id="sps-search-form">
                     <input type="text" 
                            class="sps-search-input" 
                            id="sps-product-search" 
+                           name="query"
                            placeholder="<?php esc_attr_e('Cari produk...', 'simple-product-showcase'); ?>"
                            value="<?php echo esc_attr($current_query); ?>"
                            data-category="<?php echo esc_attr($current_category); ?>"
                            data-sub-category="<?php echo esc_attr($current_sub_category); ?>">
-                    <button type="button" class="sps-search-button" id="sps-search-button">
+                    <button type="submit" class="sps-search-button" id="sps-search-button">
                         <?php _e('Cari', 'simple-product-showcase'); ?>
                     </button>
                     <div class="sps-autocomplete-results" id="sps-autocomplete-results"></div>
-                </div>
+                </form>
             </div>
             <?php
             

@@ -47,11 +47,8 @@
             $(document).on('keydown', '#sps-product-search', this.handleProductSearchKeydown);
             $(document).on('click', '.sps-autocomplete-item', this.handleAutocompleteClick);
             
-            // Search button click handler (same as Enter key)
-            $(document).on('click', '#sps-search-button', this.handleSearchButtonClick);
-            
-            // Search button/submit handler
-            $(document).on('submit', '.sps-search-wrapper', this.handleSearchSubmit);
+            // Search form submit handler
+            $(document).on('submit', '#sps-search-form', this.handleSearchSubmit);
             
             // Close autocomplete when clicking outside
             $(document).on('click', function(e) {
@@ -431,8 +428,14 @@
                     }
                 }
                 
-                // Otherwise, submit search
-                this.submitSearch($input);
+                // Otherwise, trigger form submit
+                var $form = $input.closest('#sps-search-form');
+                if ($form.length) {
+                    $form.trigger('submit');
+                } else {
+                    // Fallback: submit search directly
+                    this.submitSearch($input);
+                }
             }
             
             // Handle Escape key
@@ -495,27 +498,19 @@
         },
         
         /**
-         * Handle search button click
-         */
-        handleSearchButtonClick: function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var $input = $('#sps-product-search');
-            if ($input.length) {
-                SPS.submitSearch($input);
-            }
-        },
-        
-        /**
          * Handle search form submit
          */
         handleSearchSubmit: function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var $input = $(this).find('#sps-product-search');
+            
+            var $form = $(this);
+            var $input = $form.find('#sps-product-search');
+            
             if ($input.length) {
                 SPS.submitSearch($input);
             }
+            
             return false;
         },
         
