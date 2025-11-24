@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.14
+**Plugin Version:** 1.6.15
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.14 (NEW)
+### Version 1.6.15 (NEW)
+- **Refactor**: Use same product card template for category and query search
+  - Menggunakan template card produk yang sama untuk kategori dan query search
+  - Template konsisten dengan sps-products-grid, sps-product-item, sps-detail-button
+  - CSS untuk product card ditambahkan di shortcode products_sub_category
+  - Hanya berbeda di cara mendapatkan produk (filter), template sama
+
+### Version 1.6.14
 - **Fix**: Update search results to use proper product card layout with Detail button
   - Hasil pencarian sekarang menggunakan card layout yang sama seperti saat kategori dipilih
   - Menambahkan tombol "Detail" dengan styling yang konsisten
