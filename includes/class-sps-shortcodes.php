@@ -1198,6 +1198,11 @@ class SPS_Shortcodes {
                 margin-left: 15px;
                 margin-right: 15px;
             }
+            
+            .sps-search-button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
         }
         </style>
         
