@@ -1205,6 +1205,97 @@ class SPS_Shortcodes {
                 font-size: 13px;
             }
         }
+        
+        .sps-products-grid {
+            display: grid;
+            gap: 30px;
+            margin: 20px 0;
+            justify-items: center;
+        }
+        
+        .sps-product-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 300px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        
+        .sps-product-image {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .sps-product-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        .sps-product-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
+        
+        .sps-product-title {
+            margin: 0;
+            flex: 1;
+        }
+        
+        .sps-product-title-text {
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .sps-detail-button {
+            background: linear-gradient(to bottom, #FFEB3B, #FFD700);
+            color: #333;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 20px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(255, 215, 0, 0.4);
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .sps-detail-button:hover {
+            background: linear-gradient(to bottom, #FFF176, #FFEB3B);
+            color: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
+        }
+        
+        .sps-detail-button:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .sps-products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sps-products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         </style>
         
         <div class="sps-sub-category-container">
