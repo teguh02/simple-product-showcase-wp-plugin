@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.11  
+**Version:** 1.6.12  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,25 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.11 (Latest - January 2025)
+### Version 1.6.12 (Latest - January 2025)
+**Refactor: Convert Search Bar to HTML Form with GET Method**
+- **🔄 Refactor**: Ubah struktur search bar dari div menjadi form HTML dengan method GET
+  - Problem: Tombol "Cari" tidak bisa ditekan sama sekali
+  - Solution: Gunakan native HTML form dengan method GET dan button type="submit"
+  - Now: Form HTML dengan method="get", input name="query", button type="submit"
+- **✨ Improvements**:
+  - Native form submission dengan method GET
+  - Tombol submit berfungsi dengan baik
+  - Enter key trigger form submit
+  - Logika URL parameter handling tetap sama (menambahkan ?query= atau &query=)
+- **🔧 Technical**:
+  - Changed `<div class="sps-search-wrapper">` to `<form method="get" class="sps-search-wrapper" id="sps-search-form">`
+  - Changed `<button type="button">` to `<button type="submit">`
+  - Added `name="query"` attribute to input field
+  - Updated JavaScript form submit handler
+  - Removed button click handler (not needed with form submit)
+
+### Version 1.6.11 (January 2025)
 **UI Improvement: Replace Search Icon with Search Button**
 - **🎨 UI Change**: Ganti icon kaca pembesar dengan tombol "Cari" di sebelah kanan search bar
   - Problem: Icon kaca pembesar kurang jelas sebagai tombol action

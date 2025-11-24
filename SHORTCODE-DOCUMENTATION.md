@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.11
+**Plugin Version:** 1.6.12
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.11 (NEW)
+### Version 1.6.12 (NEW)
+- **Refactor**: Convert search bar to HTML form with GET method
+  - Changed from div to form HTML with method="get"
+  - Button changed from type="button" to type="submit"
+  - Added name="query" attribute to input field
+  - Native form submission with proper URL parameter handling
+
+### Version 1.6.11
 - **UI Improvement**: Ganti icon kaca pembesar dengan tombol "Cari" di sebelah kanan search bar
   - Tombol "Cari" dengan background kuning (#FDB913)
   - Hover effect dengan transform dan shadow
