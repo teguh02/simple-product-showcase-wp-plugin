@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.12
+**Plugin Version:** 1.6.13
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.12 (NEW)
+### Version 1.6.13 (NEW)
+- **Fix**: Add query search functionality to `sps_products_sub_category` shortcode
+  - Shortcode sekarang menampilkan produk berdasarkan query parameter
+  - Jika tidak ada kategori tapi ada query: tampilkan semua produk yang sesuai dengan query
+  - Jika ada kategori dan ada query: tampilkan produk dari kategori yang sesuai dengan query
+  - Responsive grid layout untuk hasil pencarian
+
+### Version 1.6.12
 - **Refactor**: Convert search bar to HTML form with GET method
   - Changed from div to form HTML with method="get"
   - Button changed from type="button" to type="submit"

@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.12  
+**Version:** 1.6.13  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,23 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.12 (Latest - January 2025)
+### Version 1.6.13 (Latest - January 2025)
+**Fix: Add Query Search Functionality to sps_products_sub_category Shortcode**
+- **🐛 Fix**: Shortcode `sps_products_sub_category` sekarang menampilkan produk berdasarkan query parameter
+  - Problem: Shortcode tidak menampilkan produk ketika hanya ada query tanpa kategori yang dipilih
+  - Solution: Tambahkan logika untuk menampilkan semua produk yang sesuai dengan query jika tidak ada kategori
+  - Now: Shortcode menampilkan produk berdasarkan query, baik dengan atau tanpa kategori
+- **✨ Improvements**:
+  - Query search tanpa kategori: Tampilkan semua produk yang sesuai dengan query
+  - Query search dengan kategori: Tampilkan produk dari kategori yang sesuai dengan query (sudah ada sebelumnya)
+  - Responsive grid layout untuk hasil pencarian
+  - Pesan "Tidak ada produk yang ditemukan" jika tidak ada hasil
+- **🔧 Technical**:
+  - Menggunakan `WP_Query` dengan parameter `'s' => $current_query` untuk WordPress native search
+  - Menambahkan CSS grid layout untuk hasil pencarian
+  - Update fallback method dengan logika yang sama
+
+### Version 1.6.12 (January 2025)
 **Refactor: Convert Search Bar to HTML Form with GET Method**
 - **🔄 Refactor**: Ubah struktur search bar dari div menjadi form HTML dengan method GET
   - Problem: Tombol "Cari" tidak bisa ditekan sama sekali
