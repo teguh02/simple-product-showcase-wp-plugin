@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.17
+**Plugin Version:** 1.6.18
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,12 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.17 (NEW)
+### Version 1.6.18 (NEW)
+- **Fix**: Perbaikan akurasi pencarian produk
+  - Pencarian sekarang hanya mencari di title dan content produk, tidak di taxonomy terms
+  - Hasil pencarian lebih akurat, tidak menampilkan produk yang tidak relevan
+
+### Version 1.6.17
 - **Fix**: Remove duplicate PHP tag causing parse error
   - Menghapus tag PHP duplikat di line 1431 yang menyebabkan parse error
   - Syntax error sudah diperbaiki

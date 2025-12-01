@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.17  
+**Version:** 1.6.18  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,17 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.17 (Latest - January 2025)
+### Version 1.6.18 (Latest - January 2025)
+**Fix: Perbaikan Akurasi Pencarian Produk**
+- **🐛 Fix**: Hasil pencarian sekarang lebih akurat, hanya mencari di title dan content produk
+  - Problem: Pencarian menggunakan WordPress native search (`'s'` parameter) yang terlalu luas, mencari juga di taxonomy terms, sehingga produk dari kategori yang namanya mengandung kata kunci ikut muncul
+  - Solution: Mengubah semua logika pencarian untuk menggunakan filter manual yang hanya mencari di `post_title` dan `post_content`, tidak di taxonomy terms
+  - Files Changed:
+    - `includes/class-sps-shortcodes.php`: `products_shortcode()` dan `products_sub_category_shortcode()`
+    - `simple-product-showcase.php`: `direct_products_sub_category_shortcode()` dan `ajax_search_products()`
+  - Now: Ketika mencari "paku", hanya produk yang judul atau kontennya mengandung "paku" yang akan muncul, tidak termasuk produk dari kategori yang namanya mengandung "paku"
+
+### Version 1.6.17 (January 2025)
 **Fix: Remove Duplicate PHP Tag Causing Parse Error**
 - **🐛 Fix**: Menghapus tag PHP duplikat yang menyebabkan parse error
   - Problem: Parse error di line 1431 karena ada tag `<?php` duplikat setelah `wp_reset_postdata();`

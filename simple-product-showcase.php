@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.17
+ * Version: 1.6.18
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.17');
+define('SPS_PLUGIN_VERSION', '1.6.18');
 
 /**
  * Class Simple_Product_Showcase
@@ -2761,19 +2761,47 @@ class Simple_Product_Showcase {
             if (empty($current_category)) {
                 // Jika ada query search, tampilkan produk yang sesuai dengan query
                 if (!empty($current_query)) {
-                    // Query semua produk yang sesuai dengan search term
+                    // Query semua produk (tanpa filter search WordPress native karena terlalu luas)
                     $args = array(
                         'post_type' => 'sps_product',
                         'post_status' => 'publish',
-                        'posts_per_page' => intval($atts['limit']) > 0 ? intval($atts['limit']) : -1,
+                        'posts_per_page' => -1, // Ambil semua dulu, filter manual
                         'orderby' => $atts['orderby'],
-                        'order' => $atts['order'],
-                        's' => $current_query // WordPress native search
+                        'order' => $atts['order']
                     );
                     
                     $products_query = new WP_Query($args);
                     
+                    // Filter manual: hanya cari di title dan content, TIDAK di taxonomy terms
+                    $filtered_products = array();
                     if ($products_query->have_posts()) {
+                        $search_term = strtolower(trim($current_query));
+                        while ($products_query->have_posts()) {
+                            $products_query->the_post();
+                            $post_id = get_the_ID();
+                            $product_obj = get_post($post_id);
+                            
+                            if (!$product_obj) continue;
+                            
+                            // Search hanya di title dan content
+                            $title = strtolower($product_obj->post_title);
+                            $content = strtolower($product_obj->post_content);
+                            
+                            // Cek apakah search term ada di title atau content
+                            if (strpos($title, $search_term) !== false || strpos($content, $search_term) !== false) {
+                                $filtered_products[] = $product_obj;
+                            }
+                        }
+                        wp_reset_postdata();
+                        
+                        // Apply limit setelah filter
+                        $limit = intval($atts['limit']);
+                        if ($limit > 0 && count($filtered_products) > $limit) {
+                            $filtered_products = array_slice($filtered_products, 0, $limit);
+                        }
+                    }
+                    
+                    if (!empty($filtered_products)) {
                         // Get columns for grid
                         $columns = intval($atts['columns']);
                         if ($columns < 1 || $columns > 6) {
@@ -2782,22 +2810,22 @@ class Simple_Product_Showcase {
                         ?>
                         <div class="sps-products-grid">
                             <?php
-                            while ($products_query->have_posts()) {
-                                $products_query->the_post();
+                            foreach ($filtered_products as $product_obj) {
+                                setup_postdata($product_obj);
                                 ?>
                                 <div class="sps-product-item">
-                                    <?php if (has_post_thumbnail()) : ?>
+                                    <?php if (has_post_thumbnail($product_obj->ID)) : ?>
                                         <div class="sps-product-image">
-                                            <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
+                                            <?php echo get_the_post_thumbnail($product_obj->ID, 'medium', array('alt' => get_the_title($product_obj->ID))); ?>
                                         </div>
                                     <?php endif; ?>
                                     
                                     <div class="sps-product-info">
                                         <div class="sps-product-title">
-                                            <p class="sps-product-title-text"><?php the_title(); ?></p>
+                                            <p class="sps-product-title-text"><?php echo get_the_title($product_obj->ID); ?></p>
                                         </div>
                                         <?php 
-                                        $detail_url = SPS_Configuration::get_product_detail_url(get_the_ID());
+                                        $detail_url = SPS_Configuration::get_product_detail_url($product_obj->ID);
                                         ?>
                                         <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                                     </div>
@@ -3613,12 +3641,11 @@ class Simple_Product_Showcase {
             wp_send_json_success(array('products' => array()));
         }
         
-        // Query products
+        // Query products (tanpa 's' parameter karena terlalu luas)
         $args = array(
             'post_type' => 'sps_product',
             'post_status' => 'publish',
-            'posts_per_page' => 10, // Limit autocomplete results
-            's' => $search_term // Search term
+            'posts_per_page' => -1, // Ambil semua dulu, filter manual
         );
         
         // Add category filter only if category is provided
@@ -3663,27 +3690,45 @@ class Simple_Product_Showcase {
         
         $query = new WP_Query($args);
         $products = array();
+        $search_term_lower = strtolower(trim($search_term));
         
+        // Filter manual: hanya cari di title dan content, TIDAK di taxonomy terms
         if ($query->have_posts()) {
             while ($query->have_posts()) {
                 $query->the_post();
                 $product_id = get_the_ID();
-                $image = get_the_post_thumbnail_url($product_id, 'thumbnail');
+                $product_obj = get_post($product_id);
                 
-                // Get product category
-                $terms = get_the_terms($product_id, 'sps_product_category');
-                $category_name = '';
-                if ($terms && !is_wp_error($terms)) {
-                    $category_name = $terms[0]->name;
+                if (!$product_obj) continue;
+                
+                // Search hanya di title dan content
+                $title = strtolower($product_obj->post_title);
+                $content = strtolower($product_obj->post_content);
+                
+                // Cek apakah search term ada di title atau content
+                if (strpos($title, $search_term_lower) !== false || strpos($content, $search_term_lower) !== false) {
+                    $image = get_the_post_thumbnail_url($product_id, 'thumbnail');
+                    
+                    // Get product category
+                    $terms = get_the_terms($product_id, 'sps_product_category');
+                    $category_name = '';
+                    if ($terms && !is_wp_error($terms)) {
+                        $category_name = $terms[0]->name;
+                    }
+                    
+                    $products[] = array(
+                        'id' => $product_id,
+                        'title' => get_the_title($product_id),
+                        'image' => $image ? $image : '',
+                        'category' => $category_name,
+                        'url' => get_permalink($product_id)
+                    );
+                    
+                    // Limit autocomplete results to 10
+                    if (count($products) >= 10) {
+                        break;
+                    }
                 }
-                
-                $products[] = array(
-                    'id' => $product_id,
-                    'title' => get_the_title(),
-                    'image' => $image ? $image : '',
-                    'category' => $category_name,
-                    'url' => get_permalink()
-                );
             }
             wp_reset_postdata();
         }

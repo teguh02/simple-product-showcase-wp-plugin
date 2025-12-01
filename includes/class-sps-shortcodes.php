@@ -173,10 +173,8 @@ class SPS_Shortcodes {
             )
         );
         
-        // Add search query if exists
-        if (!empty($search_query)) {
-            $args['s'] = $search_query;
-        }
+        // Jangan gunakan 's' parameter karena terlalu luas (mencari di taxonomy terms juga)
+        // Search akan dilakukan dengan filter manual setelah query
         
         // Add category filter if specified in shortcode attributes or URL parameter
         $category_filter = '';
@@ -275,20 +273,25 @@ class SPS_Shortcodes {
         // Execute query
         $products_query = new WP_Query($args);
         
-        // Additional filter by query term if exists (filter results in PHP for better accuracy)
+        // Filter manual by query term if exists (hanya cari di title dan content, TIDAK di taxonomy terms)
         if (!empty($search_query) && $products_query->have_posts()) {
             $filtered_posts = array();
-            $search_term_lower = strtolower($search_query);
+            $search_term_lower = strtolower(trim($search_query));
             
             while ($products_query->have_posts()) {
                 $products_query->the_post();
                 $post_id = get_the_ID();
-                $title = strtolower(get_the_title());
-                $content = strtolower(get_the_content());
+                $product_obj = get_post($post_id);
                 
-                // Search in title and content
+                if (!$product_obj) continue;
+                
+                // Search hanya di title dan content
+                $title = strtolower($product_obj->post_title);
+                $content = strtolower($product_obj->post_content);
+                
+                // Cek apakah search term ada di title atau content
                 if (strpos($title, $search_term_lower) !== false || strpos($content, $search_term_lower) !== false) {
-                    $filtered_posts[] = get_post($post_id);
+                    $filtered_posts[] = $product_obj;
                 }
             }
             
@@ -298,7 +301,7 @@ class SPS_Shortcodes {
             if (!empty($filtered_posts)) {
                 // Re-query with filtered post IDs
                 $args['post__in'] = wp_list_pluck($filtered_posts, 'ID');
-                $args['s'] = ''; // Remove search parameter since we're filtering by post__in
+                unset($args['s']); // Pastikan tidak ada 's' parameter
                 $products_query = new WP_Query($args);
             } else {
                 // No matching posts found
@@ -1385,19 +1388,47 @@ class SPS_Shortcodes {
             if (empty($current_category)) {
                 // Jika ada query search, tampilkan produk yang sesuai dengan query
                 if (!empty($current_query)) {
-                    // Query semua produk yang sesuai dengan search term
+                    // Query semua produk (tanpa filter search WordPress native karena terlalu luas)
                     $args = array(
                         'post_type' => 'sps_product',
                         'post_status' => 'publish',
-                        'posts_per_page' => intval($atts['limit']) > 0 ? intval($atts['limit']) : -1,
+                        'posts_per_page' => -1, // Ambil semua dulu, filter manual
                         'orderby' => $atts['orderby'],
-                        'order' => $atts['order'],
-                        's' => $current_query // WordPress native search
+                        'order' => $atts['order']
                     );
                     
                     $products_query = new WP_Query($args);
                     
+                    // Filter manual: hanya cari di title dan content, TIDAK di taxonomy terms
+                    $filtered_products = array();
                     if ($products_query->have_posts()) {
+                        $search_term = strtolower(trim($current_query));
+                        while ($products_query->have_posts()) {
+                            $products_query->the_post();
+                            $post_id = get_the_ID();
+                            $product_obj = get_post($post_id);
+                            
+                            if (!$product_obj) continue;
+                            
+                            // Search hanya di title dan content
+                            $title = strtolower($product_obj->post_title);
+                            $content = strtolower($product_obj->post_content);
+                            
+                            // Cek apakah search term ada di title atau content
+                            if (strpos($title, $search_term) !== false || strpos($content, $search_term) !== false) {
+                                $filtered_products[] = $product_obj;
+                            }
+                        }
+                        wp_reset_postdata();
+                        
+                        // Apply limit setelah filter
+                        $limit = intval($atts['limit']);
+                        if ($limit > 0 && count($filtered_products) > $limit) {
+                            $filtered_products = array_slice($filtered_products, 0, $limit);
+                        }
+                    }
+                    
+                    if (!empty($filtered_products)) {
                         // Get columns for grid
                         $columns = intval($atts['columns']);
                         if ($columns < 1 || $columns > 6) {
@@ -1405,25 +1436,27 @@ class SPS_Shortcodes {
                         }
                         ?>
                         <div class="sps-products-grid">
-                            <?php while ($products_query->have_posts()) : $products_query->the_post(); ?>
+                            <?php foreach ($filtered_products as $product_obj) : 
+                                setup_postdata($product_obj);
+                                ?>
                                 <div class="sps-product-item">
-                                    <?php if (has_post_thumbnail()) : ?>
+                                    <?php if (has_post_thumbnail($product_obj->ID)) : ?>
                                         <div class="sps-product-image">
-                                            <?php the_post_thumbnail('medium', array('alt' => get_the_title())); ?>
+                                            <?php echo get_the_post_thumbnail($product_obj->ID, 'medium', array('alt' => get_the_title($product_obj->ID))); ?>
                                         </div>
                                     <?php endif; ?>
                                     
                                     <div class="sps-product-info">
                                         <div class="sps-product-title">
-                                            <p class="sps-product-title-text"><?php the_title(); ?></p>
+                                            <p class="sps-product-title-text"><?php echo get_the_title($product_obj->ID); ?></p>
                                         </div>
                                                 <?php 
-                                                $detail_url = SPS_Settings::get_product_detail_url(get_the_ID());
+                                                $detail_url = SPS_Settings::get_product_detail_url($product_obj->ID);
                                                 ?>
                                                 <a href="<?php echo esc_url($detail_url); ?>" class="sps-detail-button">Detail</a>
                                     </div>
                                 </div>
-                            <?php endwhile; ?>
+                            <?php endforeach; ?>
                         </div>
                         
                         <?php
@@ -1538,13 +1571,14 @@ class SPS_Shortcodes {
                         $products = $this->get_products_by_category($category_term->term_id, $include_children, -1, 'title', 'ASC');
                         
                         // Filter produk berdasarkan query search jika ada
+                        // Hanya cari di title dan content, TIDAK di taxonomy terms
                         if (!empty($current_query)) {
-                            $products = array_filter($products, function($product) use ($current_query) {
+                            $search_term = strtolower(trim($current_query));
+                            $products = array_filter($products, function($product) use ($search_term) {
                                 $product_obj = get_post($product->ID);
                                 if (!$product_obj) return false;
                                 
-                                // Search in title and content
-                                $search_term = strtolower($current_query);
+                                // Search hanya di title dan content
                                 $title = strtolower($product_obj->post_title);
                                 $content = strtolower($product_obj->post_content);
                                 
@@ -1553,6 +1587,12 @@ class SPS_Shortcodes {
                             
                             // Reset array keys after filter
                             $products = array_values($products);
+                            
+                            // Apply limit setelah filter
+                            $limit = intval($atts['limit']);
+                            if ($limit > 0 && count($products) > $limit) {
+                                $products = array_slice($products, 0, $limit);
+                            }
                         }
                         
                         if (!empty($products)) {
