@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.18
+**Plugin Version:** 1.6.19
 **Last Updated:** 2025-01-27
 
 ---
@@ -608,7 +608,12 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.18 (NEW)
+### Version 1.6.19 (NEW)
+- **Fix**: Pencarian hanya di judul produk
+  - Pencarian sekarang hanya mencari di judul/nama produk saja, tidak di deskripsi/konten
+  - Hasil pencarian lebih akurat dan tepat sasaran
+
+### Version 1.6.18
 - **Fix**: Perbaikan akurasi pencarian produk
   - Pencarian sekarang hanya mencari di title dan content produk, tidak di taxonomy terms
   - Hasil pencarian lebih akurat, tidak menampilkan produk yang tidak relevan

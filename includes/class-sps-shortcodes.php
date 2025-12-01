@@ -273,7 +273,7 @@ class SPS_Shortcodes {
         // Execute query
         $products_query = new WP_Query($args);
         
-        // Filter manual by query term if exists (hanya cari di title dan content, TIDAK di taxonomy terms)
+        // Filter manual by query term if exists (hanya cari di title/judul produk saja, TIDAK di content/deskripsi)
         if (!empty($search_query) && $products_query->have_posts()) {
             $filtered_posts = array();
             $search_term_lower = strtolower(trim($search_query));
@@ -285,12 +285,11 @@ class SPS_Shortcodes {
                 
                 if (!$product_obj) continue;
                 
-                // Search hanya di title dan content
+                // Search HANYA di title/judul produk
                 $title = strtolower($product_obj->post_title);
-                $content = strtolower($product_obj->post_content);
                 
-                // Cek apakah search term ada di title atau content
-                if (strpos($title, $search_term_lower) !== false || strpos($content, $search_term_lower) !== false) {
+                // Cek apakah search term ada di title saja
+                if (strpos($title, $search_term_lower) !== false) {
                     $filtered_posts[] = $product_obj;
                 }
             }
@@ -1399,7 +1398,7 @@ class SPS_Shortcodes {
                     
                     $products_query = new WP_Query($args);
                     
-                    // Filter manual: hanya cari di title dan content, TIDAK di taxonomy terms
+                    // Filter manual: hanya cari di title/judul produk saja, TIDAK di content/deskripsi
                     $filtered_products = array();
                     if ($products_query->have_posts()) {
                         $search_term = strtolower(trim($current_query));
@@ -1410,12 +1409,11 @@ class SPS_Shortcodes {
                             
                             if (!$product_obj) continue;
                             
-                            // Search hanya di title dan content
+                            // Search HANYA di title/judul produk
                             $title = strtolower($product_obj->post_title);
-                            $content = strtolower($product_obj->post_content);
                             
-                            // Cek apakah search term ada di title atau content
-                            if (strpos($title, $search_term) !== false || strpos($content, $search_term) !== false) {
+                            // Cek apakah search term ada di title saja
+                            if (strpos($title, $search_term) !== false) {
                                 $filtered_products[] = $product_obj;
                             }
                         }
@@ -1571,18 +1569,17 @@ class SPS_Shortcodes {
                         $products = $this->get_products_by_category($category_term->term_id, $include_children, -1, 'title', 'ASC');
                         
                         // Filter produk berdasarkan query search jika ada
-                        // Hanya cari di title dan content, TIDAK di taxonomy terms
+                        // Hanya cari di title/judul produk saja, TIDAK di content/deskripsi
                         if (!empty($current_query)) {
                             $search_term = strtolower(trim($current_query));
                             $products = array_filter($products, function($product) use ($search_term) {
                                 $product_obj = get_post($product->ID);
                                 if (!$product_obj) return false;
                                 
-                                // Search hanya di title dan content
+                                // Search HANYA di title/judul produk
                                 $title = strtolower($product_obj->post_title);
-                                $content = strtolower($product_obj->post_content);
                                 
-                                return (strpos($title, $search_term) !== false || strpos($content, $search_term) !== false);
+                                return (strpos($title, $search_term) !== false);
                             });
                             
                             // Reset array keys after filter

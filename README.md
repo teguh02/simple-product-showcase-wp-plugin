@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.18  
+**Version:** 1.6.19  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,17 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.18 (Latest - January 2025)
+### Version 1.6.19 (Latest - January 2025)
+**Fix: Pencarian Hanya di Judul Produk**
+- **🐛 Fix**: Pencarian sekarang hanya mencari di judul/nama produk saja, tidak di deskripsi/konten
+  - Problem: Masih ada produk yang tidak relevan muncul karena pencarian juga mencari di `post_content` (deskripsi produk)
+  - Solution: Mengubah semua logika pencarian untuk hanya mencari di `post_title` (judul produk) saja, menghapus pencarian di `post_content`
+  - Files Changed:
+    - `includes/class-sps-shortcodes.php`: `products_shortcode()` dan `products_sub_category_shortcode()`
+    - `simple-product-showcase.php`: `direct_products_sub_category_shortcode()` dan `ajax_search_products()`
+  - Now: Ketika mencari "paku", hanya produk yang **judulnya** mengandung "paku" yang akan muncul, lebih akurat dan tepat sasaran
+
+### Version 1.6.18 (January 2025)
 **Fix: Perbaikan Akurasi Pencarian Produk**
 - **🐛 Fix**: Hasil pencarian sekarang lebih akurat, hanya mencari di title dan content produk
   - Problem: Pencarian menggunakan WordPress native search (`'s'` parameter) yang terlalu luas, mencari juga di taxonomy terms, sehingga produk dari kategori yang namanya mengandung kata kunci ikut muncul

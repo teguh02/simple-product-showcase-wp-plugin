@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.18
+ * Version: 1.6.19
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.18');
+define('SPS_PLUGIN_VERSION', '1.6.19');
 
 /**
  * Class Simple_Product_Showcase
@@ -2772,7 +2772,7 @@ class Simple_Product_Showcase {
                     
                     $products_query = new WP_Query($args);
                     
-                    // Filter manual: hanya cari di title dan content, TIDAK di taxonomy terms
+                    // Filter manual: hanya cari di title/judul produk saja, TIDAK di content/deskripsi
                     $filtered_products = array();
                     if ($products_query->have_posts()) {
                         $search_term = strtolower(trim($current_query));
@@ -2783,12 +2783,11 @@ class Simple_Product_Showcase {
                             
                             if (!$product_obj) continue;
                             
-                            // Search hanya di title dan content
+                            // Search HANYA di title/judul produk
                             $title = strtolower($product_obj->post_title);
-                            $content = strtolower($product_obj->post_content);
                             
-                            // Cek apakah search term ada di title atau content
-                            if (strpos($title, $search_term) !== false || strpos($content, $search_term) !== false) {
+                            // Cek apakah search term ada di title saja
+                            if (strpos($title, $search_term) !== false) {
                                 $filtered_products[] = $product_obj;
                             }
                         }
@@ -3701,12 +3700,11 @@ class Simple_Product_Showcase {
                 
                 if (!$product_obj) continue;
                 
-                // Search hanya di title dan content
+                // Search HANYA di title/judul produk
                 $title = strtolower($product_obj->post_title);
-                $content = strtolower($product_obj->post_content);
                 
-                // Cek apakah search term ada di title atau content
-                if (strpos($title, $search_term_lower) !== false || strpos($content, $search_term_lower) !== false) {
+                // Cek apakah search term ada di title saja
+                if (strpos($title, $search_term_lower) !== false) {
                     $image = get_the_post_thumbnail_url($product_id, 'thumbnail');
                     
                     // Get product category
