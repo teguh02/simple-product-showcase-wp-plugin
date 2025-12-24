@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.22
+ * Version: 1.6.23
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.22');
+define('SPS_PLUGIN_VERSION', '1.6.23');
 
 /**
  * Class Simple_Product_Showcase
@@ -1471,14 +1471,32 @@ class Simple_Product_Showcase {
                 // Ambil berat dari post_meta
                 $weight = get_post_meta($product->ID, '_sps_product_weight', true);
                 
-                // Format berat dengan satuan gram
-                if (!empty($weight) && is_numeric($weight)) {
-                    $weight_display = number_format($weight, 0, ',', '.') . ' gram';
-                } else {
-                    $weight_display = __('Weight not available', 'simple-product-showcase');
+                // Jika berat belum diatur, set default 20 kg (20000 gram) dan simpan ke database
+                if (empty($weight) || !is_numeric($weight) || $weight == 0) {
+                    $weight = 20000; // 20 kg = 20000 gram (default)
+                    
+                    // Simpan ke post_meta
+                    update_post_meta($product->ID, '_sps_product_weight', $weight);
+                    
+                    // Simpan ke kolom database jika ada
+                    global $wpdb;
+                    $column_exists = get_option('sps_weight_column_exists', false);
+                    if ($column_exists) {
+                        $table_name = $wpdb->posts;
+                        $wpdb->update(
+                            $table_name,
+                            array('weight' => absint($weight)),
+                            array('ID' => $product->ID),
+                            array('%d'),
+                            array('%d')
+                        );
+                    }
                 }
                 
-                return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight ? $weight : '') . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
+                // Format berat dengan satuan gram
+                $weight_display = number_format($weight, 0, ',', '.') . ' gram';
+                
+                return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight) . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
                 
             case 'image':
                 // Default: show thumbnail or first available image (PHP loads this initially)

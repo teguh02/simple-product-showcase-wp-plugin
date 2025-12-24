@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.22  
+**Version:** 1.6.23  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,19 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.22 (Latest - December 2025)
+### Version 1.6.23 (Latest - December 2025)
+**Fix: Default Weight untuk Produk Tanpa Berat**
+- **🔧 Changed**: Section `weight` pada shortcode `[sps_detail_products]` sekarang memiliki default value
+  - Jika berat produk belum diatur di database, secara otomatis akan diset ke **20 kg (20.000 gram)**
+  - Nilai default akan otomatis disimpan ke post_meta (`_sps_product_weight`) dan kolom database (`weight` di tabel `wp_posts` jika ada)
+  - Ketika produk tanpa berat diakses, nilai default akan langsung disimpan sehingga tidak perlu input manual
+  - Format tampilan tetap: "20.000 gram"
+  - Files Changed:
+    - `includes/class-sps-shortcodes.php`: Modifikasi `render_product_weight()` untuk auto-set default dan save
+    - `simple-product-showcase.php`: Modifikasi case 'weight' di fallback handler
+  - Now: Semua produk yang belum memiliki berat akan otomatis mendapat nilai default 20 kg dan disimpan ke database saat halaman detail produk diakses
+
+### Version 1.6.22 (December 2025)
 **Feature: Section Price & Weight untuk Detail Products Shortcode**
 - **✨ Added**: Menambahkan section `price` dan `weight` pada shortcode `[sps_detail_products]`
   - Section `price`: Menampilkan harga produk dengan heading tag (h1-h5), default h3

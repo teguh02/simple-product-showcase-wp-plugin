@@ -5,6 +5,15 @@ Semua perubahan penting pada plugin ini akan didokumentasikan dalam file ini.
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [1.6.23] - 2025-12-24
+
+### Changed
+- Section `weight` pada shortcode `[sps_detail_products]` sekarang memiliki default value
+  - Jika berat produk belum diatur di database, secara otomatis akan diset ke **20 kg (20.000 gram)**
+  - Nilai default akan otomatis disimpan ke post_meta (`_sps_product_weight`) dan kolom database (`weight` di tabel `wp_posts` jika ada)
+  - Ketika produk tanpa berat diakses, nilai default akan langsung disimpan sehingga tidak perlu input manual
+  - Format tampilan tetap: "20.000 gram"
+
 ## [1.6.22] - 2025-12-24
 
 ### Added

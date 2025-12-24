@@ -1811,14 +1811,32 @@ class SPS_Shortcodes {
         // Ambil berat dari post_meta
         $weight = get_post_meta($product->ID, '_sps_product_weight', true);
         
-        // Format berat dengan satuan gram
-        if (!empty($weight) && is_numeric($weight)) {
-            $weight_display = number_format($weight, 0, ',', '.') . ' gram';
-        } else {
-            $weight_display = __('Weight not available', 'simple-product-showcase');
+        // Jika berat belum diatur, set default 20 kg (20000 gram) dan simpan ke database
+        if (empty($weight) || !is_numeric($weight) || $weight == 0) {
+            $weight = 20000; // 20 kg = 20000 gram (default)
+            
+            // Simpan ke post_meta
+            update_post_meta($product->ID, '_sps_product_weight', $weight);
+            
+            // Simpan ke kolom database jika ada
+            global $wpdb;
+            $column_exists = get_option('sps_weight_column_exists', false);
+            if ($column_exists) {
+                $table_name = $wpdb->posts;
+                $wpdb->update(
+                    $table_name,
+                    array('weight' => absint($weight)),
+                    array('ID' => $product->ID),
+                    array('%d'),
+                    array('%d')
+                );
+            }
         }
         
-        return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight ? $weight : '') . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
+        // Format berat dengan satuan gram
+        $weight_display = number_format($weight, 0, ',', '.') . ' gram';
+        
+        return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight) . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
     }
     
     /**
