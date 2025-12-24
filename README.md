@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.20  
+**Version:** 1.6.21  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,24 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.20 (Latest - December 2025)
+### Version 1.6.21 (Latest - December 2025)
+**Feature: Field Harga Numeric untuk Perhitungan**
+- **✨ Added**: Menambahkan field harga produk numeric untuk perhitungan total harga
+  - Field "Price (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif (min="0" step="1")
+  - Data price numeric disimpan di post_meta dengan key `_sps_product_price_numeric`
+  - Jika kolom `price` ada di tabel `wp_posts`, data juga disimpan ke kolom tersebut untuk kompatibilitas
+  - Field "Price (Display)" tetap ada untuk menampilkan harga dengan format teks seperti "Rp 100,000"
+- **🔧 Changed**: Menambahkan mekanisme pengecekan dan pembuatan kolom `price` otomatis
+  - Fungsi `check_and_create_price_column()` mengecek apakah kolom `price` sudah ada di tabel `wp_posts`
+  - Jika belum ada, kolom akan dibuat otomatis dengan tipe `DECIMAL(15,2) UNSIGNED DEFAULT 0.00`
+  - Menggunakan cache option (`sps_price_column_exists`) untuk menghindari query berulang
+  - Dipanggil via hook `admin_init` untuk memastikan database sudah siap
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: `product_price_meta_box()`, `save_product_meta()`, `check_and_create_price_column()`, `save_price_to_posts_table()`
+  - Now: Admin dapat mengisi harga produk sebagai angka (misal: 100000) untuk memudahkan perhitungan total harga nantinya, data tersimpan baik di post_meta maupun kolom wp_posts (jika ada)
+
+### Version 1.6.20 (December 2025)
 **Feature: Field Berat Produk (Weight)**
 - **✨ Added**: Menambahkan field berat produk dalam satuan gram
   - Field "Weight (gram)" muncul di meta box "Product Price" pada halaman tambah dan edit produk

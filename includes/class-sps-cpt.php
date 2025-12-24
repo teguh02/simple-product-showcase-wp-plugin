@@ -40,6 +40,7 @@ class SPS_CPT {
         add_action('init', array($this, 'register_post_type'));
         add_action('init', array($this, 'register_taxonomy'));
         add_action('admin_init', array($this, 'check_and_create_weight_column'));
+        add_action('admin_init', array($this, 'check_and_create_price_column'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_product_meta'));
         add_filter('manage_sps_product_posts_columns', array($this, 'add_product_columns'));
@@ -176,12 +177,18 @@ class SPS_CPT {
         wp_nonce_field('sps_product_meta', 'sps_product_meta_nonce');
         
         $price = get_post_meta($post->ID, '_sps_product_price', true);
+        $price_numeric = get_post_meta($post->ID, '_sps_product_price_numeric', true);
         $weight = get_post_meta($post->ID, '_sps_product_weight', true);
         ?>
         <p>
-            <label for="sps_product_price"><?php _e('Price:', 'simple-product-showcase'); ?></label>
+            <label for="sps_product_price"><?php _e('Price (Display):', 'simple-product-showcase'); ?></label>
             <input type="text" id="sps_product_price" name="sps_product_price" value="<?php echo esc_attr($price); ?>" class="widefat" placeholder="Rp 0" />
             <small><?php _e('Enter price with currency symbol (e.g., Rp 100,000)', 'simple-product-showcase'); ?></small>
+        </p>
+        <p>
+            <label for="sps_product_price_numeric"><?php _e('Price (Numeric) - Rp:', 'simple-product-showcase'); ?></label>
+            <input type="number" id="sps_product_price_numeric" name="sps_product_price_numeric" value="<?php echo esc_attr($price_numeric); ?>" class="widefat" placeholder="0" min="0" step="1" />
+            <small><?php _e('Enter price as number only (e.g., 100000) for calculation purposes', 'simple-product-showcase'); ?></small>
         </p>
         <p>
             <label for="sps_product_weight"><?php _e('Weight (gram):', 'simple-product-showcase'); ?></label>
@@ -227,9 +234,25 @@ class SPS_CPT {
             return;
         }
         
-        // Simpan harga produk
+        // Simpan harga produk (display)
         if (isset($_POST['sps_product_price'])) {
             update_post_meta($post_id, '_sps_product_price', sanitize_text_field($_POST['sps_product_price']));
+        }
+        
+        // Simpan harga produk (numeric)
+        if (isset($_POST['sps_product_price_numeric'])) {
+            $price_numeric = floatval($_POST['sps_product_price_numeric']); // Sanitize as float to support decimals
+            if ($price_numeric < 0) {
+                $price_numeric = 0; // Ensure non-negative
+            }
+            update_post_meta($post_id, '_sps_product_price_numeric', $price_numeric);
+            
+            // Jika kolom price ada di wp_posts, simpan juga ke sana
+            $this->save_price_to_posts_table($post_id, $price_numeric);
+        } else {
+            // Jika tidak ada nilai, set ke 0 atau hapus
+            delete_post_meta($post_id, '_sps_product_price_numeric');
+            $this->save_price_to_posts_table($post_id, 0);
         }
         
         // Simpan berat produk (weight)
@@ -368,6 +391,71 @@ class SPS_CPT {
                 array('weight' => absint($weight)),
                 array('ID' => $post_id),
                 array('%d'),
+                array('%d')
+            );
+        }
+    }
+    
+    /**
+     * Check apakah kolom price ada di tabel wp_posts, jika belum ada tambahkan
+     * Dipanggil via admin_init hook untuk memastikan database sudah siap
+     */
+    public function check_and_create_price_column() {
+        global $wpdb;
+        
+        // Cek apakah kolom sudah ada (gunakan cache untuk efisiensi)
+        $column_exists = get_option('sps_price_column_exists', null);
+        
+        if ($column_exists === null) {
+            // Belum pernah di-check, cek sekarang
+            $table_name = $wpdb->posts;
+            $column_name = 'price';
+            
+            // Cek apakah kolom sudah ada dengan query yang lebih aman
+            $column_check = $wpdb->get_results($wpdb->prepare(
+                "SHOW COLUMNS FROM {$table_name} LIKE %s",
+                $column_name
+            ));
+            
+            $column_exists = !empty($column_check);
+            update_option('sps_price_column_exists', $column_exists);
+        }
+        
+        // Jika kolom belum ada, tambahkan
+        if (!$column_exists) {
+            $table_name = $wpdb->posts;
+            $column_name = 'price';
+            
+            // Coba tambahkan kolom dengan tipe DECIMAL untuk support angka desimal
+            $sql = "ALTER TABLE {$table_name} ADD COLUMN `{$column_name}` DECIMAL(15,2) UNSIGNED DEFAULT 0.00 AFTER `post_excerpt`";
+            
+            // Execute query langsung (ALTER TABLE tidak bisa menggunakan $wpdb->prepare dengan baik)
+            $result = $wpdb->query($sql);
+            
+            // Jika berhasil, update cache
+            if ($result !== false) {
+                update_option('sps_price_column_exists', true);
+            }
+        }
+    }
+    
+    /**
+     * Simpan price ke kolom wp_posts (jika kolom ada)
+     */
+    private function save_price_to_posts_table($post_id, $price) {
+        global $wpdb;
+        
+        // Cek apakah kolom price ada menggunakan cache
+        $column_exists = get_option('sps_price_column_exists', false);
+        
+        if ($column_exists) {
+            // Kolom ada, update langsung ke tabel wp_posts
+            $table_name = $wpdb->posts;
+            $wpdb->update(
+                $table_name,
+                array('price' => floatval($price)),
+                array('ID' => $post_id),
+                array('%f'),
                 array('%d')
             );
         }

@@ -5,6 +5,23 @@ Semua perubahan penting pada plugin ini akan didokumentasikan dalam file ini.
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [1.6.21] - 2025-12-24
+
+### Added
+- Menambahkan field harga produk numeric untuk perhitungan total harga
+  - Field "Price (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif (min="0" step="1")
+  - Data price numeric disimpan di post_meta dengan key `_sps_product_price_numeric`
+  - Jika kolom `price` ada di tabel `wp_posts`, data juga disimpan ke kolom tersebut
+  - Field "Price (Display)" tetap ada untuk menampilkan harga dengan format teks seperti "Rp 100,000"
+
+### Changed
+- Menambahkan mekanisme pengecekan dan pembuatan kolom `price` otomatis di tabel `wp_posts`
+  - Fungsi `check_and_create_price_column()` mengecek apakah kolom sudah ada
+  - Jika belum ada, kolom akan dibuat otomatis dengan tipe `DECIMAL(15,2) UNSIGNED DEFAULT 0.00`
+  - Menggunakan cache option (`sps_price_column_exists`) untuk menghindari query berulang
+  - Dipanggil via hook `admin_init` untuk memastikan database sudah siap
+
 ## [1.6.20] - 2025-12-24
 
 ### Added
