@@ -39,6 +39,7 @@ class SPS_CPT {
     private function init_hooks() {
         add_action('init', array($this, 'register_post_type'));
         add_action('init', array($this, 'register_taxonomy'));
+        add_action('admin_init', array($this, 'check_and_create_weight_column'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_product_meta'));
         add_filter('manage_sps_product_posts_columns', array($this, 'add_product_columns'));
@@ -175,11 +176,17 @@ class SPS_CPT {
         wp_nonce_field('sps_product_meta', 'sps_product_meta_nonce');
         
         $price = get_post_meta($post->ID, '_sps_product_price', true);
+        $weight = get_post_meta($post->ID, '_sps_product_weight', true);
         ?>
         <p>
             <label for="sps_product_price"><?php _e('Price:', 'simple-product-showcase'); ?></label>
             <input type="text" id="sps_product_price" name="sps_product_price" value="<?php echo esc_attr($price); ?>" class="widefat" placeholder="Rp 0" />
             <small><?php _e('Enter price with currency symbol (e.g., Rp 100,000)', 'simple-product-showcase'); ?></small>
+        </p>
+        <p>
+            <label for="sps_product_weight"><?php _e('Weight (gram):', 'simple-product-showcase'); ?></label>
+            <input type="number" id="sps_product_weight" name="sps_product_weight" value="<?php echo esc_attr($weight); ?>" class="widefat" placeholder="0" min="0" step="1" />
+            <small><?php _e('Enter product weight in grams (e.g., 500)', 'simple-product-showcase'); ?></small>
         </p>
         <?php
     }
@@ -223,6 +230,19 @@ class SPS_CPT {
         // Simpan harga produk
         if (isset($_POST['sps_product_price'])) {
             update_post_meta($post_id, '_sps_product_price', sanitize_text_field($_POST['sps_product_price']));
+        }
+        
+        // Simpan berat produk (weight)
+        if (isset($_POST['sps_product_weight'])) {
+            $weight = absint($_POST['sps_product_weight']); // Sanitize as positive integer
+            update_post_meta($post_id, '_sps_product_weight', $weight);
+            
+            // Jika kolom weight ada di wp_posts, simpan juga ke sana
+            $this->save_weight_to_posts_table($post_id, $weight);
+        } else {
+            // Jika tidak ada nilai, set ke 0 atau hapus
+            delete_post_meta($post_id, '_sps_product_weight');
+            $this->save_weight_to_posts_table($post_id, 0);
         }
         
         // Simpan pesan WhatsApp custom
@@ -287,5 +307,70 @@ class SPS_CPT {
     }
     
     // Gallery admin scripts are now handled by SPS_Metabox class
+    
+    /**
+     * Check apakah kolom weight ada di tabel wp_posts, jika belum ada tambahkan
+     * Dipanggil via admin_init hook untuk memastikan database sudah siap
+     */
+    public function check_and_create_weight_column() {
+        global $wpdb;
+        
+        // Cek apakah kolom sudah ada (gunakan cache untuk efisiensi)
+        $column_exists = get_option('sps_weight_column_exists', null);
+        
+        if ($column_exists === null) {
+            // Belum pernah di-check, cek sekarang
+            $table_name = $wpdb->posts;
+            $column_name = 'weight';
+            
+            // Cek apakah kolom sudah ada dengan query yang lebih aman
+            $column_check = $wpdb->get_results($wpdb->prepare(
+                "SHOW COLUMNS FROM {$table_name} LIKE %s",
+                $column_name
+            ));
+            
+            $column_exists = !empty($column_check);
+            update_option('sps_weight_column_exists', $column_exists);
+        }
+        
+        // Jika kolom belum ada, tambahkan
+        if (!$column_exists) {
+            $table_name = $wpdb->posts;
+            $column_name = 'weight';
+            
+            // Coba tambahkan kolom
+            $sql = "ALTER TABLE {$table_name} ADD COLUMN `{$column_name}` INT(11) UNSIGNED DEFAULT 0 AFTER `post_excerpt`";
+            
+            // Execute query langsung (ALTER TABLE tidak bisa menggunakan $wpdb->prepare dengan baik)
+            $result = $wpdb->query($sql);
+            
+            // Jika berhasil, update cache
+            if ($result !== false) {
+                update_option('sps_weight_column_exists', true);
+            }
+        }
+    }
+    
+    /**
+     * Simpan weight ke kolom wp_posts (jika kolom ada)
+     */
+    private function save_weight_to_posts_table($post_id, $weight) {
+        global $wpdb;
+        
+        // Cek apakah kolom weight ada menggunakan cache
+        $column_exists = get_option('sps_weight_column_exists', false);
+        
+        if ($column_exists) {
+            // Kolom ada, update langsung ke tabel wp_posts
+            $table_name = $wpdb->posts;
+            $wpdb->update(
+                $table_name,
+                array('weight' => absint($weight)),
+                array('ID' => $post_id),
+                array('%d'),
+                array('%d')
+            );
+        }
+    }
     
 }

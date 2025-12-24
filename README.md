@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.19  
+**Version:** 1.6.20  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,23 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.19 (Latest - January 2025)
+### Version 1.6.20 (Latest - December 2025)
+**Feature: Field Berat Produk (Weight)**
+- **✨ Added**: Menambahkan field berat produk dalam satuan gram
+  - Field "Weight (gram)" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif (min="0" step="1")
+  - Data weight disimpan di post_meta dengan key `_sps_product_weight` (standar WordPress)
+  - Jika kolom `weight` ada di tabel `wp_posts`, data juga disimpan ke kolom tersebut untuk kompatibilitas
+- **🔧 Changed**: Menambahkan mekanisme pengecekan dan pembuatan kolom `weight` otomatis
+  - Fungsi `check_and_create_weight_column()` mengecek apakah kolom `weight` sudah ada di tabel `wp_posts`
+  - Jika belum ada, kolom akan dibuat otomatis dengan tipe `INT(11) UNSIGNED DEFAULT 0`
+  - Menggunakan cache option (`sps_weight_column_exists`) untuk menghindari query berulang
+  - Dipanggil via hook `admin_init` untuk memastikan database sudah siap
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: `product_price_meta_box()`, `save_product_meta()`, `check_and_create_weight_column()`, `save_weight_to_posts_table()`
+  - Now: Admin dapat mengisi berat produk dalam gram, dan data akan tersimpan baik di post_meta maupun kolom wp_posts (jika ada)
+
+### Version 1.6.19 (December 2025)
 **Fix: Pencarian Hanya di Judul Produk**
 - **🐛 Fix**: Pencarian sekarang hanya mencari di judul/nama produk saja, tidak di deskripsi/konten
   - Problem: Masih ada produk yang tidak relevan muncul karena pencarian juga mencari di `post_content` (deskripsi produk)
@@ -877,7 +893,7 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
     - `simple-product-showcase.php`: `direct_products_sub_category_shortcode()` dan `ajax_search_products()`
   - Now: Ketika mencari "paku", hanya produk yang **judulnya** mengandung "paku" yang akan muncul, lebih akurat dan tepat sasaran
 
-### Version 1.6.18 (January 2025)
+### Version 1.6.18 (December 2025)
 **Fix: Perbaikan Akurasi Pencarian Produk**
 - **🐛 Fix**: Hasil pencarian sekarang lebih akurat, hanya mencari di title dan content produk
   - Problem: Pencarian menggunakan WordPress native search (`'s'` parameter) yang terlalu luas, mencari juga di taxonomy terms, sehingga produk dari kategori yang namanya mengandung kata kunci ikut muncul

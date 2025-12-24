@@ -5,6 +5,21 @@ Semua perubahan penting pada plugin ini akan didokumentasikan dalam file ini.
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [1.6.20] - 2025-12-24
+
+### Added
+- Menambahkan field berat produk (Weight) dalam satuan gram
+  - Field "Weight (gram)" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif
+  - Data weight disimpan di post_meta dengan key `_sps_product_weight`
+  - Jika kolom `weight` ada di tabel `wp_posts`, data juga disimpan ke kolom tersebut
+
+### Changed
+- Menambahkan mekanisme pengecekan dan pembuatan kolom `weight` otomatis di tabel `wp_posts`
+  - Fungsi `check_and_create_weight_column()` mengecek apakah kolom sudah ada
+  - Jika belum ada, kolom akan dibuat otomatis dengan tipe `INT(11) UNSIGNED DEFAULT 0`
+  - Menggunakan cache option untuk menghindari query berulang
+
 ## [1.6.19] - 2025-12-01
 
 ### Fixed
