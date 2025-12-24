@@ -631,7 +631,16 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.23 (NEW)
+### Version 1.6.24 (NEW)
+- **Feature**: Menambahkan field harga diskon (Price Discount) untuk produk
+  - Field "Price Discount (Numeric) - Rp:" muncul di meta box "Product Price"
+  - Default value: Harga asli 100.000 dan harga diskon 75.000
+- **Changed**: Section `price` sekarang menampilkan harga asli (strikethrough) dan harga diskon
+  - Harga asli: class `sps-product-price-original` dengan strikethrough
+  - Harga diskon: class `sps-product-price-discount` dengan warna orange, bold
+  - Keduanya memiliki data attribute `data-price` untuk scraping
+
+### Version 1.6.23
 - **Changed**: Section `weight` sekarang memiliki default value 20 kg (20.000 gram)
   - Jika berat produk belum diatur, otomatis diset ke 20.000 gram dan disimpan ke database
   - Nilai default langsung tersimpan saat produk tanpa berat diakses
