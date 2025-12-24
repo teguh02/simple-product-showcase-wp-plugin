@@ -631,7 +631,12 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.22 (NEW)
+### Version 1.6.23 (NEW)
+- **Changed**: Section `weight` sekarang memiliki default value 20 kg (20.000 gram)
+  - Jika berat produk belum diatur, otomatis diset ke 20.000 gram dan disimpan ke database
+  - Nilai default langsung tersimpan saat produk tanpa berat diakses
+
+### Version 1.6.22
 - **Feature**: Menambahkan section `price` dan `weight` pada shortcode `[sps_detail_products]`
   - Section `price`: Menampilkan harga produk dengan heading tag, class `sps-product-detail-price`, data attribute `data-price`
   - Section `weight`: Menampilkan berat produk dengan heading tag, class `sps-product-detail-weight`, data attribute `data-weight`
