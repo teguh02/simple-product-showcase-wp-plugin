@@ -1669,6 +1669,12 @@ class SPS_Shortcodes {
             case 'title':
                 return $this->render_product_title($product, $atts['style']);
                 
+            case 'price':
+                return $this->render_product_price($product, $atts['style']);
+                
+            case 'weight':
+                return $this->render_product_weight($product, $atts['style']);
+                
             case 'image':
                 return $this->render_product_image($product);
                 
@@ -1759,6 +1765,60 @@ class SPS_Shortcodes {
         $heading_tag = in_array($style, $valid_styles) ? $style : 'h1';
         
         return '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
+    }
+    
+    /**
+     * Render product price
+     * 
+     * @param WP_Post $product Product post object
+     * @param string $style Heading style (h1, h2, h3, h4, h5)
+     * @return string HTML output
+     */
+    private function render_product_price($product, $style = 'h3') {
+        // Validasi style untuk price
+        $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
+        $heading_tag = in_array($style, $valid_styles) ? $style : 'h3';
+        
+        // Ambil harga dari post_meta
+        $price = get_post_meta($product->ID, '_sps_product_price', true);
+        $price_numeric = get_post_meta($product->ID, '_sps_product_price_numeric', true);
+        
+        // Jika tidak ada harga display, tapi ada harga numeric, format dari numeric
+        if (empty($price) && !empty($price_numeric)) {
+            $price = 'Rp ' . number_format($price_numeric, 0, ',', '.');
+        }
+        
+        // Jika masih kosong, tampilkan pesan
+        if (empty($price)) {
+            $price = __('Price not available', 'simple-product-showcase');
+        }
+        
+        return '<' . $heading_tag . ' class="sps-product-detail-price" data-price="' . esc_attr($price_numeric ? $price_numeric : '') . '">' . esc_html($price) . '</' . $heading_tag . '>';
+    }
+    
+    /**
+     * Render product weight
+     * 
+     * @param WP_Post $product Product post object
+     * @param string $style Heading style (h1, h2, h3, h4, h5)
+     * @return string HTML output
+     */
+    private function render_product_weight($product, $style = 'h3') {
+        // Validasi style untuk weight
+        $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
+        $heading_tag = in_array($style, $valid_styles) ? $style : 'h3';
+        
+        // Ambil berat dari post_meta
+        $weight = get_post_meta($product->ID, '_sps_product_weight', true);
+        
+        // Format berat dengan satuan gram
+        if (!empty($weight) && is_numeric($weight)) {
+            $weight_display = number_format($weight, 0, ',', '.') . ' gram';
+        } else {
+            $weight_display = __('Weight not available', 'simple-product-showcase');
+        }
+        
+        return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight ? $weight : '') . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
     }
     
     /**

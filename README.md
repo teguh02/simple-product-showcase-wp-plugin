@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.21  
+**Version:** 1.6.22  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,24 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.21 (Latest - December 2025)
+### Version 1.6.22 (Latest - December 2025)
+**Feature: Section Price & Weight untuk Detail Products Shortcode**
+- **✨ Added**: Menambahkan section `price` dan `weight` pada shortcode `[sps_detail_products]`
+  - Section `price`: Menampilkan harga produk dengan heading tag (h1-h5), default h3
+    - Class selector: `sps-product-detail-price` untuk scraping
+    - Data attribute: `data-price` berisi nilai numeric untuk scraping
+    - Mendukung style parameter seperti section title
+  - Section `weight`: Menampilkan berat produk dengan heading tag (h1-h5), default h3
+    - Class selector: `sps-product-detail-weight` untuk scraping
+    - Data attribute: `data-weight` berisi nilai dalam gram untuk scraping
+    - Format tampilan: "X.XXX gram" (contoh: "500 gram" atau "1.500 gram")
+  - Usage: `[sps_detail_products section="price" style="h3"]` atau `[sps_detail_products section="weight" style="h3"]`
+  - Files Changed:
+    - `includes/class-sps-shortcodes.php`: Menambahkan `render_product_price()` dan `render_product_weight()`, menambahkan case `price` dan `weight` di switch statement
+    - `simple-product-showcase.php`: Menambahkan case `price` dan `weight` di fallback handler
+  - Now: Admin dapat menampilkan harga dan berat produk secara terpisah menggunakan shortcode dengan class selector dan data attribute yang jelas untuk memudahkan scraping
+
+### Version 1.6.21 (December 2025)
 **Feature: Field Harga Numeric untuk Perhitungan**
 - **✨ Added**: Menambahkan field harga produk numeric untuk perhitungan total harga
   - Field "Price (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk

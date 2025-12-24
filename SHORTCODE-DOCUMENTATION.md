@@ -1,6 +1,6 @@
 # Simple Product Showcase - Shortcode Documentation
 
-**Plugin Version:** 1.6.21
+**Plugin Version:** 1.6.22
 **Last Updated:** 2025-01-27
 
 ---
@@ -120,12 +120,14 @@ The `[sps_detail_products]` shortcode automatically detects the current product 
 
 | Parameter | Description | Options | Example |
 |-----------|-------------|---------|---------|
-| `section` | Which part of the product to display | `title`, `image`, `description`, `gallery`, `button` | `section="title"` |
-| `style` | Display style based on section:<br>• Title: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel | Title: `h1`, `h2`, `h3`, `h4`, `h5`<br>Gallery: `grid`, `slider`, `carousel` | `style="h2"` or `style="slider"` |
+| `section` | Which part of the product to display | `title`, `price`, `weight`, `image`, `description`, `gallery`, `button` | `section="title"` |
+| `style` | Display style based on section:<br>• Title/Price/Weight: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel | Title/Price/Weight: `h1`, `h2`, `h3`, `h4`, `h5`<br>Gallery: `grid`, `slider`, `carousel` | `style="h2"` or `style="slider"` |
 
 ### Available Sections:
 
 - **`title`** - Display product title as heading (supports h1, h2, h3, h4, h5 styles)
+- **`price`** - Display product price as heading (supports h1, h2, h3, h4, h5 styles, default h3) - includes class `sps-product-detail-price` and data attribute `data-price` for scraping
+- **`weight`** - Display product weight as heading (supports h1, h2, h3, h4, h5 styles, default h3) - includes class `sps-product-detail-weight` and data attribute `data-weight` for scraping
 - **`image`** - Display main product image (featured image)
 - **`description`** - Display full product description/content
 - **`gallery`** - Display product image gallery (supports grid, slider, carousel styles)
@@ -404,6 +406,26 @@ Use limit parameter to create "Featured Products" sections:
 [sps_detail_products section="title" style="h3"]
 ```
 
+**Display Product Price (H3 - Default):**
+```
+[sps_detail_products section="price" style="h3"]
+```
+
+**Display Product Price (H2):**
+```
+[sps_detail_products section="price" style="h2"]
+```
+
+**Display Product Weight (H3 - Default):**
+```
+[sps_detail_products section="weight" style="h3"]
+```
+
+**Display Product Weight (H2):**
+```
+[sps_detail_products section="weight" style="h2"]
+```
+
 **Display Main Product Image:**
 ```
 [sps_detail_products section="image"]
@@ -455,6 +477,7 @@ For a complete product detail page, use multiple shortcodes:
 **Alternative Layout with H3 Title and Carousel:**
 ```
 [sps_detail_products section="title" style="h3"]
+[sps_detail_products section="price" style="h3"]
 [sps_detail_products section="image"]
 [sps_detail_products section="gallery" style="carousel"]
 [sps_detail_products section="description"]

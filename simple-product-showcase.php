@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.21
+ * Version: 1.6.22
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.21');
+define('SPS_PLUGIN_VERSION', '1.6.22');
 
 /**
  * Class Simple_Product_Showcase
@@ -543,13 +543,13 @@ class Simple_Product_Showcase {
                         <tr>
                             <td style="padding: 10px;"><code>section</code></td>
                             <td style="padding: 10px;">Which part of the product to display</td>
-                            <td style="padding: 10px;">title, image, description, gallery, whatsapp</td>
+                            <td style="padding: 10px;">title, price, weight, image, description, gallery, whatsapp, button</td>
                             <td style="padding: 10px;"><code>section="title"</code></td>
                         </tr>
                         <tr>
                             <td style="padding: 10px;"><code>style</code></td>
-                            <td style="padding: 10px;">Display style based on section:<br>• Title: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel</td>
-                            <td style="padding: 10px;">Title: h1, h2, h3, h4, h5<br>Gallery: grid, slider, carousel</td>
+                            <td style="padding: 10px;">Display style based on section:<br>• Title/Price/Weight: h1, h2, h3, h4, h5<br>• Gallery: grid, slider, carousel</td>
+                            <td style="padding: 10px;">Title/Price/Weight: h1, h2, h3, h4, h5<br>Gallery: grid, slider, carousel</td>
                             <td style="padding: 10px;"><code>style="h2"</code> or <code>style="slider"</code></td>
                         </tr>
                     </tbody>
@@ -558,13 +558,16 @@ class Simple_Product_Showcase {
                 <h3>Available Sections:</h3>
                 <ul>
                     <li><strong>title</strong> - Display product title as heading (supports h1, h2, h3, h4, h5 styles)</li>
+                    <li><strong>price</strong> - Display product price as heading (supports h1, h2, h3, h4, h5 styles, default h3) - includes class `sps-product-detail-price` and data attribute `data-price` for scraping</li>
+                    <li><strong>weight</strong> - Display product weight as heading (supports h1, h2, h3, h4, h5 styles, default h3) - includes class `sps-product-detail-weight` and data attribute `data-weight` for scraping</li>
                     <li><strong>image</strong> - Display main product image (featured image)</li>
                     <li><strong>description</strong> - Display full product description/content</li>
                     <li><strong>gallery</strong> - Display up to 5 gallery images (supports grid, slider, carousel styles)</li>
                     <li><strong>whatsapp</strong> - Display WhatsApp contact button</li>
+                    <li><strong>button</strong> - Display all configured action buttons (Main, Custom 1, Custom 2)</li>
                 </ul>
                 
-                <h3>Title Styles:</h3>
+                <h3>Title, Price & Weight Styles:</h3>
                 <ul>
                     <li><strong>h1</strong> - Display as H1 heading (default)</li>
                     <li><strong>h2</strong> - Display as H2 heading</li>
@@ -612,6 +615,18 @@ class Simple_Product_Showcase {
                 <h4>Display Product Title (H3)</h4>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title" style="h3"]</code></pre>
                 
+                <h4>Display Product Price (H3 - Default)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="price" style="h3"]</code></pre>
+                
+                <h4>Display Product Price (H2)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="price" style="h2"]</code></pre>
+                
+                <h4>Display Product Weight (H3 - Default)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="weight" style="h3"]</code></pre>
+                
+                <h4>Display Product Weight (H2)</h4>
+                <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="weight" style="h2"]</code></pre>
+                
                 <h4>Display Main Product Image</h4>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="image"]</code></pre>
                 
@@ -640,6 +655,7 @@ class Simple_Product_Showcase {
                 
                 <h4>Alternative Layout with H3 Title and Carousel</h4>
                 <pre style="background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>[sps_detail_products section="title" style="h3"]
+[sps_detail_products section="price" style="h3"]
 [sps_detail_products section="image"]
 [sps_detail_products section="gallery" style="carousel"]
 [sps_detail_products section="description"]
@@ -1425,6 +1441,44 @@ class Simple_Product_Showcase {
                 $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
                 $heading_tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'h1';
                 return '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
+                
+            case 'price':
+                // Validasi style untuk price
+                $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
+                $heading_tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'h3';
+                
+                // Ambil harga dari post_meta
+                $price = get_post_meta($product->ID, '_sps_product_price', true);
+                $price_numeric = get_post_meta($product->ID, '_sps_product_price_numeric', true);
+                
+                // Jika tidak ada harga display, tapi ada harga numeric, format dari numeric
+                if (empty($price) && !empty($price_numeric)) {
+                    $price = 'Rp ' . number_format($price_numeric, 0, ',', '.');
+                }
+                
+                // Jika masih kosong, tampilkan pesan
+                if (empty($price)) {
+                    $price = __('Price not available', 'simple-product-showcase');
+                }
+                
+                return '<' . $heading_tag . ' class="sps-product-detail-price" data-price="' . esc_attr($price_numeric ? $price_numeric : '') . '">' . esc_html($price) . '</' . $heading_tag . '>';
+                
+            case 'weight':
+                // Validasi style untuk weight
+                $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
+                $heading_tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'h3';
+                
+                // Ambil berat dari post_meta
+                $weight = get_post_meta($product->ID, '_sps_product_weight', true);
+                
+                // Format berat dengan satuan gram
+                if (!empty($weight) && is_numeric($weight)) {
+                    $weight_display = number_format($weight, 0, ',', '.') . ' gram';
+                } else {
+                    $weight_display = __('Weight not available', 'simple-product-showcase');
+                }
+                
+                return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight ? $weight : '') . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
                 
             case 'image':
                 // Default: show thumbnail or first available image (PHP loads this initially)

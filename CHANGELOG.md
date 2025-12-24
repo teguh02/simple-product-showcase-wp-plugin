@@ -5,6 +5,24 @@ Semua perubahan penting pada plugin ini akan didokumentasikan dalam file ini.
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [1.6.22] - 2025-12-24
+
+### Added
+- Menambahkan section `price` dan `weight` pada shortcode `[sps_detail_products]`
+  - Section `price`: Menampilkan harga produk dengan heading tag (h1, h2, h3, h4, h5), default h3
+    - Class selector: `sps-product-detail-price` untuk scraping
+    - Data attribute: `data-price` berisi nilai numeric untuk scraping
+    - Mendukung style parameter seperti section title
+  - Section `weight`: Menampilkan berat produk dengan heading tag (h1, h2, h3, h4, h5), default h3
+    - Class selector: `sps-product-detail-weight` untuk scraping
+    - Data attribute: `data-weight` berisi nilai dalam gram untuk scraping
+    - Format tampilan: "X.XXX gram" (contoh: "500 gram" atau "1.500 gram")
+  - Usage: `[sps_detail_products section="price" style="h3"]` atau `[sps_detail_products section="weight" style="h3"]`
+
+### Changed
+- Update dokumentasi untuk menambahkan section `price` dan `weight` di daftar available sections
+- Update contoh penggunaan complete product detail page layout untuk menyertakan section price dan weight
+
 ## [1.6.21] - 2025-12-24
 
 ### Added
