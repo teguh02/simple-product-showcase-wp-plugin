@@ -608,7 +608,16 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.20 (NEW)
+### Version 1.6.21 (NEW)
+- **Feature**: Menambahkan field harga produk numeric untuk perhitungan total harga
+  - Field "Price (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif
+  - Data price numeric disimpan di post_meta dengan key `_sps_product_price_numeric`
+  - Mekanisme pengecekan dan pembuatan kolom `price` otomatis di tabel `wp_posts`
+  - Jika kolom `price` ada di tabel `wp_posts`, data juga disimpan ke kolom tersebut
+  - Field "Price (Display)" tetap ada untuk menampilkan harga dengan format teks
+
+### Version 1.6.20
 - **Feature**: Menambahkan field berat produk (Weight)
   - Field "Weight (gram)" muncul di meta box "Product Price" pada halaman tambah dan edit produk
   - Input tipe number dengan validasi untuk nilai positif
