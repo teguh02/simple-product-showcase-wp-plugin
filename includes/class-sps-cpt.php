@@ -178,6 +178,7 @@ class SPS_CPT {
         
         $price = get_post_meta($post->ID, '_sps_product_price', true);
         $price_numeric = get_post_meta($post->ID, '_sps_product_price_numeric', true);
+        $price_discount = get_post_meta($post->ID, '_sps_product_price_discount', true);
         $weight = get_post_meta($post->ID, '_sps_product_weight', true);
         ?>
         <p>
@@ -189,6 +190,11 @@ class SPS_CPT {
             <label for="sps_product_price_numeric"><?php _e('Price (Numeric) - Rp:', 'simple-product-showcase'); ?></label>
             <input type="number" id="sps_product_price_numeric" name="sps_product_price_numeric" value="<?php echo esc_attr($price_numeric); ?>" class="widefat" placeholder="0" min="0" step="1" />
             <small><?php _e('Enter price as number only (e.g., 100000) for calculation purposes', 'simple-product-showcase'); ?></small>
+        </p>
+        <p>
+            <label for="sps_product_price_discount"><?php _e('Price Discount (Numeric) - Rp:', 'simple-product-showcase'); ?></label>
+            <input type="number" id="sps_product_price_discount" name="sps_product_price_discount" value="<?php echo esc_attr($price_discount); ?>" class="widefat" placeholder="0" min="0" step="1" />
+            <small><?php _e('Enter discounted price as number only (e.g., 75000). This will be displayed as strikethrough original price.', 'simple-product-showcase'); ?></small>
         </p>
         <p>
             <label for="sps_product_weight"><?php _e('Weight (gram):', 'simple-product-showcase'); ?></label>
@@ -253,6 +259,18 @@ class SPS_CPT {
             // Jika tidak ada nilai, set ke 0 atau hapus
             delete_post_meta($post_id, '_sps_product_price_numeric');
             $this->save_price_to_posts_table($post_id, 0);
+        }
+        
+        // Simpan harga diskon produk
+        if (isset($_POST['sps_product_price_discount'])) {
+            $price_discount = floatval($_POST['sps_product_price_discount']); // Sanitize as float to support decimals
+            if ($price_discount < 0) {
+                $price_discount = 0; // Ensure non-negative
+            }
+            update_post_meta($post_id, '_sps_product_price_discount', $price_discount);
+        } else {
+            // Jika tidak ada nilai, hapus
+            delete_post_meta($post_id, '_sps_product_price_discount');
         }
         
         // Simpan berat produk (weight)

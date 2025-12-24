@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.23
+ * Version: 1.6.24
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.23');
+define('SPS_PLUGIN_VERSION', '1.6.24');
 
 /**
  * Class Simple_Product_Showcase
@@ -1450,18 +1450,54 @@ class Simple_Product_Showcase {
                 // Ambil harga dari post_meta
                 $price = get_post_meta($product->ID, '_sps_product_price', true);
                 $price_numeric = get_post_meta($product->ID, '_sps_product_price_numeric', true);
+                $price_discount = get_post_meta($product->ID, '_sps_product_price_discount', true);
                 
-                // Jika tidak ada harga display, tapi ada harga numeric, format dari numeric
-                if (empty($price) && !empty($price_numeric)) {
-                    $price = 'Rp ' . number_format($price_numeric, 0, ',', '.');
+                // Jika harga numeric belum diatur, set default 100.000 dan simpan ke database
+                if (empty($price_numeric) || !is_numeric($price_numeric) || $price_numeric == 0) {
+                    $price_numeric = 100000; // Default 100.000 rupiah
+                    
+                    // Simpan ke post_meta
+                    update_post_meta($product->ID, '_sps_product_price_numeric', $price_numeric);
+                    
+                    // Simpan ke kolom database jika ada
+                    global $wpdb;
+                    $column_exists = get_option('sps_price_column_exists', false);
+                    if ($column_exists) {
+                        $table_name = $wpdb->posts;
+                        $wpdb->update(
+                            $table_name,
+                            array('price' => floatval($price_numeric)),
+                            array('ID' => $product->ID),
+                            array('%f'),
+                            array('%d')
+                        );
+                    }
                 }
                 
-                // Jika masih kosong, tampilkan pesan
-                if (empty($price)) {
-                    $price = __('Price not available', 'simple-product-showcase');
+                // Jika harga diskon belum diatur, set default 75.000 dan simpan ke database
+                if (empty($price_discount) || !is_numeric($price_discount) || $price_discount == 0) {
+                    $price_discount = 75000; // Default 75.000 rupiah
+                    
+                    // Simpan ke post_meta
+                    update_post_meta($product->ID, '_sps_product_price_discount', $price_discount);
                 }
                 
-                return '<' . $heading_tag . ' class="sps-product-detail-price" data-price="' . esc_attr($price_numeric ? $price_numeric : '') . '">' . esc_html($price) . '</' . $heading_tag . '>';
+                // Format harga asli (original price)
+                $price_original = 'Rp ' . number_format($price_numeric, 0, ',', '.');
+                
+                // Format harga diskon (discounted price)
+                $price_discounted = 'Rp ' . number_format($price_discount, 0, ',', '.');
+                
+                // Jika ada harga diskon, tampilkan harga asli dengan strikethrough dan harga diskon
+                if (!empty($price_discount) && is_numeric($price_discount) && $price_discount > 0) {
+                    return '<' . $heading_tag . ' class="sps-product-detail-price">' .
+                           '<span class="sps-product-price-original" data-price="' . esc_attr($price_numeric) . '" style="text-decoration: line-through; color: #999; margin-right: 10px;">' . esc_html($price_original) . '</span>' .
+                           '<span class="sps-product-price-discount" data-price="' . esc_attr($price_discount) . '" style="color: #f56c2d; font-weight: bold;">' . esc_html($price_discounted) . '</span>' .
+                           '</' . $heading_tag . '>';
+                } else {
+                    // Jika tidak ada diskon, tampilkan harga asli saja
+                    return '<' . $heading_tag . ' class="sps-product-detail-price" data-price="' . esc_attr($price_numeric) . '">' . esc_html($price_original) . '</' . $heading_tag . '>';
+                }
                 
             case 'weight':
                 // Validasi style untuk weight

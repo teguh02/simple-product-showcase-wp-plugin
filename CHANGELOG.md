@@ -5,6 +5,25 @@ Semua perubahan penting pada plugin ini akan didokumentasikan dalam file ini.
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [1.6.24] - 2025-12-24
+
+### Added
+- Menambahkan field harga diskon (Price Discount) untuk produk
+  - Field "Price Discount (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif (min="0" step="1")
+  - Data price discount disimpan di post_meta dengan key `_sps_product_price_discount`
+  - Default value: Harga asli 100.000 dan harga diskon 75.000 untuk produk yang belum memiliki harga
+
+### Changed
+- Section `price` pada shortcode `[sps_detail_products]` sekarang menampilkan harga asli dan harga diskon
+  - Jika ada harga diskon: Harga asli ditampilkan dengan strikethrough (garis coret) dan harga diskon ditampilkan di sampingnya
+  - Harga asli menggunakan class `sps-product-price-original` dengan data attribute `data-price`
+  - Harga diskon menggunakan class `sps-product-price-discount` dengan data attribute `data-price`
+  - Warna harga diskon: orange (#f56c2d) dengan font-weight bold
+  - Jika tidak ada diskon: Hanya menampilkan harga asli saja
+  - Default value otomatis disimpan ke database saat produk diakses jika belum ada
+  - Format tampilan: "Rp 100.000" (coret) "Rp 75.000" (orange, bold)
+
 ## [1.6.23] - 2025-12-24
 
 ### Changed
