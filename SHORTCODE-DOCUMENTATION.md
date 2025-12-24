@@ -631,7 +631,14 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.21 (NEW)
+### Version 1.6.22 (NEW)
+- **Feature**: Menambahkan section `price` dan `weight` pada shortcode `[sps_detail_products]`
+  - Section `price`: Menampilkan harga produk dengan heading tag, class `sps-product-detail-price`, data attribute `data-price`
+  - Section `weight`: Menampilkan berat produk dengan heading tag, class `sps-product-detail-weight`, data attribute `data-weight`
+  - Kedua section mendukung style parameter (h1, h2, h3, h4, h5) seperti section title
+  - Format weight: "X.XXX gram" (contoh: "500 gram")
+
+### Version 1.6.21
 - **Feature**: Menambahkan field harga produk numeric untuk perhitungan total harga
   - Field "Price (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk
   - Input tipe number dengan validasi untuk nilai positif
