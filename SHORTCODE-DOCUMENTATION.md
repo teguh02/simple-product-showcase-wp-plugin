@@ -608,7 +608,15 @@ If you need help with the shortcode:
 
 ## 🔄 Changelog
 
-### Version 1.6.19 (NEW)
+### Version 1.6.20 (NEW)
+- **Feature**: Menambahkan field berat produk (Weight)
+  - Field "Weight (gram)" muncul di meta box "Product Price" pada halaman tambah dan edit produk
+  - Input tipe number dengan validasi untuk nilai positif
+  - Data weight disimpan di post_meta dengan key `_sps_product_weight`
+  - Mekanisme pengecekan dan pembuatan kolom `weight` otomatis di tabel `wp_posts`
+  - Jika kolom `weight` ada di tabel `wp_posts`, data juga disimpan ke kolom tersebut
+
+### Version 1.6.19
 - **Fix**: Pencarian hanya di judul produk
   - Pencarian sekarang hanya mencari di judul/nama produk saja, tidak di deskripsi/konten
   - Hasil pencarian lebih akurat dan tepat sasaran
