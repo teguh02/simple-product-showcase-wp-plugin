@@ -1721,6 +1721,8 @@ class SPS_Shortcodes {
         $js = "<script>\n(function(){\nvar key = '" . $cookie_key . "';\nvar section = '" . $section_name . "';\nvar value = '" . $section_content . "';\nvar cookie = {};\ntry {\n  cookie = JSON.parse(localStorage.getItem(key) || '{}');\n} catch(e) { cookie = {}; }\ncookie[section] = value;\nlocalStorage.setItem(key, JSON.stringify(cookie));\n})();\n</script>";
         return $output . $js;
     }
+
+    /**
      * Render product category & subcategory
      *
      * @param WP_Post $product Product post object
