@@ -5,6 +5,16 @@ Semua perubahan penting pada plugin ini akan didokumentasikan dalam file ini.
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+
+## [1.6.25] - 2025-12-27
+
+### Added
+- Section baru `category` pada shortcode `[sps_detail_products section="category"]` untuk menampilkan kategori dan sub kategori produk (format: Kategori > Subkategori jika ada)
+- Setiap section yang ditampilkan oleh `[sps_detail_products]` kini otomatis disimpan ke cookie (localStorage) per produk, sehingga plugin/fitur lain dapat membaca data produk yang sedang dilihat user
+
+### Changed
+- Tidak ada perubahan pada fungsionalitas lama, hanya penambahan fitur di atas
+
 ## [1.6.24] - 2025-12-24
 
 ### Added

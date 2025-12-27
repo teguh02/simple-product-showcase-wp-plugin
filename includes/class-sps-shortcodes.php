@@ -1665,37 +1665,100 @@ class SPS_Shortcodes {
         }
         
         // Switch berdasarkan section
+        $output = '';
+        $section_value = '';
         switch ($atts['section']) {
             case 'title':
-                return $this->render_product_title($product, $atts['style']);
-                
+                $section_value = $this->render_product_title($product, $atts['style']);
+                $output = $section_value;
+                break;
             case 'price':
-                return $this->render_product_price($product, $atts['style']);
-                
+                $section_value = $this->render_product_price($product, $atts['style']);
+                $output = $section_value;
+                break;
             case 'weight':
-                return $this->render_product_weight($product, $atts['style']);
-                
+                $section_value = $this->render_product_weight($product, $atts['style']);
+                $output = $section_value;
+                break;
             case 'image':
-                return $this->render_product_image($product);
-                
+                $section_value = $this->render_product_image($product);
+                $output = $section_value;
+                break;
             case 'description':
-                return $this->render_product_description($product);
-                
+                $section_value = $this->render_product_description($product);
+                $output = $section_value;
+                break;
             case 'gallery':
-                return $this->render_product_gallery($product, $atts['style']);
-                
+                $section_value = $this->render_product_gallery($product, $atts['style']);
+                $output = $section_value;
+                break;
             case 'whatsapp':
-                return $this->render_whatsapp_button($product);
-                
+                $section_value = $this->render_whatsapp_button($product);
+                $output = $section_value;
+                break;
             case 'button':
-                return $this->render_all_buttons($product);
-                
+                $section_value = $this->render_all_buttons($product);
+                $output = $section_value;
+                break;
+            case 'category':
+                $section_value = $this->render_product_category($product);
+                $output = $section_value;
+                break;
             default:
-                return '<p class="sps-invalid-section">' . sprintf(__('Invalid section: %s', 'simple-product-showcase'), esc_html($atts['section'])) . '</p>';
+                $section_value = '<p class="sps-invalid-section">' . sprintf(__('Invalid section: %s', 'simple-product-showcase'), esc_html($atts['section'])) . '</p>';
+                $output = $section_value;
+                break;
         }
-    }
+        // Tambahkan script untuk set cookie section
+        $section_name = esc_js($atts['section']);
+        $product_id = esc_js($product->ID);
+        $cookie_key = 'sps_detail_products_' + $product_id;
+        $section_content = '';
+        // Untuk konten HTML, encode base64 agar aman di cookie
+        if (is_string($section_value)) {
+            $section_content = base64_encode($section_value);
+        }
+        $js = "<script>\n(function(){\nvar key = '" . $cookie_key . "';\nvar section = '" . $section_name . "';\nvar value = '" . $section_content . "';\nvar cookie = {};\ntry {\n  cookie = JSON.parse(localStorage.getItem(key) || '{}');\n} catch(e) { cookie = {}; }\ncookie[section] = value;\nlocalStorage.setItem(key, JSON.stringify(cookie));\n})();\n</script>";
+        return $output . $js;
     
     /**
+     * Render product category & subcategory
+     *
+     * @param WP_Post $product Product post object
+     * @return string HTML output
+     */
+    private function render_product_category($product) {
+        $terms = get_the_terms($product->ID, 'sps_product_category');
+        if (empty($terms) || is_wp_error($terms)) {
+            return '<span class="sps-product-category-empty">' . __('No category', 'simple-product-showcase') . '</span>';
+        }
+
+        // Ambil term utama (parent) dan sub (child)
+        $main = null;
+        $subs = array();
+        foreach ($terms as $term) {
+            if ($term->parent && $term->parent > 0) {
+                $subs[] = $term;
+            } else {
+                $main = $term;
+            }
+        }
+
+        // Jika tidak ada parent, ambil yang pertama sebagai main
+        if (!$main && count($terms) > 0) {
+            $main = $terms[0];
+        }
+
+        $output = '';
+        if ($main) {
+            $output .= esc_html($main->name);
+        }
+        if (!empty($subs)) {
+            $sub_names = array_map(function($t) { return esc_html($t->name); }, $subs);
+            $output .= ' &gt; ' . implode(' , ', $sub_names);
+        }
+        return '<span class="sps-product-category">' . $output . '</span>';
+    }
      * Get current product from URL
      * 
      * @return WP_Post|false Current product post or false if not found
