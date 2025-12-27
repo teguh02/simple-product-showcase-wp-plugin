@@ -6,6 +6,11 @@ Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
+## [1.6.28] - 2025-12-27
+
+### Changed
+- Cookie info produk sekarang disimpan sebagai base64 JSON agar proses decode cukup sekali
+
 ## [1.6.27] - 2025-12-27
 
 ### Changed
