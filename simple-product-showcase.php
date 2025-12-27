@@ -1,3 +1,29 @@
+// Set cookie produk terakhir dilihat sebelum output HTML (hanya 1 cookie, replace setiap lihat produk)
+add_action('template_redirect', function() {
+    if (is_singular('sps_product')) {
+        global $post;
+        if ($post && $post->post_type === 'sps_product') {
+            $product_data = array(
+                'id' => $post->ID,
+                'title' => $post->post_title,
+                'price' => get_post_meta($post->ID, '_sps_product_price', true),
+                'weight' => get_post_meta($post->ID, '_sps_product_weight', true),
+                'description' => wp_strip_all_tags($post->post_content),
+                'category' => '',
+            );
+            $terms = get_the_terms($post->ID, 'sps_product_category');
+            if (!empty($terms) && !is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    if ($term->parent == 0) {
+                        $product_data['category'] = $term->name;
+                        break;
+                    }
+                }
+            }
+            setcookie('sps_product_info', base64_encode(json_encode($product_data)), time() + 60 * 60 * 24 * 7, '/');
+        }
+    }
+});
 <?php
 /**
  * Plugin Name: Simple Product Showcase
