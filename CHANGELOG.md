@@ -7,7 +7,7 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
-## [1.6.29] - 2025-12-27
+## [1.6.30] - 2025-12-27
 
 ### Changed
 - Cookie info produk sekarang hanya satu (sps_product_info), selalu replace dengan produk terakhir yang dilihat, tidak ada lagi cookie per produk ID.

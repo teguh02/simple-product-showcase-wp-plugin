@@ -1,35 +1,9 @@
-// Set cookie produk terakhir dilihat sebelum output HTML (hanya 1 cookie, replace setiap lihat produk)
-add_action('template_redirect', function() {
-    if (is_singular('sps_product')) {
-        global $post;
-        if ($post && $post->post_type === 'sps_product') {
-            $product_data = array(
-                'id' => $post->ID,
-                'title' => $post->post_title,
-                'price' => get_post_meta($post->ID, '_sps_product_price', true),
-                'weight' => get_post_meta($post->ID, '_sps_product_weight', true),
-                'description' => wp_strip_all_tags($post->post_content),
-                'category' => '',
-            );
-            $terms = get_the_terms($post->ID, 'sps_product_category');
-            if (!empty($terms) && !is_wp_error($terms)) {
-                foreach ($terms as $term) {
-                    if ($term->parent == 0) {
-                        $product_data['category'] = $term->name;
-                        break;
-                    }
-                }
-            }
-            setcookie('sps_product_info', base64_encode(json_encode($product_data)), time() + 60 * 60 * 24 * 7, '/');
-        }
-    }
-});
 <?php
 /**
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.29
+ * Version: 1.6.30
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -46,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.28');
+define('SPS_PLUGIN_VERSION', '1.6.30');
 
 /**
  * Class Simple_Product_Showcase
@@ -1660,7 +1634,7 @@ class Simple_Product_Showcase {
         }
 
         $product_id = $product->ID;
-        $cookie_key = 'sps_product_info_' . $product_id;
+        $cookie_key = 'sps_product_info';
 
         $price_numeric = get_post_meta($product_id, '_sps_product_price_numeric', true);
         $price_discount = get_post_meta($product_id, '_sps_product_price_discount', true);
