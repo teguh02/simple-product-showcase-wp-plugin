@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.26
+ * Version: 1.6.27
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.24');
+define('SPS_PLUGIN_VERSION', '1.6.27');
 
 /**
  * Class Simple_Product_Showcase
@@ -1510,8 +1510,9 @@ class Simple_Product_Showcase {
                 
             case 'weight':
                 // Validasi style untuk weight
-                $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
-                $heading_tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'h3';
+                $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5', 'p');
+                $weight_style = ($atts['style'] === 'grid') ? 'p' : $atts['style'];
+                $heading_tag = in_array($weight_style, $valid_styles) ? $weight_style : 'p';
                 
                 // Ambil berat dari post_meta
                 $weight = get_post_meta($product->ID, '_sps_product_weight', true);

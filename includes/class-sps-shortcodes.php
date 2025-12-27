@@ -1896,10 +1896,13 @@ class SPS_Shortcodes {
      * @param string $style Heading style (h1, h2, h3, h4, h5)
      * @return string HTML output
      */
-    private function render_product_weight($product, $style = 'h3') {
+    private function render_product_weight($product, $style = 'p') {
         // Validasi style untuk weight
-        $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
-        $heading_tag = in_array($style, $valid_styles) ? $style : 'h3';
+        $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5', 'p');
+        if ($style === 'grid') {
+            $style = 'p';
+        }
+        $heading_tag = in_array($style, $valid_styles) ? $style : 'p';
         
         // Ambil berat dari post_meta
         $weight = get_post_meta($product->ID, '_sps_product_weight', true);

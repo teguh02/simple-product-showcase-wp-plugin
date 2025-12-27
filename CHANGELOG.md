@@ -6,6 +6,11 @@ Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
+## [1.6.27] - 2025-12-27
+
+### Changed
+- Section `weight` pada shortcode `[sps_detail_products]` kini default ke tag `p` saat `style` tidak diisi atau bernilai `grid`, sehingga ukuran font tidak terlalu besar
+
 ## [1.6.26] - 2025-12-27
 
 ### Changed
