@@ -1709,7 +1709,27 @@ class SPS_Shortcodes {
                 $output = $section_value;
                 break;
         }
-        // Tambahkan script untuk set cookie section
+        // Simpan data produk ke cookie HTTP (hanya satu cookie, replace setiap lihat produk)
+        $product_data = array(
+            'id' => $product->ID,
+            'title' => $product->post_title,
+            'price' => get_post_meta($product->ID, '_sps_product_price', true),
+            'weight' => get_post_meta($product->ID, '_sps_product_weight', true),
+            'description' => wp_strip_all_tags($product->post_content),
+            'category' => '',
+        );
+        // Ambil kategori utama
+        $terms = get_the_terms($product->ID, 'sps_product_category');
+        if (!empty($terms) && !is_wp_error($terms)) {
+            foreach ($terms as $term) {
+                if ($term->parent == 0) {
+                    $product_data['category'] = $term->name;
+                    break;
+                }
+            }
+        }
+        // Set cookie (replace, 1 jam, path root) - use WordPress action to avoid headers already sent error
+        setcookie('sps_product_info', base64_encode(json_encode($product_data)), time() + 60 * 60, '/');
         return $output;
     }
 
