@@ -1760,6 +1760,8 @@ class SPS_Shortcodes {
         }
         return '<span class="sps-product-category">' . $output . '</span>';
     }
+
+    /**
      * Get current product from URL
      * 
      * @return WP_Post|false Current product post or false if not found
