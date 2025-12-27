@@ -6,6 +6,12 @@ Format berdasarkan [Keep a Changelog](https://keepachangelog.com/id/1.0.0/),
 dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
+## [1.6.26] - 2025-12-27
+
+### Changed
+- Penyimpanan cookie info produk dipindahkan ke PHP (server-side) untuk memastikan cookie tersedia tanpa bergantung pada JavaScript
+- Fallback handler `[sps_detail_products]` kini mendukung `section="category"` agar tidak muncul error "Invalid section"
+
 ## [1.6.25] - 2025-12-27
 
 ### Added

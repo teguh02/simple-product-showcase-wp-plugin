@@ -1710,16 +1710,7 @@ class SPS_Shortcodes {
                 break;
         }
         // Tambahkan script untuk set cookie section
-        $section_name = esc_js($atts['section']);
-        $product_id = esc_js($product->ID);
-        $cookie_key = 'sps_detail_products_' + $product_id;
-        $section_content = '';
-        // Untuk konten HTML, encode base64 agar aman di cookie
-        if (is_string($section_value)) {
-            $section_content = base64_encode($section_value);
-        }
-        $js = "<script>\n(function(){\nvar key = '" . $cookie_key . "';\nvar section = '" . $section_name . "';\nvar value = '" . $section_content . "';\nvar cookie = {};\ntry {\n  cookie = JSON.parse(localStorage.getItem(key) || '{}');\n} catch(e) { cookie = {}; }\ncookie[section] = value;\nlocalStorage.setItem(key, JSON.stringify(cookie));\n})();\n</script>";
-        return $output . $js;
+        return $output;
     }
 
     /**

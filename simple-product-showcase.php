@@ -115,6 +115,9 @@ class Simple_Product_Showcase {
         add_action('wp_ajax_nopriv_get_gallery_image', array($this, 'ajax_get_gallery_image'));
         add_action('wp_ajax_sps_search_products', array($this, 'ajax_search_products'));
         add_action('wp_ajax_nopriv_sps_search_products', array($this, 'ajax_search_products'));
+
+        // Set cookie info produk via PHP sebelum output
+        add_action('template_redirect', array($this, 'set_product_info_cookie'));
     }
     
     /**
@@ -1435,12 +1438,16 @@ class Simple_Product_Showcase {
         }
         
         // Switch berdasarkan section
+        $output = '';
+        $section_value = '';
         switch ($atts['section']) {
             case 'title':
                 // Validasi style untuk title
                 $valid_styles = array('h1', 'h2', 'h3', 'h4', 'h5');
                 $heading_tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'h1';
-                return '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
+                $section_value = '<' . $heading_tag . ' class="sps-product-detail-title">' . esc_html($product->post_title) . '</' . $heading_tag . '>';
+                $output = $section_value;
+                break;
                 
             case 'price':
                 // Validasi style untuk price
@@ -1490,14 +1497,16 @@ class Simple_Product_Showcase {
                 
                 // Jika ada harga diskon, tampilkan harga asli dengan strikethrough dan harga diskon
                 if (!empty($price_discount) && is_numeric($price_discount) && $price_discount > 0) {
-                    return '<' . $heading_tag . ' class="sps-product-detail-price">' .
+                    $section_value = '<' . $heading_tag . ' class="sps-product-detail-price">' .
                            '<span class="sps-product-price-original" data-price="' . esc_attr($price_numeric) . '" style="text-decoration: line-through; color: #999; margin-right: 10px;">' . esc_html($price_original) . '</span>' .
                            '<span class="sps-product-price-discount" data-price="' . esc_attr($price_discount) . '" style="color: #f56c2d; font-weight: bold;">' . esc_html($price_discounted) . '</span>' .
                            '</' . $heading_tag . '>';
                 } else {
                     // Jika tidak ada diskon, tampilkan harga asli saja
-                    return '<' . $heading_tag . ' class="sps-product-detail-price" data-price="' . esc_attr($price_numeric) . '">' . esc_html($price_original) . '</' . $heading_tag . '>';
+                    $section_value = '<' . $heading_tag . ' class="sps-product-detail-price" data-price="' . esc_attr($price_numeric) . '">' . esc_html($price_original) . '</' . $heading_tag . '>';
                 }
+                $output = $section_value;
+                break;
                 
             case 'weight':
                 // Validasi style untuk weight
@@ -1532,31 +1541,132 @@ class Simple_Product_Showcase {
                 // Format berat dengan satuan gram
                 $weight_display = number_format($weight, 0, ',', '.') . ' gram';
                 
-                return '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight) . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
+                $section_value = '<' . $heading_tag . ' class="sps-product-detail-weight" data-weight="' . esc_attr($weight) . '">' . esc_html($weight_display) . '</' . $heading_tag . '>';
+                $output = $section_value;
+                break;
                 
             case 'image':
                 // Default: show thumbnail or first available image (PHP loads this initially)
                 if (has_post_thumbnail($product->ID)) {
-                    return '<div class="sps-product-detail-image" id="sps-main-image-container">' . get_the_post_thumbnail($product->ID, 'large', array('class' => 'sps-main-image')) . '</div>';
+                    $section_value = '<div class="sps-product-detail-image" id="sps-main-image-container">' . get_the_post_thumbnail($product->ID, 'large', array('class' => 'sps-main-image')) . '</div>';
+                } else {
+                    $section_value = '<div class="sps-product-detail-image" id="sps-main-image-container"><p>No image available.</p></div>';
                 }
-                return '<div class="sps-product-detail-image" id="sps-main-image-container"><p>No image available.</p></div>';
+                $output = $section_value;
+                break;
                 
             case 'description':
                 $content = apply_filters('the_content', $product->post_content);
-                return '<div class="sps-product-detail-description">' . $content . '</div>';
+                $section_value = '<div class="sps-product-detail-description">' . $content . '</div>';
+                $output = $section_value;
+                break;
                 
             case 'gallery':
-                return $this->render_gallery_fallback($product, $atts['style']);
+                $section_value = $this->render_gallery_fallback($product, $atts['style']);
+                $output = $section_value;
+                break;
                 
             case 'whatsapp':
-                return $this->render_whatsapp_fallback($product);
+                $section_value = $this->render_whatsapp_fallback($product);
+                $output = $section_value;
+                break;
                 
             case 'button':
-                return $this->render_all_buttons_fallback($product);
+                $section_value = $this->render_all_buttons_fallback($product);
+                $output = $section_value;
+                break;
+
+            case 'category':
+                $terms = get_the_terms($product->ID, 'sps_product_category');
+                if (empty($terms) || is_wp_error($terms)) {
+                    $section_value = '<span class="sps-product-category-empty">No category</span>';
+                } else {
+                    $main = null;
+                    $subs = array();
+                    foreach ($terms as $term) {
+                        if ($term->parent && $term->parent > 0) {
+                            $subs[] = $term;
+                        } else {
+                            $main = $term;
+                        }
+                    }
+                    if (!$main && count($terms) > 0) {
+                        $main = $terms[0];
+                    }
+                    $category_output = '';
+                    if ($main) {
+                        $category_output .= esc_html($main->name);
+                    }
+                    if (!empty($subs)) {
+                        $sub_names = array_map(function($t) { return esc_html($t->name); }, $subs);
+                        $category_output .= ' &gt; ' . implode(' , ', $sub_names);
+                    }
+                    $section_value = '<span class="sps-product-category">' . $category_output . '</span>';
+                }
+                $output = $section_value;
+                break;
                 
             default:
-                return '<p class="sps-invalid-section">Invalid section: ' . esc_html($atts['section']) . '</p>';
+                $section_value = '<p class="sps-invalid-section">Invalid section: ' . esc_html($atts['section']) . '</p>';
+                $output = $section_value;
+                break;
         }
+
+        return $output;
+    }
+
+    /**
+     * Set cookie informasi produk via PHP (tanpa JS).
+     */
+    public function set_product_info_cookie() {
+        if (is_admin() || wp_doing_ajax()) {
+            return;
+        }
+
+        if (headers_sent()) {
+            return;
+        }
+
+        $product = $this->get_current_product_fallback();
+        if (!$product) {
+            return;
+        }
+
+        $product_id = $product->ID;
+        $cookie_key = 'sps_product_info_' . $product_id;
+
+        $price_numeric = get_post_meta($product_id, '_sps_product_price_numeric', true);
+        $price_discount = get_post_meta($product_id, '_sps_product_price_discount', true);
+
+        $terms = get_the_terms($product_id, 'sps_product_category');
+        $category_names = array();
+        if (!empty($terms) && !is_wp_error($terms)) {
+            foreach ($terms as $term) {
+                $category_names[] = $term->name;
+            }
+        }
+
+        $data = array(
+            'id' => $product_id,
+            'title' => $product->post_title,
+            'url' => get_permalink($product_id),
+            'image' => get_the_post_thumbnail_url($product_id, 'medium'),
+            'price' => $price_numeric,
+            'discount' => $price_discount,
+            'categories' => $category_names,
+        );
+
+        $value = rawurlencode(wp_json_encode($data));
+
+        setcookie(
+            $cookie_key,
+            $value,
+            time() + (7 * DAY_IN_SECONDS),
+            COOKIEPATH ? COOKIEPATH : '/',
+            COOKIE_DOMAIN,
+            is_ssl(),
+            false
+        );
     }
     
     /**
