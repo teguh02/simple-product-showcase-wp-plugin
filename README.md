@@ -867,7 +867,20 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.33 (Latest - December 2025)
+### Version 1.6.34 (Latest - December 2025)
+**Fix: Memperbaiki Fungsi Penyimpanan Data Meta Box**
+- **🔧 Fixed**: Memperbaiki fungsi penyimpanan data di meta box "Product Price"
+  - Menambahkan cek post type di awal fungsi `save_product_meta()` untuk memastikan hanya post type `sps_product` yang diproses
+  - Menghapus logic yang menghapus meta jika field kosong, sekarang hanya menyimpan jika field ada di form
+  - Menambahkan cek untuk mencegah duplikasi registrasi meta box di fallback function
+  - Memperjelas priority pada hook `save_post` untuk memastikan fungsi save terpanggil dengan benar
+  - Data sekarang tersimpan dengan benar setelah menekan tombol Save
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: Perbaikan fungsi `save_product_meta()` dan penambahan cek post type
+    - `simple-product-showcase.php`: Penambahan cek duplikasi meta box di fallback function
+  - Now: Inputan Harga Normal, Harga Diskon Coret, dan Berat Produk sekarang tersimpan dengan benar ke database setelah menekan tombol Save
+
+### Version 1.6.33 (December 2025)
 **Removed: WhatsApp Settings Meta Box dari Halaman Edit Produk**
 - **🗑️ Removed**: Menghapus meta box "WhatsApp Settings" dari halaman edit/tambah produk
   - Pengaturan WhatsApp sekarang hanya tersedia di halaman Button Configuration (Products → Configuration)
