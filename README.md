@@ -867,15 +867,26 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.32 (Latest - December 2025)
+### Version 1.6.33 (Latest - December 2025)
+**Removed: WhatsApp Settings Meta Box dari Halaman Edit Produk**
+- **🗑️ Removed**: Menghapus meta box "WhatsApp Settings" dari halaman edit/tambah produk
+  - Pengaturan WhatsApp sekarang hanya tersedia di halaman Button Configuration (Products → Configuration)
+  - Semua pengaturan WhatsApp (nomor, pesan, mode button) hanya bisa diatur di halaman konfigurasi
+  - Menyederhanakan antarmuka admin dengan memusatkan semua pengaturan button di satu tempat
+  - Hanya meta box "Product Price" yang tersisa di halaman edit produk dengan 3 inputan: Harga Normal, Harga Diskon Coret, dan Berat Produk
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: Menghapus registrasi dan fungsi meta box WhatsApp Settings
+  - Now: Semua pengaturan WhatsApp terpusat di halaman Button Configuration, membuat workflow admin lebih sederhana dan konsisten
+
+### Version 1.6.32 (December 2025)
 **Fix: Fallback Meta Box Registration**
 - **🔧 Fixed**: Menambahkan fallback registrasi meta box "Product Price" di file utama plugin untuk memastikan inputan selalu muncul
   - Fungsi `register_fallback_meta_boxes()` ditambahkan sebagai cadangan jika registrasi dari class SPS_CPT gagal
-  - Fungsi `fallback_product_price_meta_box()` dan `fallback_product_whatsapp_meta_box()` ditambahkan untuk menampilkan inputan
+  - Fungsi `fallback_product_price_meta_box()` ditambahkan untuk menampilkan inputan
   - Memastikan meta box "Product Price" dengan 3 inputan (Harga Normal, Harga Diskon Coret, Berat Produk) selalu muncul di sidebar kanan halaman edit/tambah produk
   - Fallback akan menggunakan method dari class SPS_CPT jika tersedia, jika tidak akan menggunakan implementasi fallback
   - Files Changed:
-    - `simple-product-showcase.php`: Menambahkan fallback meta box registration dan content functions
+    - `simple-product-showcase.php`: Menambahkan fallback meta box registration dan content function
   - Now: Meta box "Product Price" akan selalu muncul bahkan jika registrasi dari class utama gagal, memastikan inputan selalu tersedia untuk admin
 
 ### Version 1.6.31 (December 2025)
