@@ -7,6 +7,21 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.6.35] - 2025-12-28
+
+### Fixed
+- **CRITICAL FIX**: Memperbaiki penyimpanan data yang tidak bekerja di Gutenberg Block Editor
+  - Menambahkan multiple filters untuk memastikan Block Editor benar-benar dinonaktifkan untuk `sps_product`:
+    - `use_block_editor_for_post_type` dengan priority 100
+    - `use_block_editor_for_post` dengan priority 100
+    - `gutenberg_can_edit_post_type` dengan priority 100
+    - `gutenberg_can_edit_post` dengan priority 100
+  - Menambahkan fungsi `disable_block_editor_for_post()` untuk menangani filter berbasis post object
+  - Menambahkan dukungan REST API untuk meta fields sebagai backup jika Gutenberg masih aktif
+  - Mendaftarkan meta fields (`_sps_product_price_numeric`, `_sps_product_price_discount`, `_sps_product_weight`, `_sps_product_price`) via `register_post_meta()` dengan `show_in_rest => true`
+  - Menambahkan hook `save_post_sps_product` untuk menyimpan data ke kolom custom wp_posts dari REST API
+  - Sekarang data tersimpan dengan benar baik di Classic Editor maupun Gutenberg
+
 ## [1.6.34] - 2025-12-28
 
 ### Fixed

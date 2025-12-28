@@ -39,17 +39,23 @@ class SPS_CPT {
     private function init_hooks() {
         add_action('init', array($this, 'register_post_type'));
         add_action('init', array($this, 'register_taxonomy'));
+        add_action('init', array($this, 'register_meta_fields_for_rest'));
         add_action('admin_init', array($this, 'check_and_create_weight_column'));
         add_action('admin_init', array($this, 'check_and_create_price_column'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_product_meta'), 10, 1);
+        add_action('save_post_sps_product', array($this, 'save_product_meta_rest'), 10, 3);
         add_filter('manage_sps_product_posts_columns', array($this, 'add_product_columns'));
         add_action('manage_sps_product_posts_custom_column', array($this, 'populate_product_columns'), 10, 2);
         
         // Gallery admin scripts are now handled by SPS_Metabox class
         
         // Disable block editor for sps_product to ensure meta boxes work
-        add_filter('use_block_editor_for_post_type', array($this, 'disable_block_editor'), 10, 2);
+        // Multiple filters to ensure Gutenberg is completely disabled for sps_product
+        add_filter('use_block_editor_for_post_type', array($this, 'disable_block_editor'), 100, 2);
+        add_filter('use_block_editor_for_post', array($this, 'disable_block_editor_for_post'), 100, 2);
+        add_filter('gutenberg_can_edit_post_type', array($this, 'disable_block_editor'), 100, 2);
+        add_filter('gutenberg_can_edit_post', array($this, 'disable_block_editor_for_post'), 100, 2);
         
         // Duplicate functionality is now handled by SPS_Duplicate class
     }
@@ -112,6 +118,59 @@ class SPS_CPT {
         );
         
         register_post_type('sps_product', $args);
+    }
+    
+    /**
+     * Register meta fields for REST API support (for Gutenberg compatibility)
+     */
+    public function register_meta_fields_for_rest() {
+        // Register meta fields untuk sps_product post type
+        $meta_fields = array(
+            '_sps_product_price_numeric' => array(
+                'type' => 'number',
+                'description' => 'Product price (numeric)',
+                'single' => true,
+                'sanitize_callback' => 'floatval',
+                'auth_callback' => function() {
+                    return current_user_can('edit_posts');
+                },
+                'show_in_rest' => true,
+            ),
+            '_sps_product_price_discount' => array(
+                'type' => 'number',
+                'description' => 'Product discount price',
+                'single' => true,
+                'sanitize_callback' => 'floatval',
+                'auth_callback' => function() {
+                    return current_user_can('edit_posts');
+                },
+                'show_in_rest' => true,
+            ),
+            '_sps_product_weight' => array(
+                'type' => 'integer',
+                'description' => 'Product weight in grams',
+                'single' => true,
+                'sanitize_callback' => 'absint',
+                'auth_callback' => function() {
+                    return current_user_can('edit_posts');
+                },
+                'show_in_rest' => true,
+            ),
+            '_sps_product_price' => array(
+                'type' => 'string',
+                'description' => 'Product price (display)',
+                'single' => true,
+                'sanitize_callback' => 'sanitize_text_field',
+                'auth_callback' => function() {
+                    return current_user_can('edit_posts');
+                },
+                'show_in_rest' => true,
+            ),
+        );
+        
+        foreach ($meta_fields as $meta_key => $args) {
+            register_post_meta('sps_product', $meta_key, $args);
+        }
     }
     
     /**
@@ -266,6 +325,40 @@ class SPS_CPT {
     }
     
     /**
+     * Save product meta from REST API (Gutenberg compatibility)
+     * This is called by save_post_sps_product hook
+     */
+    public function save_product_meta_rest($post_id, $post, $update) {
+        // Skip jika bukan update (new post)
+        if (!$update) {
+            return;
+        }
+        
+        // Skip autosave
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+        
+        // Check permissions
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+        
+        // Ambil nilai dari post meta (yang sudah disimpan oleh REST API)
+        $price_numeric = get_post_meta($post_id, '_sps_product_price_numeric', true);
+        $weight = get_post_meta($post_id, '_sps_product_weight', true);
+        
+        // Simpan ke kolom custom di wp_posts jika ada nilai
+        if (!empty($price_numeric)) {
+            $this->save_price_to_posts_table($post_id, floatval($price_numeric));
+        }
+        
+        if (!empty($weight)) {
+            $this->save_weight_to_posts_table($post_id, absint($weight));
+        }
+    }
+    
+    /**
      * Tambahkan kolom custom di admin list produk
      */
     public function add_product_columns($columns) {
@@ -312,6 +405,28 @@ class SPS_CPT {
      * Disable block editor for sps_product post type
      */
     public function disable_block_editor($use_block_editor, $post_type) {
+        if ($post_type === 'sps_product') {
+            return false;
+        }
+        return $use_block_editor;
+    }
+    
+    /**
+     * Disable block editor for sps_product post (by post object)
+     */
+    public function disable_block_editor_for_post($use_block_editor, $post) {
+        if (empty($post)) {
+            return $use_block_editor;
+        }
+        
+        // Handle both object and ID
+        $post_type = '';
+        if (is_object($post)) {
+            $post_type = $post->post_type;
+        } elseif (is_numeric($post)) {
+            $post_type = get_post_type($post);
+        }
+        
         if ($post_type === 'sps_product') {
             return false;
         }

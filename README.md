@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.34  
+**Version:** 1.6.35  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,19 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.34 (Latest - December 2025)
+### Version 1.6.35 (Latest - December 2025)
+**CRITICAL FIX: Penyimpanan Data Tidak Bekerja di Gutenberg**
+- **🔧 CRITICAL FIX**: Memperbaiki penyimpanan data yang tidak bekerja di Gutenberg Block Editor
+  - Menambahkan multiple filters dengan priority tinggi (100) untuk memastikan Block Editor benar-benar dinonaktifkan untuk `sps_product`
+  - Filters yang ditambahkan: `use_block_editor_for_post_type`, `use_block_editor_for_post`, `gutenberg_can_edit_post_type`, `gutenberg_can_edit_post`
+  - Menambahkan dukungan REST API untuk meta fields sebagai backup jika Gutenberg masih aktif
+  - Mendaftarkan meta fields via `register_post_meta()` dengan `show_in_rest => true`
+  - Menambahkan hook `save_post_sps_product` untuk menyimpan data ke kolom custom wp_posts dari REST API
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: Multiple filter untuk disable Gutenberg, REST API support untuk meta fields
+  - Now: Data tersimpan dengan benar baik di Classic Editor maupun Gutenberg
+
+### Version 1.6.34 (December 2025)
 **Fix: Memperbaiki Fungsi Penyimpanan Data Meta Box**
 - **🔧 Fixed**: Memperbaiki fungsi penyimpanan data di meta box "Product Price"
   - Menambahkan cek post type di awal fungsi `save_product_meta()` untuk memastikan hanya post type `sps_product` yang diproses
