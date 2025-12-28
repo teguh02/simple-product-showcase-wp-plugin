@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.31  
+**Version:** 1.6.32  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,18 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.31 (Latest - December 2025)
+### Version 1.6.32 (Latest - December 2025)
+**Fix: Fallback Meta Box Registration**
+- **🔧 Fixed**: Menambahkan fallback registrasi meta box "Product Price" di file utama plugin untuk memastikan inputan selalu muncul
+  - Fungsi `register_fallback_meta_boxes()` ditambahkan sebagai cadangan jika registrasi dari class SPS_CPT gagal
+  - Fungsi `fallback_product_price_meta_box()` dan `fallback_product_whatsapp_meta_box()` ditambahkan untuk menampilkan inputan
+  - Memastikan meta box "Product Price" dengan 3 inputan (Harga Normal, Harga Diskon Coret, Berat Produk) selalu muncul di sidebar kanan halaman edit/tambah produk
+  - Fallback akan menggunakan method dari class SPS_CPT jika tersedia, jika tidak akan menggunakan implementasi fallback
+  - Files Changed:
+    - `simple-product-showcase.php`: Menambahkan fallback meta box registration dan content functions
+  - Now: Meta box "Product Price" akan selalu muncul bahkan jika registrasi dari class utama gagal, memastikan inputan selalu tersedia untuk admin
+
+### Version 1.6.31 (December 2025)
 **Improvement: Label Inputan yang Lebih Jelas**
 - **🔧 Changed**: Memperbaiki label inputan di meta box "Product Price" menjadi lebih jelas dalam bahasa Indonesia
   - "Harga Normal": Input untuk harga normal produk (disimpan ke kolom `price` di tabel `wp_posts`)

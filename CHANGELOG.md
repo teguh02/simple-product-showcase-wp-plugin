@@ -7,6 +7,15 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.6.32] - 2025-12-28
+
+### Fixed
+- Menambahkan fallback registrasi meta box "Product Price" di file utama plugin untuk memastikan inputan selalu muncul
+  - Fungsi `register_fallback_meta_boxes()` ditambahkan sebagai cadangan jika registrasi dari class SPS_CPT gagal
+  - Fungsi `fallback_product_price_meta_box()` dan `fallback_product_whatsapp_meta_box()` ditambahkan untuk menampilkan inputan
+  - Memastikan meta box "Product Price" dengan 3 inputan (Harga Normal, Harga Diskon Coret, Berat Produk) selalu muncul di sidebar kanan halaman edit/tambah produk
+  - Fallback akan menggunakan method dari class SPS_CPT jika tersedia, jika tidak akan menggunakan implementasi fallback
+
 ## [1.6.31] - 2025-12-28
 
 ### Changed
