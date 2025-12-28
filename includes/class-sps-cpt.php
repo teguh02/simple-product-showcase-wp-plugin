@@ -42,7 +42,7 @@ class SPS_CPT {
         add_action('admin_init', array($this, 'check_and_create_weight_column'));
         add_action('admin_init', array($this, 'check_and_create_price_column'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
-        add_action('save_post', array($this, 'save_product_meta'));
+        add_action('save_post', array($this, 'save_product_meta'), 10, 1);
         add_filter('manage_sps_product_posts_columns', array($this, 'add_product_columns'));
         add_action('manage_sps_product_posts_custom_column', array($this, 'populate_product_columns'), 10, 2);
         
@@ -204,6 +204,11 @@ class SPS_CPT {
      * Simpan meta data produk
      */
     public function save_product_meta($post_id) {
+        // Cek post type
+        if (get_post_type($post_id) !== 'sps_product') {
+            return;
+        }
+        
         // Cek nonce
         if (!isset($_POST['sps_product_meta_nonce']) || !wp_verify_nonce($_POST['sps_product_meta_nonce'], 'sps_product_meta')) {
             return;
@@ -224,7 +229,7 @@ class SPS_CPT {
             update_post_meta($post_id, '_sps_product_price', sanitize_text_field($_POST['sps_product_price']));
         }
         
-        // Simpan harga produk (numeric)
+        // Simpan harga produk (numeric) - selalu simpan jika field ada di form
         if (isset($_POST['sps_product_price_numeric'])) {
             $price_numeric = floatval($_POST['sps_product_price_numeric']); // Sanitize as float to support decimals
             if ($price_numeric < 0) {
@@ -234,35 +239,24 @@ class SPS_CPT {
             
             // Jika kolom price ada di wp_posts, simpan juga ke sana
             $this->save_price_to_posts_table($post_id, $price_numeric);
-        } else {
-            // Jika tidak ada nilai, set ke 0 atau hapus
-            delete_post_meta($post_id, '_sps_product_price_numeric');
-            $this->save_price_to_posts_table($post_id, 0);
         }
         
-        // Simpan harga diskon produk
+        // Simpan harga diskon produk - selalu simpan jika field ada di form
         if (isset($_POST['sps_product_price_discount'])) {
             $price_discount = floatval($_POST['sps_product_price_discount']); // Sanitize as float to support decimals
             if ($price_discount < 0) {
                 $price_discount = 0; // Ensure non-negative
             }
             update_post_meta($post_id, '_sps_product_price_discount', $price_discount);
-        } else {
-            // Jika tidak ada nilai, hapus
-            delete_post_meta($post_id, '_sps_product_price_discount');
         }
         
-        // Simpan berat produk (weight)
+        // Simpan berat produk (weight) - selalu simpan jika field ada di form
         if (isset($_POST['sps_product_weight'])) {
             $weight = absint($_POST['sps_product_weight']); // Sanitize as positive integer
             update_post_meta($post_id, '_sps_product_weight', $weight);
             
             // Jika kolom weight ada di wp_posts, simpan juga ke sana
             $this->save_weight_to_posts_table($post_id, $weight);
-        } else {
-            // Jika tidak ada nilai, set ke 0 atau hapus
-            delete_post_meta($post_id, '_sps_product_weight');
-            $this->save_weight_to_posts_table($post_id, 0);
         }
         
         // WhatsApp message settings are now handled in Button Configuration page only

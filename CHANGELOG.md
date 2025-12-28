@@ -7,6 +7,16 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.6.34] - 2025-12-28
+
+### Fixed
+- Memperbaiki fungsi penyimpanan data di meta box "Product Price"
+  - Menambahkan cek post type di awal fungsi `save_product_meta()` untuk memastikan hanya post type `sps_product` yang diproses
+  - Menghapus logic yang menghapus meta jika field kosong, sekarang hanya menyimpan jika field ada di form
+  - Menambahkan cek untuk mencegah duplikasi registrasi meta box di fallback function
+  - Memperjelas priority pada hook `save_post` untuk memastikan fungsi save terpanggil dengan benar
+  - Data sekarang tersimpan dengan benar setelah menekan tombol Save
+
 ## [1.6.33] - 2025-12-28
 
 ### Removed
