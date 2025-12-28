@@ -182,24 +182,24 @@ class SPS_CPT {
         $weight = get_post_meta($post->ID, '_sps_product_weight', true);
         ?>
         <p>
+            <label for="sps_product_price_numeric"><strong><?php _e('Harga Normal:', 'simple-product-showcase'); ?></strong></label>
+            <input type="number" id="sps_product_price_numeric" name="sps_product_price_numeric" value="<?php echo esc_attr($price_numeric); ?>" class="widefat" placeholder="0" min="0" step="1" />
+            <small><?php _e('Masukkan harga normal produk (contoh: 100000). Data akan disimpan ke kolom database.', 'simple-product-showcase'); ?></small>
+        </p>
+        <p>
+            <label for="sps_product_price_discount"><strong><?php _e('Harga Diskon Coret:', 'simple-product-showcase'); ?></strong></label>
+            <input type="number" id="sps_product_price_discount" name="sps_product_price_discount" value="<?php echo esc_attr($price_discount); ?>" class="widefat" placeholder="0" min="0" step="1" />
+            <small><?php _e('Jika diisi, harga normal akan dicoret dan harga diskon yang digunakan untuk kalkulasi (contoh: 75000).', 'simple-product-showcase'); ?></small>
+        </p>
+        <p>
+            <label for="sps_product_weight"><strong><?php _e('Berat Produk (dalam gram):', 'simple-product-showcase'); ?></strong></label>
+            <input type="number" id="sps_product_weight" name="sps_product_weight" value="<?php echo esc_attr($weight); ?>" class="widefat" placeholder="0" min="0" step="1" />
+            <small><?php _e('Masukkan berat produk dalam gram (contoh: 500). Data akan disimpan ke kolom database.', 'simple-product-showcase'); ?></small>
+        </p>
+        <p style="display: none;">
             <label for="sps_product_price"><?php _e('Price (Display):', 'simple-product-showcase'); ?></label>
             <input type="text" id="sps_product_price" name="sps_product_price" value="<?php echo esc_attr($price); ?>" class="widefat" placeholder="Rp 0" />
             <small><?php _e('Enter price with currency symbol (e.g., Rp 100,000)', 'simple-product-showcase'); ?></small>
-        </p>
-        <p>
-            <label for="sps_product_price_numeric"><?php _e('Price (Numeric) - Rp:', 'simple-product-showcase'); ?></label>
-            <input type="number" id="sps_product_price_numeric" name="sps_product_price_numeric" value="<?php echo esc_attr($price_numeric); ?>" class="widefat" placeholder="0" min="0" step="1" />
-            <small><?php _e('Enter price as number only (e.g., 100000) for calculation purposes', 'simple-product-showcase'); ?></small>
-        </p>
-        <p>
-            <label for="sps_product_price_discount"><?php _e('Price Discount (Numeric) - Rp:', 'simple-product-showcase'); ?></label>
-            <input type="number" id="sps_product_price_discount" name="sps_product_price_discount" value="<?php echo esc_attr($price_discount); ?>" class="widefat" placeholder="0" min="0" step="1" />
-            <small><?php _e('Enter discounted price as number only (e.g., 75000). This will be displayed as strikethrough original price.', 'simple-product-showcase'); ?></small>
-        </p>
-        <p>
-            <label for="sps_product_weight"><?php _e('Weight (gram):', 'simple-product-showcase'); ?></label>
-            <input type="number" id="sps_product_weight" name="sps_product_weight" value="<?php echo esc_attr($weight); ?>" class="widefat" placeholder="0" min="0" step="1" />
-            <small><?php _e('Enter product weight in grams (e.g., 500)', 'simple-product-showcase'); ?></small>
         </p>
         <?php
     }

@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.24  
+**Version:** 1.6.31  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,19 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.24 (Latest - December 2025)
+### Version 1.6.31 (Latest - December 2025)
+**Improvement: Label Inputan yang Lebih Jelas**
+- **🔧 Changed**: Memperbaiki label inputan di meta box "Product Price" menjadi lebih jelas dalam bahasa Indonesia
+  - "Harga Normal": Input untuk harga normal produk (disimpan ke kolom `price` di tabel `wp_posts`)
+  - "Harga Diskon Coret": Input untuk harga diskon (jika diisi, harga normal akan dicoret di tampilan website)
+  - "Berat Produk (dalam gram)": Input untuk berat produk (disimpan ke kolom `weight` di tabel `wp_posts`)
+  - Semua inputan tetap tersimpan ke kolom database yang sudah ada sebelumnya
+  - Field "Price (Display)" tetap ada untuk kompatibilitas namun disembunyikan dari tampilan
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: Update label inputan di `product_price_meta_box()`
+  - Now: Admin dapat menginput harga normal, harga diskon, dan berat produk dengan label yang lebih jelas dan mudah dipahami
+
+### Version 1.6.24 (December 2025)
 **Feature: Harga Diskon dengan Strikethrough**
 - **✨ Added**: Menambahkan field harga diskon (Price Discount) untuk produk
   - Field "Price Discount (Numeric) - Rp:" muncul di meta box "Product Price" pada halaman tambah dan edit produk

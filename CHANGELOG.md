@@ -7,6 +7,16 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.6.31] - 2025-12-28
+
+### Changed
+- Memperbaiki label inputan di meta box "Product Price" menjadi lebih jelas dalam bahasa Indonesia
+  - "Harga Normal": Input untuk harga normal produk (disimpan ke kolom `price` di tabel `wp_posts`)
+  - "Harga Diskon Coret": Input untuk harga diskon (jika diisi, harga normal akan dicoret di tampilan website)
+  - "Berat Produk (dalam gram)": Input untuk berat produk (disimpan ke kolom `weight` di tabel `wp_posts`)
+  - Semua inputan tetap tersimpan ke kolom database yang sudah ada sebelumnya
+  - Field "Price (Display)" tetap ada untuk kompatibilitas namun disembunyikan dari tampilan
+
 ## [1.6.30] - 2025-12-27
 
 ### Changed
