@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.32  
+**Version:** 1.6.33  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  

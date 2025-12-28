@@ -158,14 +158,7 @@ class SPS_CPT {
             'high'
         );
         
-        add_meta_box(
-            'sps_product_whatsapp',
-            __('WhatsApp Settings', 'simple-product-showcase'),
-            array($this, 'product_whatsapp_meta_box'),
-            'sps_product',
-            'side',
-            'default'
-        );
+        // WhatsApp Settings meta box removed - settings only available in Button Configuration page
         
         // Product Gallery meta box is now handled by SPS_Metabox class
     }
@@ -204,22 +197,8 @@ class SPS_CPT {
         <?php
     }
     
-    /**
-     * Meta box untuk pengaturan WhatsApp
-     */
-    public function product_whatsapp_meta_box($post) {
-        $custom_message = get_post_meta($post->ID, '_sps_whatsapp_message', true);
-        $global_message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}');
-        ?>
-        <p>
-            <label for="sps_whatsapp_message"><?php _e('Custom WhatsApp Message:', 'simple-product-showcase'); ?></label>
-            <textarea id="sps_whatsapp_message" name="sps_whatsapp_message" class="widefat" rows="3" placeholder="<?php echo esc_attr($global_message); ?>"><?php echo esc_textarea($custom_message); ?></textarea>
-            <small><?php _e('Leave empty to use global message. Use {product_link} placeholder for product URL.', 'simple-product-showcase'); ?></small>
-        </p>
-        <?php
-    }
-    
     // Product Gallery meta box is now handled by SPS_Metabox class
+    // WhatsApp Settings meta box removed - settings only available in Button Configuration page
     
     /**
      * Simpan meta data produk
@@ -286,10 +265,8 @@ class SPS_CPT {
             $this->save_weight_to_posts_table($post_id, 0);
         }
         
-        // Simpan pesan WhatsApp custom
-        if (isset($_POST['sps_whatsapp_message'])) {
-            update_post_meta($post_id, '_sps_whatsapp_message', sanitize_textarea_field($_POST['sps_whatsapp_message']));
-        }
+        // WhatsApp message settings are now handled in Button Configuration page only
+        // Custom per-product WhatsApp message removed - use global settings only
         
         // Gallery images are now handled by SPS_Metabox class
     }

@@ -3,7 +3,7 @@
  * Plugin Name: Simple Product Showcase
  * Plugin URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * Description: Plugin WordPress ringan untuk menampilkan produk dengan integrasi WhatsApp tanpa fitur checkout, cart, atau pembayaran.
- * Version: 1.6.32
+ * Version: 1.6.33
  * Author: Teguh Rijanandi
  * Author URI: https://github.com/teguh02/simple-product-showcase-wp-plugin
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 // Definisi konstanta plugin
 define('SPS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SPS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('SPS_PLUGIN_VERSION', '1.6.32');
+define('SPS_PLUGIN_VERSION', '1.6.33');
 
 /**
  * Class Simple_Product_Showcase
@@ -910,7 +910,8 @@ class Simple_Product_Showcase {
             return;
         }
         
-        // Register Product Price meta box
+        // Register Product Price meta box only
+        // WhatsApp Settings meta box is handled by SPS_CPT class
         add_meta_box(
             'sps_product_price',
             __('Product Price', 'simple-product-showcase'),
@@ -918,16 +919,6 @@ class Simple_Product_Showcase {
             'sps_product',
             'side',
             'high'
-        );
-        
-        // Register WhatsApp Settings meta box
-        add_meta_box(
-            'sps_product_whatsapp',
-            __('WhatsApp Settings', 'simple-product-showcase'),
-            array($this, 'fallback_product_whatsapp_meta_box'),
-            'sps_product',
-            'side',
-            'default'
         );
     }
     
@@ -965,31 +956,6 @@ class Simple_Product_Showcase {
             <label for="sps_product_weight"><strong><?php _e('Berat Produk (dalam gram):', 'simple-product-showcase'); ?></strong></label>
             <input type="number" id="sps_product_weight" name="sps_product_weight" value="<?php echo esc_attr($weight); ?>" class="widefat" placeholder="0" min="0" step="1" />
             <small><?php _e('Masukkan berat produk dalam gram (contoh: 500). Data akan disimpan ke kolom database.', 'simple-product-showcase'); ?></small>
-        </p>
-        <?php
-    }
-    
-    /**
-     * Fallback WhatsApp Settings meta box content
-     */
-    public function fallback_product_whatsapp_meta_box($post) {
-        // Check if SPS_CPT class exists and use its method
-        if (class_exists('SPS_CPT')) {
-            $cpt_instance = SPS_CPT::get_instance();
-            if (method_exists($cpt_instance, 'product_whatsapp_meta_box')) {
-                $cpt_instance->product_whatsapp_meta_box($post);
-                return;
-            }
-        }
-        
-        // Fallback implementation
-        $custom_message = get_post_meta($post->ID, '_sps_whatsapp_message', true);
-        $global_message = get_option('sps_whatsapp_message', 'Hai kak, saya mau tanya tanya tentang produk ini yaa: {product_link}');
-        ?>
-        <p>
-            <label for="sps_whatsapp_message"><?php _e('Custom WhatsApp Message:', 'simple-product-showcase'); ?></label>
-            <textarea id="sps_whatsapp_message" name="sps_whatsapp_message" class="widefat" rows="3" placeholder="<?php echo esc_attr($global_message); ?>"><?php echo esc_textarea($custom_message); ?></textarea>
-            <small><?php _e('Leave empty to use global message. Use {product_link} placeholder for product URL.', 'simple-product-showcase'); ?></small>
         </p>
         <?php
     }

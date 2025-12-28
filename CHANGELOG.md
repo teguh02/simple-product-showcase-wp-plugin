@@ -7,6 +7,15 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.6.33] - 2025-12-28
+
+### Removed
+- Menghapus meta box "WhatsApp Settings" dari halaman edit/tambah produk
+  - Pengaturan WhatsApp sekarang hanya tersedia di halaman Button Configuration (Products → Configuration)
+  - Semua pengaturan WhatsApp (nomor, pesan, mode button) hanya bisa diatur di halaman konfigurasi
+  - Menyederhanakan antarmuka admin dengan memusatkan semua pengaturan button di satu tempat
+  - Hanya meta box "Product Price" yang tersisa di halaman edit produk dengan 3 inputan: Harga Normal, Harga Diskon Coret, dan Berat Produk
+
 ## [1.6.32] - 2025-12-28
 
 ### Fixed
