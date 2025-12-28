@@ -1861,35 +1861,10 @@ class SPS_Shortcodes {
         $price_numeric = get_post_meta($product->ID, '_sps_product_price_numeric', true);
         $price_discount = get_post_meta($product->ID, '_sps_product_price_discount', true);
         
-        // Jika harga numeric belum diatur, set default 100.000 dan simpan ke database
-        if (empty($price_numeric) || !is_numeric($price_numeric) || $price_numeric == 0) {
-            $price_numeric = 100000; // Default 100.000 rupiah
-            
-            // Simpan ke post_meta
-            update_post_meta($product->ID, '_sps_product_price_numeric', $price_numeric);
-            
-            // Simpan ke kolom database jika ada
-            global $wpdb;
-            $column_exists = get_option('sps_price_column_exists', false);
-            if ($column_exists) {
-                $table_name = $wpdb->posts;
-                $wpdb->update(
-                    $table_name,
-                    array('price' => floatval($price_numeric)),
-                    array('ID' => $product->ID),
-                    array('%f'),
-                    array('%d')
-                );
-            }
-        }
-        
-        // Jika harga diskon belum diatur, set default 75.000 dan simpan ke database
-        if (empty($price_discount) || !is_numeric($price_discount) || $price_discount == 0) {
-            $price_discount = 75000; // Default 75.000 rupiah
-            
-            // Simpan ke post_meta
-            update_post_meta($product->ID, '_sps_product_price_discount', $price_discount);
-        }
+        // TIDAK ada default value - tampilkan nilai sesuai database
+        // Jika kosong, tampilkan 0
+        $price_numeric = is_numeric($price_numeric) ? floatval($price_numeric) : 0;
+        $price_discount = is_numeric($price_discount) ? floatval($price_discount) : 0;
         
         // Format harga asli (original price)
         $price_original = 'Rp ' . number_format($price_numeric, 0, ',', '.');
@@ -1927,27 +1902,9 @@ class SPS_Shortcodes {
         // Ambil berat dari post_meta
         $weight = get_post_meta($product->ID, '_sps_product_weight', true);
         
-        // Jika berat belum diatur, set default 20 kg (20000 gram) dan simpan ke database
-        if (empty($weight) || !is_numeric($weight) || $weight == 0) {
-            $weight = 20000; // 20 kg = 20000 gram (default)
-            
-            // Simpan ke post_meta
-            update_post_meta($product->ID, '_sps_product_weight', $weight);
-            
-            // Simpan ke kolom database jika ada
-            global $wpdb;
-            $column_exists = get_option('sps_weight_column_exists', false);
-            if ($column_exists) {
-                $table_name = $wpdb->posts;
-                $wpdb->update(
-                    $table_name,
-                    array('weight' => absint($weight)),
-                    array('ID' => $product->ID),
-                    array('%d'),
-                    array('%d')
-                );
-            }
-        }
+        // TIDAK ada default value - tampilkan nilai sesuai database
+        // Jika kosong, tampilkan 0
+        $weight = is_numeric($weight) ? absint($weight) : 0;
         
         // Format berat dengan satuan gram
         $weight_display = number_format($weight, 0, ',', '.') . ' gram';

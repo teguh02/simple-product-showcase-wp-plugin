@@ -7,6 +7,19 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.6.36] - 2025-12-28
+
+### Fixed
+- **CRITICAL FIX**: Menghapus kode berbahaya yang menimpa nilai harga dan berat dengan default setiap kali shortcode dijalankan
+  - Shortcode `sps_detail_products` sebelumnya MENYIMPAN nilai default (100000, 75000, 20000) ke database setiap kali halaman detail produk dibuka
+  - Ini menyebabkan nilai yang sudah admin inputkan SELALU tertimpa dengan nilai default
+  - Sekarang shortcode hanya untuk DISPLAY, tidak mengubah data apapun di database
+  - Kode yang dihapus dari `class-sps-shortcodes.php` dan `simple-product-showcase.php`:
+    - `update_post_meta()` pada fungsi `render_product_price()`
+    - `update_post_meta()` pada fungsi `render_product_weight()`
+    - `$wpdb->update()` untuk kolom price dan weight
+  - Sekarang data yang diinput admin BENAR-BENAR tersimpan dan tidak akan tertimpa
+
 ## [1.6.35] - 2025-12-28
 
 ### Fixed

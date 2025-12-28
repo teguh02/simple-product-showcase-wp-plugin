@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.35  
+**Version:** 1.6.36  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,18 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.35 (Latest - December 2025)
+### Version 1.6.36 (Latest - December 2025)
+**CRITICAL FIX: Shortcode Menimpa Data dengan Default Values**
+- **🔧 CRITICAL FIX**: Menghapus kode berbahaya yang menimpa nilai harga dan berat dengan default setiap kali shortcode dijalankan
+  - Shortcode `sps_detail_products` sebelumnya MENYIMPAN nilai default ke database setiap kali halaman detail produk dibuka
+  - Ini menyebabkan nilai yang sudah admin inputkan SELALU tertimpa dengan nilai default (100000, 75000, 20000)
+  - Sekarang shortcode hanya untuk DISPLAY, tidak mengubah data apapun di database
+  - Files Changed:
+    - `includes/class-sps-shortcodes.php`: Menghapus `update_post_meta()` dan `$wpdb->update()` dari render functions
+    - `simple-product-showcase.php`: Menghapus kode yang sama dari fallback handler
+  - Now: Data yang diinput admin BENAR-BENAR tersimpan dan tidak akan tertimpa lagi
+
+### Version 1.6.35 (December 2025)
 **CRITICAL FIX: Penyimpanan Data Tidak Bekerja di Gutenberg**
 - **🔧 CRITICAL FIX**: Memperbaiki penyimpanan data yang tidak bekerja di Gutenberg Block Editor
   - Menambahkan multiple filters dengan priority tinggi (100) untuk memastikan Block Editor benar-benar dinonaktifkan untuk `sps_product`
