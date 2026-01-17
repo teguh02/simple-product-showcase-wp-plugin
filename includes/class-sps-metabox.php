@@ -107,14 +107,11 @@ class SPS_Metabox {
     }
     
     /**
-     * Save gallery images
+     * Save gallery images AND product price/weight data
+     * Menggabungkan save gallery dan product price dalam satu fungsi
+     * karena Gutenberg meta-box-loader hanya memanggil hooks tertentu
      */
     public function save_gallery_images($post_id) {
-        // Check nonce
-        if (!isset($_POST['sps_gallery_nonce']) || !wp_verify_nonce($_POST['sps_gallery_nonce'], 'sps_save_gallery')) {
-            return;
-        }
-        
         // Check if this is an autosave
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
@@ -125,19 +122,110 @@ class SPS_Metabox {
             return;
         }
         
-        // Save gallery images
-        for ($i = 1; $i <= 5; $i++) {
-            $meta_key = '_sps_gallery_' . $i;
-            
-            if (isset($_POST['sps_gallery_' . $i])) {
-                $image_id = intval($_POST['sps_gallery_' . $i]);
+        // Check post type
+        if (get_post_type($post_id) !== 'sps_product') {
+            return;
+        }
+        
+        // ========== SAVE GALLERY IMAGES ==========
+        // Check gallery nonce
+        if (isset($_POST['sps_gallery_nonce']) && wp_verify_nonce($_POST['sps_gallery_nonce'], 'sps_save_gallery')) {
+            // Save gallery images
+            for ($i = 1; $i <= 5; $i++) {
+                $meta_key = '_sps_gallery_' . $i;
                 
-                if ($image_id > 0) {
-                    update_post_meta($post_id, $meta_key, $image_id);
-                } else {
-                    delete_post_meta($post_id, $meta_key);
+                if (isset($_POST['sps_gallery_' . $i])) {
+                    $image_id = intval($_POST['sps_gallery_' . $i]);
+                    
+                    if ($image_id > 0) {
+                        update_post_meta($post_id, $meta_key, $image_id);
+                    } else {
+                        delete_post_meta($post_id, $meta_key);
+                    }
                 }
             }
+        }
+        
+        // ========== SAVE PRODUCT PRICE/WEIGHT DATA ==========
+        // Check product meta nonce - ATAU simpan tanpa nonce jika data ada (untuk Gutenberg compatibility)
+        $has_price_nonce = isset($_POST['sps_product_meta_nonce']) && wp_verify_nonce($_POST['sps_product_meta_nonce'], 'sps_product_meta');
+        $has_price_data = isset($_POST['sps_product_price_numeric']) || isset($_POST['sps_product_price_discount']) || isset($_POST['sps_product_weight']);
+        
+        if ($has_price_nonce || $has_price_data) {
+            // Simpan harga produk (display)
+            if (isset($_POST['sps_product_price'])) {
+                update_post_meta($post_id, '_sps_product_price', sanitize_text_field($_POST['sps_product_price']));
+            }
+            
+            // Simpan harga produk (numeric)
+            if (isset($_POST['sps_product_price_numeric'])) {
+                $price_numeric = floatval($_POST['sps_product_price_numeric']);
+                if ($price_numeric < 0) {
+                    $price_numeric = 0;
+                }
+                update_post_meta($post_id, '_sps_product_price_numeric', $price_numeric);
+                
+                // Simpan ke kolom database jika ada
+                $this->save_price_to_posts_table($post_id, $price_numeric);
+            }
+            
+            // Simpan harga diskon produk
+            if (isset($_POST['sps_product_price_discount'])) {
+                $price_discount = floatval($_POST['sps_product_price_discount']);
+                if ($price_discount < 0) {
+                    $price_discount = 0;
+                }
+                update_post_meta($post_id, '_sps_product_price_discount', $price_discount);
+            }
+            
+            // Simpan berat produk (weight)
+            if (isset($_POST['sps_product_weight'])) {
+                $weight = absint($_POST['sps_product_weight']);
+                update_post_meta($post_id, '_sps_product_weight', $weight);
+                
+                // Simpan ke kolom database jika ada
+                $this->save_weight_to_posts_table($post_id, $weight);
+            }
+        }
+    }
+    
+    /**
+     * Simpan price ke kolom wp_posts (jika kolom ada)
+     */
+    private function save_price_to_posts_table($post_id, $price) {
+        global $wpdb;
+        
+        $column_exists = get_option('sps_price_column_exists', false);
+        
+        if ($column_exists) {
+            $table_name = $wpdb->posts;
+            $wpdb->update(
+                $table_name,
+                array('price' => floatval($price)),
+                array('ID' => $post_id),
+                array('%f'),
+                array('%d')
+            );
+        }
+    }
+    
+    /**
+     * Simpan weight ke kolom wp_posts (jika kolom ada)
+     */
+    private function save_weight_to_posts_table($post_id, $weight) {
+        global $wpdb;
+        
+        $column_exists = get_option('sps_weight_column_exists', false);
+        
+        if ($column_exists) {
+            $table_name = $wpdb->posts;
+            $wpdb->update(
+                $table_name,
+                array('weight' => absint($weight)),
+                array('ID' => $post_id),
+                array('%d'),
+                array('%d')
+            );
         }
     }
     

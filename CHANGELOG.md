@@ -7,6 +7,54 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.7.0] - 2025-12-28
+
+### Changed
+- **MAJOR REFACTORING**: Memecah file utama `simple-product-showcase.php` (~4000 baris) menjadi class-class legacy terpisah
+  - File utama sekarang hanya ~300 baris (bootstrap + wrapper methods)
+  - Tidak ada perubahan perilaku plugin - hanya pemindahan kode
+  - Semua shortcode, CPT, AJAX, admin menu tetap berfungsi identik
+
+### Added
+- **New Legacy Classes** di folder `includes/legacy/`:
+  - `class-sps-legacy-shortcodes.php` - Handler untuk shortcode `sps_products`, `sps_random_products`, helper methods
+  - `class-sps-legacy-shortcodes-extended.php` - Handler untuk `sps_detail_products`, gallery, buttons, cookie
+  - `class-sps-legacy-shortcodes-filters.php` - Handler untuk `sps_products_with_filters`, `sps_products_sub_category`
+  - `class-sps-legacy-admin.php` - Handler untuk fallback admin menu, settings page, callbacks
+  - `class-sps-legacy-cpt.php` - Handler untuk fallback CPT registration, meta boxes
+  - `class-sps-legacy-ajax.php` - Handler untuk AJAX endpoints (gallery image, search)
+
+### Technical Notes
+- Semua class legacy menggunakan singleton pattern (`get_instance()`)
+- Method di `Simple_Product_Showcase` sekarang adalah wrapper 1-3 baris yang memanggil class legacy
+- Hook/shortcode registration di `init()` tetap mengarah ke method di class utama untuk kompatibilitas
+- Tidak ada perubahan pada output HTML, CSS, JavaScript
+- Tidak ada perubahan pada nama shortcode, CPT, taxonomy, option keys, atau meta keys
+
+## [1.6.38] - 2025-12-28
+
+### Fixed
+- **CRITICAL FIX**: Menggabungkan save Product Price ke dalam class SPS_Metabox yang sudah bekerja
+  - Product Gallery save berfungsi dengan baik di Gutenberg, tapi Product Price tidak
+  - Solusi: Menggabungkan logic save harga dan berat ke dalam fungsi `save_gallery_images()` 
+  - Sekarang satu fungsi menangani save gallery DAN save price/weight
+  - Menambahkan fallback: jika nonce valid ATAU data ada, simpan ke database
+  - Ini memastikan data tersimpan baik di Classic Editor maupun Gutenberg meta-box-loader
+  - Files Changed:
+    - `includes/class-sps-metabox.php`: Menambahkan logic save price/weight ke fungsi save_gallery_images()
+
+## [1.6.37] - 2025-12-28
+
+### Fixed
+- **CRITICAL FIX**: MEMAKSA Classic Editor untuk sps_product - Gutenberg SEPENUHNYA dinonaktifkan
+  - Mengubah `show_in_rest` menjadi `false` pada `register_post_type()` untuk menonaktifkan REST API
+  - Ini memaksa WordPress menggunakan Classic Editor karena Gutenberg membutuhkan REST API
+  - Mengubah priority filter menjadi `PHP_INT_MAX` untuk memastikan filter tidak di-override oleh plugin lain
+  - Menambahkan filter `classic_editor_enabled_editors_for_post_type` dan `classic_editor_enabled_editors_for_post` untuk kompatibilitas dengan plugin Classic Editor
+  - Menghapus registrasi REST API untuk meta fields karena tidak diperlukan lagi
+  - Sekarang halaman edit/tambah produk PASTI menggunakan Classic Editor, bukan Gutenberg
+  - Data dari meta box (Harga Normal, Harga Diskon, Berat) PASTI tersimpan dengan benar
+
 ## [1.6.36] - 2025-12-28
 
 ### Fixed

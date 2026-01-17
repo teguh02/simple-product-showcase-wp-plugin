@@ -39,23 +39,26 @@ class SPS_CPT {
     private function init_hooks() {
         add_action('init', array($this, 'register_post_type'));
         add_action('init', array($this, 'register_taxonomy'));
-        add_action('init', array($this, 'register_meta_fields_for_rest'));
+        // REST API support removed - forcing Classic Editor instead
         add_action('admin_init', array($this, 'check_and_create_weight_column'));
         add_action('admin_init', array($this, 'check_and_create_price_column'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_product_meta'), 10, 1);
-        add_action('save_post_sps_product', array($this, 'save_product_meta_rest'), 10, 3);
         add_filter('manage_sps_product_posts_columns', array($this, 'add_product_columns'));
         add_action('manage_sps_product_posts_custom_column', array($this, 'populate_product_columns'), 10, 2);
         
         // Gallery admin scripts are now handled by SPS_Metabox class
         
         // Disable block editor for sps_product to ensure meta boxes work
-        // Multiple filters to ensure Gutenberg is completely disabled for sps_product
-        add_filter('use_block_editor_for_post_type', array($this, 'disable_block_editor'), 100, 2);
-        add_filter('use_block_editor_for_post', array($this, 'disable_block_editor_for_post'), 100, 2);
-        add_filter('gutenberg_can_edit_post_type', array($this, 'disable_block_editor'), 100, 2);
-        add_filter('gutenberg_can_edit_post', array($this, 'disable_block_editor_for_post'), 100, 2);
+        // Multiple filters with HIGHEST priority to ensure Gutenberg is completely disabled
+        add_filter('use_block_editor_for_post_type', array($this, 'disable_block_editor'), PHP_INT_MAX, 2);
+        add_filter('use_block_editor_for_post', array($this, 'disable_block_editor_for_post'), PHP_INT_MAX, 2);
+        add_filter('gutenberg_can_edit_post_type', array($this, 'disable_block_editor'), PHP_INT_MAX, 2);
+        add_filter('gutenberg_can_edit_post', array($this, 'disable_block_editor_for_post'), PHP_INT_MAX, 2);
+        
+        // Additional filters to force classic editor
+        add_filter('classic_editor_enabled_editors_for_post_type', array($this, 'force_classic_editor'), PHP_INT_MAX, 2);
+        add_filter('classic_editor_enabled_editors_for_post', array($this, 'force_classic_editor_for_post'), PHP_INT_MAX, 2);
         
         // Duplicate functionality is now handled by SPS_Duplicate class
     }
@@ -114,7 +117,7 @@ class SPS_CPT {
             'menu_position'      => 5,
             'menu_icon'          => 'dashicons-products',
             'supports'           => array('title', 'editor', 'thumbnail', 'excerpt'),
-            'show_in_rest'       => true,
+            'show_in_rest'       => false, // DISABLE REST API to force Classic Editor
         );
         
         register_post_type('sps_product', $args);
@@ -431,6 +434,37 @@ class SPS_CPT {
             return false;
         }
         return $use_block_editor;
+    }
+    
+    /**
+     * Force classic editor for sps_product (Classic Editor plugin compatibility)
+     */
+    public function force_classic_editor($editors, $post_type) {
+        if ($post_type === 'sps_product') {
+            return array('classic_editor' => true, 'block_editor' => false);
+        }
+        return $editors;
+    }
+    
+    /**
+     * Force classic editor for sps_product post (Classic Editor plugin compatibility)
+     */
+    public function force_classic_editor_for_post($editors, $post) {
+        if (empty($post)) {
+            return $editors;
+        }
+        
+        $post_type = '';
+        if (is_object($post)) {
+            $post_type = $post->post_type;
+        } elseif (is_numeric($post)) {
+            $post_type = get_post_type($post);
+        }
+        
+        if ($post_type === 'sps_product') {
+            return array('classic_editor' => true, 'block_editor' => false);
+        }
+        return $editors;
     }
     
     // Gallery admin scripts are now handled by SPS_Metabox class

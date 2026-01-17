@@ -1,6 +1,6 @@
 # Simple Product Showcase
 
-**Version:** 1.6.36  
+**Version:** 1.7.0  
 **Author:** Teguh Rijanandi  
 **License:** GPL v2 or later  
 **Requires:** WordPress 5.0+  
@@ -867,7 +867,28 @@ User Submit Form → POST /wp-admin/edit.php?...page=sps-configuration
 
 ## 🔄 Changelog
 
-### Version 1.6.36 (Latest - December 2025)
+### Version 1.6.38 (Latest - December 2025)
+**CRITICAL FIX: Menggabungkan Save ke Class SPS_Metabox yang Sudah Bekerja**
+- **🔧 CRITICAL FIX**: Product Gallery save berfungsi di Gutenberg, Product Price tidak
+  - Solusi: Menggabungkan logic save harga dan berat ke dalam fungsi `save_gallery_images()`
+  - Sekarang satu fungsi menangani save gallery DAN save price/weight
+  - Menambahkan fallback: jika nonce valid ATAU data ada, simpan ke database
+  - Files Changed:
+    - `includes/class-sps-metabox.php`: Menggabungkan save price/weight ke save_gallery_images()
+  - Now: Data harga dan berat PASTI tersimpan karena menggunakan mekanisme yang sama dengan Gallery yang sudah bekerja
+
+### Version 1.6.37 (December 2025)
+**CRITICAL FIX: MEMAKSA Classic Editor - Gutenberg SEPENUHNYA Dinonaktifkan**
+- **🔧 CRITICAL FIX**: Gutenberg SEPENUHNYA dinonaktifkan untuk sps_product
+  - Mengubah `show_in_rest => false` pada `register_post_type()` untuk menonaktifkan REST API
+  - Ini MEMAKSA WordPress menggunakan Classic Editor karena Gutenberg membutuhkan REST API
+  - Mengubah priority filter menjadi `PHP_INT_MAX` untuk memastikan filter tidak di-override
+  - Menambahkan filter untuk kompatibilitas dengan plugin Classic Editor
+  - Files Changed:
+    - `includes/class-sps-cpt.php`: `show_in_rest => false`, PHP_INT_MAX priority, classic editor filters
+  - Now: Halaman edit/tambah produk PASTI menggunakan Classic Editor - Data PASTI tersimpan
+
+### Version 1.6.36 (December 2025)
 **CRITICAL FIX: Shortcode Menimpa Data dengan Default Values**
 - **🔧 CRITICAL FIX**: Menghapus kode berbahaya yang menimpa nilai harga dan berat dengan default setiap kali shortcode dijalankan
   - Shortcode `sps_detail_products` sebelumnya MENYIMPAN nilai default ke database setiap kali halaman detail produk dibuka
