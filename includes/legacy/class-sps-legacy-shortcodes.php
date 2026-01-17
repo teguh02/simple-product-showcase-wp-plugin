@@ -305,49 +305,57 @@ class SPS_Legacy_Shortcodes {
             $limit = -1;
         }
         
-        // Get all categories yang punya produk
-        $all_categories = get_terms(array(
-            'taxonomy' => 'sps_product_category',
-            'hide_empty' => true,
-            'orderby' => 'name',
-            'order' => 'ASC'
-        ));
+        // ====================================================================
+        // NEW: Detect current product and check if it's in Packaging category
+        // ====================================================================
+        $current_product = $this->get_current_product_fallback();
+        $is_packaging_category = false;
+        $current_product_id = 0;
+        $packaging_term_id = 0;
         
-        if (is_wp_error($all_categories) || empty($all_categories)) {
-            return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
+        if ($current_product) {
+            $current_product_id = $current_product->ID;
+            $terms = get_the_terms($current_product_id, 'sps_product_category');
+            if (!empty($terms) && !is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    // Check if product is in Packaging category (or its children)
+                    if (strtolower($term->slug) === 'packaging' || $this->is_child_of_packaging($term)) {
+                        $is_packaging_category = true;
+                        // Get the packaging parent term ID
+                        $packaging_term = get_term_by('slug', 'packaging', 'sps_product_category');
+                        if ($packaging_term && !is_wp_error($packaging_term)) {
+                            $packaging_term_id = $packaging_term->term_id;
+                        }
+                        break;
+                    }
+                }
+            }
         }
         
-        // Shuffle categories untuk random urutan
-        shuffle($all_categories);
-        
-        // Tentukan target jumlah produk berdasarkan limit
-        $target_count = ($limit > 0) ? min($limit, count($all_categories)) : count($all_categories);
-        
-        // Koleksi produk random (1 produk per kategori berbeda)
+        // Initialize random products array
         $random_products = array();
         $selected_product_ids = array();
         
-        $category_index = 0;
-        $product_count = 0;
-        $max_attempts = count($all_categories) * 2;
-        $attempts = 0;
+        // Exclude current product if viewing one
+        if ($current_product_id > 0) {
+            $selected_product_ids[] = $current_product_id;
+        }
         
-        while ($product_count < $target_count && $attempts < $max_attempts) {
-            if ($category_index >= count($all_categories)) {
-                $category_index = 0;
-            }
-            
-            $category = $all_categories[$category_index];
-            
-            $category_args = array(
+        // ====================================================================
+        // CASE 1: Current product is in Packaging category
+        // Show only products from Packaging category (including children)
+        // ====================================================================
+        if ($is_packaging_category && $packaging_term_id > 0) {
+            $packaging_args = array(
                 'post_type' => 'sps_product',
                 'post_status' => 'publish',
-                'posts_per_page' => 10,
+                'posts_per_page' => ($limit > 0) ? $limit : 12,
                 'tax_query' => array(
                     array(
                         'taxonomy' => 'sps_product_category',
                         'field' => 'term_id',
-                        'terms' => $category->term_id
+                        'terms' => $packaging_term_id,
+                        'include_children' => true // Include Box, Pallet, Protector, etc.
                     )
                 ),
                 'orderby' => 'rand',
@@ -355,22 +363,84 @@ class SPS_Legacy_Shortcodes {
                 'post__not_in' => $selected_product_ids
             );
             
-            $category_query = new WP_Query($category_args);
+            $packaging_query = new WP_Query($packaging_args);
             
-            if ($category_query->have_posts()) {
-                $category_query->the_post();
-                $current_post = get_post();
-                
-                if (!in_array($current_post->ID, $selected_product_ids)) {
-                    $random_products[] = $current_post;
-                    $selected_product_ids[] = $current_post->ID;
-                    $product_count++;
+            if ($packaging_query->have_posts()) {
+                while ($packaging_query->have_posts()) {
+                    $packaging_query->the_post();
+                    $random_products[] = get_post();
                 }
                 wp_reset_postdata();
             }
+        }
+        // ====================================================================
+        // CASE 2: Current product is NOT in Packaging category
+        // Show random products from various categories (original behavior)
+        // ====================================================================
+        else {
+            // Get all categories yang punya produk
+            $all_categories = get_terms(array(
+                'taxonomy' => 'sps_product_category',
+                'hide_empty' => true,
+                'orderby' => 'name',
+                'order' => 'ASC'
+            ));
             
-            $category_index++;
-            $attempts++;
+            if (is_wp_error($all_categories) || empty($all_categories)) {
+                return '<p class="sps-no-products">' . __('No products found.', 'simple-product-showcase') . '</p>';
+            }
+            
+            // Shuffle categories untuk random urutan
+            shuffle($all_categories);
+            
+            // Tentukan target jumlah produk berdasarkan limit
+            $target_count = ($limit > 0) ? min($limit, count($all_categories)) : count($all_categories);
+            
+            $category_index = 0;
+            $product_count = 0;
+            $max_attempts = count($all_categories) * 2;
+            $attempts = 0;
+            
+            while ($product_count < $target_count && $attempts < $max_attempts) {
+                if ($category_index >= count($all_categories)) {
+                    $category_index = 0;
+                }
+                
+                $category = $all_categories[$category_index];
+                
+                $category_args = array(
+                    'post_type' => 'sps_product',
+                    'post_status' => 'publish',
+                    'posts_per_page' => 10,
+                    'tax_query' => array(
+                        array(
+                            'taxonomy' => 'sps_product_category',
+                            'field' => 'term_id',
+                            'terms' => $category->term_id
+                        )
+                    ),
+                    'orderby' => 'rand',
+                    'order' => 'ASC',
+                    'post__not_in' => $selected_product_ids
+                );
+                
+                $category_query = new WP_Query($category_args);
+                
+                if ($category_query->have_posts()) {
+                    $category_query->the_post();
+                    $current_post = get_post();
+                    
+                    if (!in_array($current_post->ID, $selected_product_ids)) {
+                        $random_products[] = $current_post;
+                        $selected_product_ids[] = $current_post->ID;
+                        $product_count++;
+                    }
+                    wp_reset_postdata();
+                }
+                
+                $category_index++;
+                $attempts++;
+            }
         }
         
         if (empty($random_products)) {
@@ -619,6 +689,33 @@ class SPS_Legacy_Shortcodes {
         } else {
             return '62' . $number;
         }
+    }
+    
+    /**
+     * Check if a term is child of Packaging category
+     * 
+     * @param object $term The term object to check
+     * @return bool True if term is child of Packaging
+     */
+    private function is_child_of_packaging($term) {
+        if (!$term || !isset($term->parent) || $term->parent == 0) {
+            return false;
+        }
+        
+        // Get Packaging term
+        $packaging_term = get_term_by('slug', 'packaging', 'sps_product_category');
+        if (!$packaging_term || is_wp_error($packaging_term)) {
+            return false;
+        }
+        
+        // Check if parent is Packaging
+        if ($term->parent == $packaging_term->term_id) {
+            return true;
+        }
+        
+        // Check ancestors (for nested children)
+        $ancestors = get_ancestors($term->term_id, 'sps_product_category', 'taxonomy');
+        return in_array($packaging_term->term_id, $ancestors);
     }
     
     /**
