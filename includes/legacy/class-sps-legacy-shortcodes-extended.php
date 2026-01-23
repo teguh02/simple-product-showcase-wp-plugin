@@ -169,6 +169,20 @@ class SPS_Legacy_Shortcodes_Extended {
                 $output = $section_value;
                 break;
                 
+            case 'short_description':
+                $short_description = get_post_meta($product->ID, '_sps_product_short_description', true);
+                if (empty($short_description)) {
+                    $section_value = '';
+                } else {
+                    // Support style parameter untuk tag HTML (p, div, h1-h5, span)
+                    $valid_styles = array('p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'span');
+                    $tag = in_array($atts['style'], $valid_styles) ? $atts['style'] : 'p';
+                    $escaped_content = wp_kses_post(nl2br(esc_html($short_description)));
+                    $section_value = '<' . $tag . ' class="sps-product-detail-short-description">' . $escaped_content . '</' . $tag . '>';
+                }
+                $output = $section_value;
+                break;
+                
             case 'gallery':
                 $section_value = $this->render_gallery_fallback($product, $atts['style']);
                 $output = $section_value;

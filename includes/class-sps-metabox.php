@@ -149,7 +149,7 @@ class SPS_Metabox {
         // ========== SAVE PRODUCT PRICE/WEIGHT DATA ==========
         // Check product meta nonce - ATAU simpan tanpa nonce jika data ada (untuk Gutenberg compatibility)
         $has_price_nonce = isset($_POST['sps_product_meta_nonce']) && wp_verify_nonce($_POST['sps_product_meta_nonce'], 'sps_product_meta');
-        $has_price_data = isset($_POST['sps_product_price_numeric']) || isset($_POST['sps_product_price_discount']) || isset($_POST['sps_product_weight']);
+        $has_price_data = isset($_POST['sps_product_price_numeric']) || isset($_POST['sps_product_price_discount']) || isset($_POST['sps_product_weight']) || isset($_POST['sps_product_short_description']);
         
         if ($has_price_nonce || $has_price_data) {
             // Simpan harga produk (display)
@@ -185,6 +185,12 @@ class SPS_Metabox {
                 
                 // Simpan ke kolom database jika ada
                 $this->save_weight_to_posts_table($post_id, $weight);
+            }
+            
+            // Simpan deskripsi singkat produk
+            if (isset($_POST['sps_product_short_description'])) {
+                $short_description = sanitize_textarea_field($_POST['sps_product_short_description']);
+                update_post_meta($post_id, '_sps_product_short_description', $short_description);
             }
         }
     }

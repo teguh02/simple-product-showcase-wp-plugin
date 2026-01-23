@@ -7,6 +7,28 @@ dan plugin ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 
 
+## [1.7.1] - 2025-01-23
+
+### Added
+- **Field Deskripsi Singkat**: Menambahkan inputan textarea untuk deskripsi singkat produk di meta box Product Price
+  - Field ini muncul di sidebar kanan saat menambah/edit produk
+  - Data disimpan ke meta field `_sps_product_short_description`
+  - Mendukung penyimpanan baik di Classic Editor maupun Gutenberg meta-box-loader
+
+- **Section `short_description` pada shortcode `[sps_detail_products]`**:
+  - Menambahkan section baru `short_description` untuk menampilkan deskripsi singkat produk
+  - Mendukung parameter `style` untuk tag HTML: `p`, `div`, `h1`, `h2`, `h3`, `h4`, `h5`, `span`
+  - Default style: `p`
+  - Usage: `[sps_detail_products section="short_description"]` atau `[sps_detail_products section="short_description" style="h2"]`
+  - Jika deskripsi kosong, tidak menampilkan apapun (return empty string)
+
+### Files Changed
+- `includes/class-sps-cpt.php`: Menambahkan field deskripsi singkat di meta box Product Price
+- `includes/class-sps-metabox.php`: Menambahkan logic save deskripsi singkat
+- `includes/legacy/class-sps-legacy-cpt.php`: Menambahkan field deskripsi singkat di fallback meta box
+- `includes/class-sps-shortcodes.php`: Menambahkan case `short_description` dan method `render_product_short_description()`
+- `includes/legacy/class-sps-legacy-shortcodes-extended.php`: Menambahkan case `short_description` di fallback handler
+
 ## [1.7.0] - 2025-12-28
 
 ### Changed

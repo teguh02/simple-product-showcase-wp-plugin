@@ -1688,6 +1688,10 @@ class SPS_Shortcodes {
                 $section_value = $this->render_product_description($product);
                 $output = $section_value;
                 break;
+            case 'short_description':
+                $section_value = $this->render_product_short_description($product, $atts['style']);
+                $output = $section_value;
+                break;
             case 'gallery':
                 $section_value = $this->render_product_gallery($product, $atts['style']);
                 $output = $section_value;
@@ -1930,6 +1934,23 @@ class SPS_Shortcodes {
     private function render_product_description($product) {
         $content = apply_filters('the_content', $product->post_content);
         return '<div class="sps-product-detail-description">' . $content . '</div>';
+    }
+    
+    /**
+     * Render product short description
+     */
+    private function render_product_short_description($product, $style = 'p') {
+        $short_description = get_post_meta($product->ID, '_sps_product_short_description', true);
+        if (empty($short_description)) {
+            return '';
+        }
+        
+        // Support style parameter untuk tag HTML (p, div, h1-h5, span)
+        $valid_styles = array('p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'span');
+        $tag = in_array($style, $valid_styles) ? $style : 'p';
+        $escaped_content = wp_kses_post(nl2br(esc_html($short_description)));
+        
+        return '<' . $tag . ' class="sps-product-detail-short-description">' . $escaped_content . '</' . $tag . '>';
     }
     
     /**

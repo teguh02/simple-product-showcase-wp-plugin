@@ -235,7 +235,13 @@ class SPS_CPT {
         $price_numeric = get_post_meta($post->ID, '_sps_product_price_numeric', true);
         $price_discount = get_post_meta($post->ID, '_sps_product_price_discount', true);
         $weight = get_post_meta($post->ID, '_sps_product_weight', true);
+        $short_description = get_post_meta($post->ID, '_sps_product_short_description', true);
         ?>
+        <p>
+            <label for="sps_product_short_description"><strong><?php _e('Deskripsi Singkat:', 'simple-product-showcase'); ?></strong></label>
+            <textarea id="sps_product_short_description" name="sps_product_short_description" class="widefat" rows="4" placeholder="<?php esc_attr_e('Masukkan deskripsi singkat produk di sini...', 'simple-product-showcase'); ?>"><?php echo esc_textarea($short_description); ?></textarea>
+            <small><?php _e('Masukkan deskripsi singkat produk. Deskripsi ini akan digunakan untuk tampilan ringkas produk.', 'simple-product-showcase'); ?></small>
+        </p>
         <p>
             <label for="sps_product_price_numeric"><strong><?php _e('Harga Normal:', 'simple-product-showcase'); ?></strong></label>
             <input type="number" id="sps_product_price_numeric" name="sps_product_price_numeric" value="<?php echo esc_attr($price_numeric); ?>" class="widefat" placeholder="0" min="0" step="1" />
@@ -319,6 +325,12 @@ class SPS_CPT {
             
             // Jika kolom weight ada di wp_posts, simpan juga ke sana
             $this->save_weight_to_posts_table($post_id, $weight);
+        }
+        
+        // Simpan deskripsi singkat produk
+        if (isset($_POST['sps_product_short_description'])) {
+            $short_description = sanitize_textarea_field($_POST['sps_product_short_description']);
+            update_post_meta($post_id, '_sps_product_short_description', $short_description);
         }
         
         // WhatsApp message settings are now handled in Button Configuration page only

@@ -245,7 +245,13 @@ class SPS_Legacy_CPT {
         $price_numeric = get_post_meta($post->ID, '_sps_product_price_numeric', true);
         $price_discount = get_post_meta($post->ID, '_sps_product_price_discount', true);
         $weight = get_post_meta($post->ID, '_sps_product_weight', true);
+        $short_description = get_post_meta($post->ID, '_sps_product_short_description', true);
         ?>
+        <p>
+            <label for="sps_product_short_description"><strong><?php _e('Deskripsi Singkat:', 'simple-product-showcase'); ?></strong></label>
+            <textarea id="sps_product_short_description" name="sps_product_short_description" class="widefat" rows="4" placeholder="<?php esc_attr_e('Masukkan deskripsi singkat produk di sini...', 'simple-product-showcase'); ?>"><?php echo esc_textarea($short_description); ?></textarea>
+            <small><?php _e('Masukkan deskripsi singkat produk. Deskripsi ini akan digunakan untuk tampilan ringkas produk.', 'simple-product-showcase'); ?></small>
+        </p>
         <p>
             <label for="sps_product_price_numeric"><strong><?php _e('Harga Normal:', 'simple-product-showcase'); ?></strong></label>
             <input type="number" id="sps_product_price_numeric" name="sps_product_price_numeric" value="<?php echo esc_attr($price_numeric); ?>" class="widefat" placeholder="0" min="0" step="1" />
